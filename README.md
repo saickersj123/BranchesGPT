@@ -1,2 +1,2 @@
 # Branches GPT
- 2024 Branches ChatGPT Duplication Project
+ 2024 Branches Chat-GPT Duplication Project
