@@ -1,15 +1,11 @@
-//check dependencies
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const routes =require('./routes');
 const path = require("path");
-
-//init express app
 const app = express();
 const PORT = process.env.PORT || 8000
 
-//init cors and express.json
 app.use(cors())
 app.use(express.json())
 
@@ -27,12 +23,9 @@ try {
 	console.log(error)
 }
 
-//init /files urls
 app.use("/files", express.static(path.resolve(__dirname, "..", "files")))
-//init routes
 app.use(routes);
 
-//check if server is running
 app.listen(PORT, () => {
 	console.log(`Listening on ${PORT}`)
 })
