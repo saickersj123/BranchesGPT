@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Password</title>
+    
+    <link rel="stylesheet" href="window_style.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="full-height">
+        <div id="findpwContainer" class="findpw-box">
+            <h1 class="text-center">비밀번호 찾기</h1>
+            <div id="forgotPasswordErrorAlert" class="alert alert-danger d-none" role="alert"></div>
+            <form id="forgotPasswordForm">
+                <div class="mb-3">
+                    <label for="forgotPasswordEmail" class="form-label">등록된 이메일 주소</label>
+                    <input type="email" class="form-control" id="forgotPasswordEmail" placeholder="이메일을 입력하세요">
+                </div>
+                <button type="submit" class="btn btn-primary w-100">비밀번호 재설정 메일 보내기</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        document.getElementById("forgotPasswordForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById("forgotPasswordEmail").value;
+
+            if (!email) {
+                const forgotPasswordErrorAlert = document.getElementById("forgotPasswordErrorAlert");
+                forgotPasswordErrorAlert.innerText = "이메일을 입력하세요.";
+                forgotPasswordErrorAlert.classList.remove("d-none");
+                return;
+            }
+
+            try {
+                // 이메일을 서버로 전송하는 코드
+                // 여기에 실제로 이메일을 보내는 코드를 추가하세요.
+
+                // 비밀번호 재설정 이메일을 성공적으로 보냈다고 가정
+                document.getElementById("successAlert").innerText = "비밀번호 재설정 이메일을 보냈습니다.";
+                document.getElementById("successAlert").classList.remove("d-none");
+            } catch (error) {
+                // 이메일 전송에 실패한 경우
+                console.error("이메일 전송에 실패했습니다:", error);
+                const forgotPasswordErrorAlert = document.getElementById("forgotPasswordErrorAlert");
+                forgotPasswordErrorAlert.innerText = "이메일을 보내는 중 문제가 발생했습니다. 나중에 다시 시도해주세요.";
+                forgotPasswordErrorAlert.classList.remove("d-none");
+            }
+        });
+    </script>
+</body>
+</html>

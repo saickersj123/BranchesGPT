@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <link rel="stylesheet" href="window_style.css">
+</head>
+<body>
+    <div id="signupModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">회원가입</h5>
+                </div>
+                <div class="modal-body">
+                    <!-- 회원가입 폼 -->
+                    <form id="signupForm">
+                        <div id="signupErrorAlert" class="alert alert-danger d-none" role="alert"></div>
+                        <div class="mb-3">
+                            <label for="signupEmail" class="form-label">이메일 주소</label>
+                            <input type="email" class="form-control" id="signupEmail" placeholder="이메일을 입력하세요">
+                        </div>
+                        <div class="mb-3">
+                            <label for="signupNickname" class="form-label">닉네임</label>
+                            <input type="text" class="form-control" id="signupNickname" placeholder="닉네임을 입력하세요">
+                        </div>
+                        <div class="mb-3">
+                            <label for="signupPassword" class="form-label">비밀번호</label>
+                            <input type="password" class="form-control" id="signupPassword" placeholder="비밀번호를 입력하세요">
+                        </div>
+                        <button type="submit" class="btn btn-primary">회원가입</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("signupForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById("signupEmail").value;
+            const nickname = document.getElementById("signupNickname").value;
+            const password = document.getElementById("signupPassword").value;
+
+            if (!nickname) {
+                const signupErrorAlert = document.getElementById("signupErrorAlert");
+                signupErrorAlert.innerText = "닉네임을 입력하세요.";
+                signupErrorAlert.classList.remove("d-none");
+                return;
+            }
+
+            if (password.length < 8) {
+                const signupErrorAlert = document.getElementById("signupErrorAlert");
+                signupErrorAlert.innerText = "비밀번호는 8자리 이상이어야 합니다.";
+                signupErrorAlert.classList.remove("d-none");
+                return;
+            }
+
+            // 여기에 회원가입 처리 코드를 추가하세요.
+            // 성공적으로 처리되었다면 아래 코드를 실행하세요.
+            // 아래 코드는 현재 창을 닫고, 이전 페이지로 리다이렉트하는 것입니다.
+            if (email && password) {
+                // 성공 메시지 표시
+                alert('성공했습니다!');
+
+                // 1초 후에 현재 창을 닫음
+                setTimeout(function() {
+                    window.close();
+                }, 1000);
+
+                // 1.5초 후에 이전 페이지로 리다이렉트
+                setTimeout(function() {
+                    window.history.back();
+                }, 1500);
+            }
+        });
+
+        document.querySelector('#signupModal .btn-close').addEventListener('click', function() {
+            document.getElementById('signupModal').style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('signupModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

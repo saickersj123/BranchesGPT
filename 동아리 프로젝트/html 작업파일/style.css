@@ -4,12 +4,11 @@
     padding: 0;
     box-sizing: border-box;
   }
-  
 
   .header {
     font-weight: bold;
-    background-color: #ffffff;
-    padding: 20px; /* 상하 길이를 2배로 늘리기 위해 상하 패딩을 20px로 설정 */
+    background-color: #d3ddff;
+    padding: 30px; /* 상하 길이를 2배로 늘리기 위해 상하 패딩을 20px로 설정 */
     display: flex;
     align-items: center;
     position: relative; /* 로그인 버튼 위치 조정을 위해 relative 사용 */
