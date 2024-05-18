@@ -1,0 +1,282 @@
+<!-- login.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            margin: 10px 0; /* 상단 마진을 10px로 줄임 */
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .header {
+            font-weight: bold;
+            background-color: rgb(200, 250, 255);
+            padding: 10px;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .full-height {
+            height: calc(100vh - 40px); /* 헤더 높이를 뺀 높이를 줄임 */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* 상단 정렬로 변경 */
+            padding-top: 20px; /* 추가 상단 패딩으로 조절 */
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="center">
+            <p id="indexButton">react-bootstrap을 쓸 공간</p>
+        </div>
+    </header>
+    <div class="full-height">
+        <div id="loginContainer" class="login-box">
+            <h1 class="text-center">로그인</h1>
+            <div id="errorAlert" class="alert alert-danger d-none" role="alert"></div>
+            <div id="successAlert" class="alert alert-success d-none" role="alert"></div>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="emailInput" class="form-label">이메일 주소</label>
+                    <input type="email" class="form-control" id="emailInput" placeholder="이메일을 입력하세요">
+                </div>
+                <div class="mb-3">
+                    <label for="passwordInput" class="form-label">비밀번호</label>
+                    <input type="password" class="form-control" id="passwordInput" placeholder="비밀번호를 입력하세요">
+                </div>
+                <button type="submit" class="btn btn-primary w-100">로그인</button>
+                <button type="button" id="registerButton" class="btn btn-secondary w-100 mt-2">회원가입</button>
+                <button type="button" id="forgotPasswordButton" class="btn btn-secondary w-100 mt-2">비밀번호 찾기</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById("emailInput").value;
+            const password = document.getElementById("passwordInput").value;
+
+            if (!email || !password) {
+                document.getElementById("errorAlert").innerText = "이메일과 비밀번호를 입력하세요.";
+                document.getElementById("errorAlert").classList.remove("d-none");
+                return;
+            }
+
+            // Assume login is successful for demonstration purposes
+            document.getElementById("successAlert").innerText = "로그인에 성공했습니다!";
+            document.getElementById("successAlert").classList.remove("d-none");
+
+            // Save login state to localStorage
+            localStorage.setItem("isLoggedIn", "true");
+
+            // 1초 후에 홈 페이지로 리다이렉트
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            window.location.href = "index.html"; // index.html로 이동
+        });
+
+        document.getElementById("registerButton").addEventListener("click", function() {
+            // 회원가입 모달 창을 표시합니다.
+            document.getElementById("signupModal").style.display = "block";
+        });
+
+        document.getElementById("indexButton").addEventListener("click", function() {
+            window.location.href = "index.html"; // index.html로 이동
+        });
+    </script>
+
+    <!-- 회원가입 모달 -->
+    <div id="signupModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">회원가입</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 회원가입 폼 -->
+                    <form id="signupForm">
+                        <div id="signupErrorAlert" class="alert alert-danger d-none" role="alert"></div>
+                        <div class="mb-3">
+                            <label for="signupEmail" class="form-label">이메일 주소</label>
+                            <input type="email" class="form-control" id="signupEmail" placeholder="이메일을 입력하세요">
+                        </div>
+                        <div class="mb-3">
+                            <label for="signupPassword" class="form-label">비밀번호</label>
+                            <input type="password" class="form-control" id="signupPassword" placeholder="비밀번호를 입력하세요">
+                        </div>
+                        <button type="submit" class="btn btn-primary">회원가입</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("signupForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById("signupEmail").value;
+            const password = document.getElementById("signupPassword").value;
+
+            // 비밀번호 길이 확인
+            if (password.length < 8) {
+                const signupErrorAlert = document.getElementById("signupErrorAlert");
+                signupErrorAlert.innerText = "비밀번호는 8자리 이상이어야 합니다.";
+                signupErrorAlert.classList.remove("d-none");
+                return;
+            }
+
+            // 회원가입이 성공하면 모달을 닫고, 성공 알림을 표시할 수 있습니다.
+            document.getElementById("signupModal").style.display = "none";
+            document.getElementById("successAlert").innerText = "회원가입에 성공했습니다!";
+            document.getElementById("successAlert").classList.remove("d-none");
+        });
+        
+    // 모달 닫기 버튼의 이벤트 핸들러 추가
+    document.querySelector('#signupModal .btn-close').addEventListener('click', function() {
+        document.getElementById('signupModal').style.display = 'none';
+    });
+
+    // 모달 외부 클릭 시 모달 닫기
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('signupModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    </script>
+    
+<!-- 비밀번호 찾기 모달 -->
+<div id="forgotPasswordModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">비밀번호 찾기</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 비밀번호 찾기 폼 -->
+                <form id="forgotPasswordForm">
+                    <div id="forgotPasswordErrorAlert" class="alert alert-danger d-none" role="alert"></div>
+                    <div class="mb-3">
+                        <label for="forgotPasswordEmail" class="form-label">등록된 이메일 주소</label>
+                        <input type="email" class="form-control" id="forgotPasswordEmail" placeholder="이메일을 입력하세요">
+                    </div>
+                    <button type="submit" class="btn btn-primary">비밀번호 재설정 메일 보내기</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("forgotPasswordForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const email = document.getElementById("forgotPasswordEmail").value;
+
+    if (!email) {
+        const forgotPasswordErrorAlert = document.getElementById("forgotPasswordErrorAlert");
+        forgotPasswordErrorAlert.innerText = "이메일을 입력하세요.";
+        forgotPasswordErrorAlert.classList.remove("d-none");
+        return;
+    }
+
+    try {
+        // 이메일을 서버로 전송하는 코드
+        // 여기에 실제로 이메일을 보내는 코드를 추가하세요.
+
+        // 비밀번호 재설정 이메일을 성공적으로 보냈다고 가정
+        document.getElementById("forgotPasswordModal").style.display = "none";
+        document.getElementById("successAlert").innerText = "비밀번호 재설정 이메일을 보냈습니다.";
+        document.getElementById("successAlert").classList.remove("d-none");
+    } catch (error) {
+        // 이메일 전송에 실패한 경우
+        console.error("이메일 전송에 실패했습니다:", error);
+        const forgotPasswordErrorAlert = document.getElementById("forgotPasswordErrorAlert");
+        forgotPasswordErrorAlert.innerText = "이메일을 보내는 중 문제가 발생했습니다. 나중에 다시 시도해주세요.";
+        forgotPasswordErrorAlert.classList.remove("d-none");
+    }
+});
+
+    document.getElementById("forgotPasswordButton").addEventListener("click", function() {
+        // 비밀번호 찾기 모달 창을 표시합니다.
+        document.getElementById("forgotPasswordModal").style.display = "block";
+    });
+    
+    // 모달 닫기 버튼의 이벤트 핸들러 추가
+    document.querySelector('#forgotPasswordModal .btn-close').addEventListener('click', function() {
+        document.getElementById('forgotPasswordModal').style.display = 'none';
+    });
+
+    // 모달 외부 클릭 시 모달 닫기
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('forgotPasswordModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+</script>
+
+<script>
+    document.getElementById("loginForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const email = document.getElementById("emailInput").value;
+        const password = document.getElementById("passwordInput").value;
+
+        if (!email || !password) {
+            document.getElementById("errorAlert").innerText = "이메일과 비밀번호를 입력하세요.";
+            document.getElementById("errorAlert").classList.remove("d-none");
+            return;
+        }
+
+        // Assume login is successful for demonstration purposes
+        document.getElementById("successAlert").innerText = "로그인에 성공했습니다!";
+        document.getElementById("successAlert").classList.remove("d-none");
+
+        // Save login state to localStorage
+        localStorage.setItem("isLoggedIn", "true");
+
+        // 1초 후에 홈 페이지로 리다이렉트
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        window.location.href = "index.html"; // index.html로 이동
+    });
+
+    document.getElementById("registerButton").addEventListener("click", function() {
+        // 회원가입 모달 창을 표시합니다.
+        document.getElementById("signupModal").style.display = "block";
+    });
+
+    document.getElementById("indexButton").addEventListener("click", function() {
+        window.location.href = "index.html"; // index.html로 이동
+    });
+    
+</script
+
+
+
+</body>
+</html>

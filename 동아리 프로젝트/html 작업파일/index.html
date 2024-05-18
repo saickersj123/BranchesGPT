@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT 서비스</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .header {
+            font-weight: bold;
+            background-color: #ffffff;
+            padding: 20px; /* 상하 길이를 2배로 늘리기 위해 상하 패딩을 20px로 설정 */
+            display: flex;
+            align-items: center;
+            position: relative; /* 로그인 버튼 위치 조정을 위해 relative 사용 */
+            border-bottom: 1px solid #444444;
+        }
+        .header-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px; /* 글자 크기 조절 */
+        }
+        .header-center a {
+            color: black; /* 글자 색상을 검정색으로 설정 */
+            text-decoration: none; /* 밑줄 제거 */
+        }
+        .auth-button {
+            cursor: pointer; /* 클릭 가능 커서 설정 */
+            margin-left: auto; /* 왼쪽 마진을 자동으로 설정하여 오른쪽 정렬 */
+        }
+        .login-message {
+            border: 1px solid black; /* 네모 박스의 테두리 */
+            padding: 100px;
+            display: flex;
+            justify-content: center; /* 가운데 정렬 */
+            align-items: center; /* 수직 정렬 */
+            height: 50%;
+            font-size: 18px; /* 글자 크기 */
+            margin: 10%; /* 위 여백을 추가합니다. */
+            margin-left: 25%; /* 왼쪽 여백을 추가합니다. */
+            margin-right: 25%; /* 오른쪽 여백을 추가합니다. */
+            border-radius: 30px;
+        }
+    </style>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@^6.26.0/babel.min.js"></script>
+    <script>
+        // 전역 변수로 로그인 상태를 정의
+        var isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    </script>
+</head>
+<body>
+<header class="header">
+    <div class="header-center">
+        <a href="index.html">react-bootstrap을 쓸 공간</a>
+    </div>
+    <div class="auth-button" id="authButtonContainer"></div> <!-- 로그인 버튼 -->
+</header>
+
+<main class="main-section">
+    <script>
+        // 조건에 따라 HTML을 동적으로 생성
+        if (isLoggedIn) {
+            document.write('<div class="ChatList">MongoDB에서 대화기록을 가지고 올 공간</div>');
+            document.write('<div class="chat-container">');
+            document.write('<div class="chat-container" id="chatApp"></div>');
+            document.write('</div>');
+        } else {
+            document.write('<div class="login-message">서비스 이용을 위해선 로그인이 필요합니다.</div>');
+        }
+    </script>
+</main>
+
+<footer class="footer">
+    <p>&copy; GPT 서비스.</p>
+    <nav>
+        <a href="#">이용 약관</a>
+        <a href="#">연락처</a>
+    </nav>
+</footer>
+
+<script type="text/babel">
+    const { useState } = React;
+
+    const ChatBox = ({ sendMessage }) => {
+        const [message, setMessage] = useState('');
+
+        const handleMessageChange = (event) => {
+            setMessage(event.target.value);
+        };
+
+        const sendMessageToChatList = () => {
+            if (message.trim() === '') return;
+            sendMessage(message);
+            setMessage('');
+            console.log('메시지 전송:', message);
+        };
+
+        const handleKeyPress = (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessageToChatList();
+            }
+        };
+
+        return (
+            <div className="chat-input-container">
+                <textarea
+                    value={message}
+                    onChange={handleMessageChange}
+                    onKeyPress={handleKeyPress}
+                    placeholder="메시지를 입력하세요..."
+                    className="chat-container"
+                />
+                <button onClick={sendMessageToChatList} className="chat-box-button">전송</button>
+            </div>
+        );
+    };
+
+    const rootElement = document.getElementById("chatApp");
+    ReactDOM.render(<ChatBox sendMessage={() => {}} />, rootElement);
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const authButtonContainer = document.getElementById("authButtonContainer");
+
+        const authButton = document.createElement('p');
+        authButton.classList.add('auth-button');
+        authButton.addEventListener('click', function() {
+            if (isLoggedIn) {
+                localStorage.removeItem('isLoggedIn');
+                isLoggedIn = false; // 전역 변수 업데이트
+                window.location.reload();
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        if (isLoggedIn) {
+            authButton.innerText = "로그아웃";
+        } else {
+            authButton.innerText = "로그인";
+        }
+
+        authButtonContainer.appendChild(authButton);
+    });
+</script>
+
+</body>
+</html>
