@@ -1,0 +1,146 @@
+/* 전체 레이아웃 */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.header {
+    background-color: #007BFF;
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+}
+
+.header a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.5em;
+}
+
+.main-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 60px);
+}
+
+/* 마이페이지 컨테이너 */
+.mypage-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+    position: relative; /* 부모 요소로부터 상대 위치 설정 */
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.save-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.save-button:hover {
+    background-color: #0056b3;
+}
+
+.nickname-section,
+.password-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#nickname-display {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.edit-button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.edit-button:hover {
+    background-color: #0056b3;
+}
+
+.edit-section {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.cancel-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.cancel-button:hover {
+    background-color: #c82333;
+}
+
+.close-button {
+    position: absolute; /* 절대 위치 설정 */
+    top: 10px; /* 상단 여백 설정 */
+    right: 10px; /* 우측 여백 설정 */
+    padding: 5px; /* 버튼 크기 조정 */
+    background-color: #ffffff;
+    color: rgb(231, 224, 224);
+    border: none;
+    border-radius: 50%; /* 원 모양으로 변경 */
+    cursor: pointer;
+    font-size: 1.2em; /* 아이콘 크기 조정 */
+    width: 30px; /* 아이콘 크기 조정 */
+    height: 30px; /* 아이콘 크기 조정 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.close-button:hover {
+    background-color: #5a6268;
+}

@@ -1,7 +1,7 @@
 import React from 'react';
-import '../App.css'; // 필요한 경우 별도의 CSS 파일
-import ChatBox from './ChatBox';
-import ChatList from './ChatList';
+import '../css/App.css'; // 필요한 경우 별도의 CSS 파일
+import ChatBox from '../components/ChatBox';
+import ChatList from '../components/ChatList';
 import Alert from 'react-bootstrap/Alert';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignInAlt } from '@fortawesome/free-solid-svg-icons';

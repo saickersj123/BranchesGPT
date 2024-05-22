@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GPT 서비스</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./css/style.css">
     <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/babel-standalone@^6.26.0/babel.min.js"></script>
@@ -103,11 +103,27 @@
 
         if (isLoggedIn) {
             authButton.innerText = "로그아웃";
+            
+            // 마이페이지 버튼 추가
+            const myPageButton = document.createElement('p');
+            myPageButton.classList.add('auth-button');
+            myPageButton.innerText = "마이페이지";
+            myPageButton.addEventListener('click', function() {
+                window.location.href = "mypage.html";
+            });
+
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.display = 'flex';
+            buttonContainer.style.gap = '10px';
+            
+            buttonContainer.appendChild(authButton);
+            buttonContainer.appendChild(myPageButton);
+            
+            authButtonContainer.appendChild(buttonContainer);
         } else {
             authButton.innerText = "로그인";
+            authButtonContainer.appendChild(authButton);
         }
-
-        authButtonContainer.appendChild(authButton);
     });
 </script>
 

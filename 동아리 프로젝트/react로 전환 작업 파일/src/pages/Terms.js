@@ -1,5 +1,5 @@
 import React from 'react';
-import '../App.css'; // 필요한 경우 별도의 CSS 파일
+import '../css/App.css'; // 필요한 경우 별도의 CSS 파일
 
 const Terms = () => (
   <main className="main-section">

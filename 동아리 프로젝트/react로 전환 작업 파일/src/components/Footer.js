@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import '../App.css'; // 필요한 경우 별도의 CSS 파일
+import '../css/App.css'; // 필요한 경우 별도의 CSS 파일
 
 const Footer = () => (
   <footer className="footer">

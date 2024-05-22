@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지 - GPT 서비스</title>
+    <link rel="stylesheet" href="./css/mypage.css">
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@^6.26.0/babel.min.js"></script>
+</head>
+<body>
+<header class="header">
+    <div class="header-center">
+        <a href="index.html">react-bootstrap을 쓸 공간(HOME 버튼)</a>
+    </div>
+</header>
+
+<main class="main-section">
+    <div id="mypageApp"></div>
+</main>
+
+<script type="text/babel">
+    const { useState } = React;
+
+    const MyPage = () => {
+        const [password, setPassword] = useState('');
+        const [isPasswordVerified, setIsPasswordVerified] = useState(false);
+        const [nickname, setNickname] = useState('User123');
+        const [newNickname, setNewNickname] = useState('');
+        const [newPassword, setNewPassword] = useState('');
+        const [isEditingNickname, setIsEditingNickname] = useState(false);
+        const [isEditingPassword, setIsEditingPassword] = useState(false);
+
+        const handlePasswordChange = (event) => {
+            setPassword(event.target.value);
+        };
+
+        const handleVerifyPassword = () => {
+            if (password === '1234') {
+                setIsPasswordVerified(true);
+            } else {
+                alert('현재 비밀번호가 일치하지 않습니다.');
+            }
+        };
+
+        const handleNewNicknameChange = (event) => {
+            setNewNickname(event.target.value);
+        };
+
+        const handleNewPasswordChange = (event) => {
+            setNewPassword(event.target.value);
+        };
+
+        const handleEditNickname = () => {
+            setIsEditingNickname(true);
+        };
+
+        const handleEditPassword = () => {
+            setIsEditingPassword(true);
+        };
+
+        const handleSaveNewNickname = () => {
+            setNickname(newNickname);
+            setIsEditingNickname(false);
+            setNewNickname('');
+        };
+
+        const handleSaveNewPassword = () => {
+            alert('새 비밀번호가 저장되었습니다.');
+            setIsEditingPassword(false);
+            setNewPassword('');
+        };
+
+        const handleCancelEditNickname = () => {
+            setIsEditingNickname(false);
+            setNewNickname('');
+        };
+
+        const handleCancelEditPassword = () => {
+            setIsEditingPassword(false);
+            setNewPassword('');
+        };
+
+        const handleCloseMyPage = () => {
+            window.location.href = "index.html"; // 이전 페이지로 리다이렉트
+        };
+
+        return (
+            <div className="mypage-container">
+                <button onClick={handleCloseMyPage} className="close-button">X</button>
+                {!isPasswordVerified ? (
+                    <div>
+                        <h2>현재 비밀번호를 입력하세요</h2>
+                        <div className="form-group">
+                            <label htmlFor="password">비밀번호:</label>
+                            <input
+                                type="password"
+                                id="password"
+                                value={password}
+                                onChange={handlePasswordChange}
+                                className="form-control"
+                            />
+                        </div>
+                        <button onClick={handleVerifyPassword} className="save-button">확인</button>
+                    </div>
+                ) : (
+                    <div>
+                        <h2>마이페이지</h2>
+                        <div className="form-group nickname-section">
+                            <label htmlFor="nickname">현재 닉네임:</label>
+                            <span id="nickname-display">{nickname}</span>
+                            <button onClick={handleEditNickname} className="edit-button">수정</button>
+                        </div>
+                        {isEditingNickname && (
+                            <div className="edit-section">
+                                <div className="form-group">
+                                    <label htmlFor="newNickname">새 닉네임:</label>
+                                    <input
+                                        type="text"
+                                        id="newNickname"
+                                        value={newNickname}
+                                        onChange={handleNewNicknameChange}
+                                        className="form-control"
+                                    />
+                                </div>
+                                <button onClick={handleSaveNewNickname} className="save-button">저장</button>
+                                <button onClick={handleCancelEditNickname} className="cancel-button">닫기</button>
+                            </div>
+                        )}
+                        <div className="form-group password-section">
+                            <label htmlFor="password">비밀번호 수정:</label>
+                            <button onClick={handleEditPassword} className="edit-button">수정</button>
+                        </div>
+                        {isEditingPassword && (
+                            <div className="edit-section">
+                                <div className="form-group">
+                                    <label htmlFor="newPassword">새 비밀번호:</label>
+                                    <input
+                                        type="password"
+                                        id="newPassword"
+                                        value={newPassword}
+                                        onChange={handleNewPasswordChange}
+                                        className="form-control"
+                                    />
+                                </div>
+                                <button onClick={handleSaveNewPassword} className="save-button">저장</button>
+                                <button onClick={handleCancelEditPassword} className="cancel-button">닫기</button>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    const rootElement = document.getElementById("mypageApp");
+    ReactDOM.render(<MyPage />, rootElement);
+</script>
+
+</body>
+</html>

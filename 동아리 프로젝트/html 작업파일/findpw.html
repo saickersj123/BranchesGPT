@@ -1,61 +1,108 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find Password</title>
-    
-    <link rel="stylesheet" href="window_style.css">
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>비밀번호 찾기</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    .styled-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .styled-button {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .alert {
+      margin-top: 15px;
+    }
+  </style>
 </head>
 <body>
-    <div class="full-height">
-        <div id="findpwContainer" class="findpw-box">
-            <h1 class="text-center">비밀번호 찾기</h1>
-            <div id="forgotPasswordErrorAlert" class="alert alert-danger d-none" role="alert"></div>
-            <form id="forgotPasswordForm">
-                <div class="mb-3">
-                    <label for="forgotPasswordEmail" class="form-label">등록된 이메일 주소</label>
-                    <input type="email" class="form-control" id="forgotPasswordEmail" placeholder="이메일을 입력하세요">
-                </div>
-                <button type="submit" class="btn btn-primary w-100">비밀번호 재설정 메일 보내기</button>
-            </form>
+  <div class="modal fade" id="passwordResetModal" tabindex="-1" aria-labelledby="passwordResetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="passwordResetModalLabel">비밀번호 찾기</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
+        <div class="modal-body">
+          <form id="emailForm" class="styled-form">
+            <div class="form-group">
+              <label for="resetEmail">이메일 주소</label>
+              <input type="email" class="form-control" id="resetEmail" placeholder="이메일을 입력하세요">
+            </div>
+            <button type="submit" class="btn btn-primary styled-button">비밀번호 재설정</button>
+            <div id="resetEmailAlert" class="alert alert-danger" role="alert" style="display: none;"></div>
+            <div id="resetEmailSuccessAlert" class="alert alert-success" role="alert" style="display: none;">이메일 인증이 성공했습니다. 이메일을 확인해 주세요.</div>
+          </form>
+          <form id="passwordForm" class="styled-form" style="display: none;">
+            <div class="form-group">
+              <label for="newPassword">새 비밀번호</label>
+              <input type="password" class="form-control" id="newPassword" placeholder="새 비밀번호를 입력하세요">
+            </div>
+            <button type="submit" class="btn btn-primary styled-button">비밀번호 재설정</button>
+            <div id="resetPasswordAlert" class="alert alert-danger" role="alert" style="display: none;"></div>
+            <div id="resetPasswordSuccessAlert" class="alert alert-success" role="alert" style="display: none;">비밀번호가 성공적으로 변경되었습니다.</div>
+          </form>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Bootstrap JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#passwordResetModal').modal('show');
 
-    <script>
-        document.getElementById("forgotPasswordForm").addEventListener("submit", async function(event) {
-            event.preventDefault();
+      $('#emailForm').on('submit', function(e) {
+        e.preventDefault();
+        const resetEmail = $('#resetEmail').val().trim();
 
-            const email = document.getElementById("forgotPasswordEmail").value;
+        if (!resetEmail) {
+          $('#resetEmailAlert').text('이메일을 입력하세요.').show();
+          return;
+        }
 
-            if (!email) {
-                const forgotPasswordErrorAlert = document.getElementById("forgotPasswordErrorAlert");
-                forgotPasswordErrorAlert.innerText = "이메일을 입력하세요.";
-                forgotPasswordErrorAlert.classList.remove("d-none");
-                return;
-            }
+        $('#resetEmailAlert').hide();
 
-            try {
-                // 이메일을 서버로 전송하는 코드
-                // 여기에 실제로 이메일을 보내는 코드를 추가하세요.
+        // Simulate email sending success or failure
+        const emailSendSuccess = Math.random() > 0.5;
 
-                // 비밀번호 재설정 이메일을 성공적으로 보냈다고 가정
-                document.getElementById("successAlert").innerText = "비밀번호 재설정 이메일을 보냈습니다.";
-                document.getElementById("successAlert").classList.remove("d-none");
-            } catch (error) {
-                // 이메일 전송에 실패한 경우
-                console.error("이메일 전송에 실패했습니다:", error);
-                const forgotPasswordErrorAlert = document.getElementById("forgotPasswordErrorAlert");
-                forgotPasswordErrorAlert.innerText = "이메일을 보내는 중 문제가 발생했습니다. 나중에 다시 시도해주세요.";
-                forgotPasswordErrorAlert.classList.remove("d-none");
-            }
-        });
-    </script>
+        if (emailSendSuccess) {
+          $('#resetEmailSuccessAlert').text('이메일 전송에 성공했습니다. 이메일을 확인해 주세요.').show();
+          $('#emailForm').hide();
+          $('#passwordForm').show();
+        } else {
+          $('#resetEmailAlert').text('이메일 전송에 실패했습니다. 이메일을 다시 확인해 주세요.').show();
+        }
+      });
+
+      $('#passwordForm').on('submit', function(e) {
+        e.preventDefault();
+        const newPassword = $('#newPassword').val().trim();
+
+        if (!newPassword) {
+          $('#resetPasswordAlert').text('새 비밀번호를 입력하세요.').show();
+          return;
+        }
+
+        $('#resetPasswordAlert').hide();
+        $('#resetPasswordSuccessAlert').show();
+
+        setTimeout(function() {
+          $('#passwordResetModal').modal('hide');
+        }, 1000);
+      });
+    });
+  </script>
 </body>
 </html>

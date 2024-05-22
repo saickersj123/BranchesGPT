@@ -1,4 +1,3 @@
-// Navigation.js
 import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
@@ -9,7 +8,7 @@ const Navigation = ({ isLoggedIn, setIsLoggedIn }) => {
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    localStorage.removeItem('isLoggedIn'); // 로그아웃 시 localStorage에서 isLoggedIn 값을 제거
+    localStorage.removeItem('isLoggedIn');
   };
 
   return (
@@ -27,9 +26,12 @@ const Navigation = ({ isLoggedIn, setIsLoggedIn }) => {
                 <Nav.Link href="/login">로그인</Nav.Link>
               </Nav.Link>
             ) : (
-              <Nav.Link eventKey={2} as={Link} to="/" onClick={handleLogout}>
+              <>
+              <Nav.Link as={Link} to="/mypage">마이페이지</Nav.Link>
+              <Nav.Link eventKey={3} onClick={handleLogout}>
                 로그아웃
               </Nav.Link>
+            </>
             )}
           </Nav>
         </Navbar.Collapse>
