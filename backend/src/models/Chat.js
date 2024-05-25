@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-import { randomUUID } from "crypto"
+const { randomUUID } = require('crypto');
 
 const chatSchema = new mongoose.Schema({
 	id: {
@@ -16,4 +16,4 @@ const chatSchema = new mongoose.Schema({
 	}
 })
 
-module.exports = mongoose.model('Chat', chatSchema)
+module.exports = chatSchema;
