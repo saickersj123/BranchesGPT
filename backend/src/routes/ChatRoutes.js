@@ -6,8 +6,8 @@ const { deleteAllChats, generateChatCompletion, getAllChats } = require('../cont
 const chatRoutes = express.Router();
 
 // test
-chatRoutes.get("/", (res) => {
-	console.log("hi");
+chatRoutes.get("/", (req, res) => {
+	console.log("hi"),
 	res.send("hello from chatRoutes");
 });
 

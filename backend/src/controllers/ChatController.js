@@ -28,7 +28,7 @@ async generateChatCompletion(req, res){
 
 		// make request to openAi
 		// get latest response
-		const chatResponse = await openai.createChatCompletion({
+		const chatResponse = await openai.complietions.create({
 			model: "gpt-3.5-turbo",
 			messages: chats,
 		});

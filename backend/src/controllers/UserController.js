@@ -48,7 +48,6 @@ async userSignUp(req, res) {
 
 		res.cookie(COOKIE_NAME, token, {
 			path: "/", //cookie directory in browser
-			domain: process.env.DOMAIN, // our website domain
 			expires, // same as token expiration time
 			httpOnly: true,
 			signed: true,
@@ -85,7 +84,6 @@ async userLogin(req, res) {
 		res.clearCookie(COOKIE_NAME),
 			{
 				path: "/", //cookie directory in browser
-				domain: process.env.DOMAIN, // our website domain
 				httpOnly: true,
 				signed: true,
 			};
@@ -98,12 +96,11 @@ async userLogin(req, res) {
 
 		res.cookie(COOKIE_NAME, token, {
 			path: "/", //cookie directory in browser
-			domain: process.env.DOMAIN, // our website domain
 			expires, // same as token expiration time
 			httpOnly: true,
 			signed: true,
 		});
-
+		console.log("token created on login:",token);
 		return res
 			.status(200)
 			.json({ message: "OK", name: user.name, email: user.email });
@@ -155,11 +152,10 @@ async logoutUser(res) {
 				.status(401)
 				.json({ message: "ERROR", cause: "Permissions didn't match" });
 		}
-
+		
         res.clearCookie(COOKIE_NAME),
         {
             path: "/", //cookie directory in browser
-            domain: process.env.DOMAIN, // our website domain
             httpOnly: true,
             signed: true,
         };
