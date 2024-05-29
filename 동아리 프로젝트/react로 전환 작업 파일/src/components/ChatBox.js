@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
-import '../css/ChatBox.css'; // ChatBox.css 파일의 경로 수정
+import '../css/ChatBox.css';
+import { sendMessage } from '../api/axiosInstance'; // sendMessage 함수를 가져옵니다.
 
-const ChatBox = ({ sendMessage }) => {
+const ChatBox = () => {
   const [message, setMessage] = useState('');
 
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
 
-  const sendMessageToChatList = () => {
+  const sendMessageToChatList = async () => {
     if (message.trim() === '') return;
-    sendMessage(message); // 전달받은 sendMessage 함수를 호출하여 메시지를 전달
-    setMessage('');
+
+    try {
+      const response = await sendMessage(message);
+      console.log('Message sent:', response);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    } finally {
+      setMessage(''); // 메시지 전송 시도 후 항상 메시지 입력 필드를 지웁니다.
+    }
   };
 
   const handleKeyPress = (event) => {

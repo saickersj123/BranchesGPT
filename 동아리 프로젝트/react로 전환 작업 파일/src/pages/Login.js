@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
+import Spinner from 'react-bootstrap/Spinner'; // Spinner 추가
 import backgroundImage from '../img/login_background_image.png';
-import Signup from '../components/NewSignup'; // Import the Signup component
-import PasswordReset from '../components/PasswordReset'; // Import the PasswordReset component
+import Signup from '../components/NewSignup';
+import PasswordReset from '../components/PasswordReset';
+import { loginUser } from '../api/axiosInstance';
 
 const BackgroundContainer = styled.div`
   background-image: url(${backgroundImage});
@@ -29,7 +31,7 @@ const StyledContainer = styled(Container)`
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   background-color: #fff;
-  transition: margin-top 0.5s ease; /* Added transition for smoother appearance */
+  transition: margin-top 0.5s ease;
 `;
 
 const StyledForm = styled(Form)`
@@ -43,17 +45,29 @@ const StyledButton = styled(Button)`
   margin-top: 10px;
 `;
 
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const PasswordGroup = styled.div`
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.5s ease;
+
+  ${props => props.show && css`
+    max-height: 550px; // Adjusted to fit the content including the button
+  `}
+`;
 
 const Login = ({ setIsLoggedIn }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showPasswordResetModal, setShowPasswordResetModal] = useState(false);
-  const [isEmailEntered, setIsEmailEntered] = useState(false);
   const navigate = useNavigate();
+
+  // 이메일에 '@' 포함 여부에 따라 비밀번호 입력란 표시
+  const showPasswordInput = email.includes('@');
+  // 비밀번호 유효성 검사 (8자리 이상)
+  const isPasswordValid = password.length >= 8;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -63,25 +77,32 @@ const Login = ({ setIsLoggedIn }) => {
       return;
     }
 
-    setSuccess(true);
-    setError('');
-
-    setIsLoggedIn(true);
-
-    await delay(1000);
-    navigate('/');
-  };
-
-  const showPasswordField = () => {
-    return email.indexOf('@') !== -1 && email.indexOf('.') !== -1;
+    setLoading(true);
+    try {
+      const response = await loginUser(email, password);
+      if (response.success) {
+        const { nickname, email } = response.data;
+        sessionStorage.setItem('nickname', nickname);
+        sessionStorage.setItem('email', email);
+        setTimeout(() => {
+          setIsLoggedIn(true);
+          navigate('/');
+        }, 1000); // 로그인 성공 후 1초 후 홈 페이지로 이동
+      } else {
+        setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.');
+        setLoading(false);
+      }
+    } catch (error) {
+      setError('로그인 중 오류가 발생했습니다. 다시 시도하세요.');
+      setLoading(false);
+    }
   };
 
   return (
     <BackgroundContainer>
-      <StyledContainer style={{ marginTop: showPasswordField() ? '10vh' : '20vh' }}> {/* Adjusted marginTop based on showPasswordField */}
+      <StyledContainer>
         <h1>로그인</h1>
         {error && <Alert variant="danger">{error}</Alert>}
-        {success && <Alert variant="success">로그인에 성공했습니다!</Alert>}
         <StyledForm onSubmit={handleSubmit}>
           <Form.Group controlId="formEmail">
             <Form.Label>이메일 주소</Form.Label>
@@ -89,38 +110,36 @@ const Login = ({ setIsLoggedIn }) => {
               type="email"
               placeholder="이메일을 입력하세요."
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setIsEmailEntered(showPasswordField()); // Update isEmailEntered based on showPasswordField
-              }}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </Form.Group>
 
-          {showPasswordField() && ( // Render password field only if showPasswordField is true
+          <PasswordGroup show={showPasswordInput}>
             <Form.Group controlId="formPassword">
               <Form.Label>비밀번호</Form.Label>
               <Form.Control
                 type="password"
-                placeholder="비밀번호를 입력하세요."
+                placeholder="8~15자리의 비밀번호를 입력하세요."
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </Form.Group>
-          )}
 
-          <StyledButton variant="primary" type="submit" disabled={!showPasswordField()}> {/* Disable login button until showPasswordField is true */}
-            로그인
-          </StyledButton>
-          <StyledButton variant="secondary" onClick={() => setShowSignupModal(true)}>
-            회원가입
-          </StyledButton>
-          <StyledButton variant="link" onClick={() => setShowPasswordResetModal(true)}>
-            비밀번호 찾기
-          </StyledButton>
+            <StyledButton variant="primary" type="submit" disabled={!isPasswordValid || loading}>
+              {loading ? <Spinner animation="border" size="sm" /> : '로그인'}
+            </StyledButton>
+          </PasswordGroup>
         </StyledForm>
 
-        <Signup show={showSignupModal} onHide={() => setShowSignupModal(false)} />
-        <PasswordReset show={showPasswordResetModal} onHide={() => setShowPasswordResetModal(false)} />
+        <StyledButton variant="secondary" onClick={() => setShowSignupModal(true)}>
+          회원가입
+        </StyledButton>
+        <StyledButton variant="link" onClick={() => setShowPasswordResetModal(true)}>
+          비밀번호 찾기
+        </StyledButton>
+
+        {showSignupModal && <Signup show={showSignupModal} onHide={() => setShowSignupModal(false)} />}
+        {showPasswordResetModal && <PasswordReset show={showPasswordResetModal} onHide={() => setShowPasswordResetModal(false)} />}
       </StyledContainer>
     </BackgroundContainer>
   );

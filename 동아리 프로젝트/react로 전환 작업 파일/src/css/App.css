@@ -1,41 +1,68 @@
-/* 모든 요소의 기본 마진과 패딩을 초기화하고, border-box 모델을 적용합니다. */
+/* css/App.css */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* 전체 body의 스타일을 설정합니다. */
 body {
-  font-family: Arial, sans-serif; /* 글꼴을 Arial 또는 sans-serif로 설정합니다. */
-  line-height: 1.6; /* 줄 간격을 1.6으로 설정합니다. */
-  display: flex; /* 요소들을 플렉스 방향으로 배치합니다. */
-  flex-direction: column; /* 요소들을 세로 방향으로 배치합니다. */
-  min-height: 100vh; /* 최소 높이를 화면 전체 높이로 설정합니다. */
-  overflow: hidden; /* 내용이 넘칠 때 스크롤바를 표시하지 않습니다. */
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding-top: 70px;
 }
 
-/* 메인 섹션의 스타일을 설정합니다. */
-.main-section {
-  flex: 1; /* 남은 공간을 모두 차지하도록 설정합니다. */
-  padding: 20px; /* 내부 여백을 설정합니다. */
-  display: flex; /* 요소들을 플렉스 방향으로 배치합니다. */
-  flex-direction: column; /* 요소들을 세로 방향으로 배치합니다. */
+.app-container {
+  display: flex;
 }
 
-/* 채팅 목록의 스타일을 설정합니다. */
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+
+.main-content.shifted {
+  margin-left: 200px;
+}
+
+.ChatBoxFixed {
+  position: fixed;
+  bottom: 0;
+  width: calc(100% - 40px);
+  left: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+}
+
 .ChatList {
-  background-color: #f9f9f9; /* 배경색을 설정합니다. */
-  padding: 20px; /* 내부 여백을 설정합니다. */
-  border-bottom: 1px solid #ccc; /* 아래 테두리를 설정합니다. */
-  overflow-y: auto; /* 수직 스크롤바가 필요할 때만 표시됩니다. */
-  height: 60vh; /* 높이를 60vh로 설정합니다. */
-  margin-left: 25%; /* 왼쪽 여백을 추가합니다. */
-  margin-right: 25%; /* 오른쪽 여백을 추가합니다. */
+  padding: 20px;
+  overflow-y: scroll;
+  margin-left: 25%;
+  margin-right: 25%;
+  max-height: 80vh;
 }
 
+.ChatList::-webkit-scrollbar {
+  width: 8px;
+}
 
-/* 모바일 기기에서의 반응형 스타일 */
+.ChatList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ChatList::-webkit-scrollbar-thumb {
+  background-color: #D3D3D3;
+  border-radius: 10px;
+}
+
+.ChatList::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
 @media screen and (max-width: 768px) {
   .ChatList {
     margin-left: 3%;
@@ -43,33 +70,16 @@ body {
   }
 }
 
-/* 푸터의 스타일을 설정합니다. */
-.footer {
-  position: fixed; /* 위치를 고정시킵니다. */
-  bottom: 0; /* 하단으로 위치시킵니다. */
-  left: 0; /* 왼쪽에 위치시킵니다. */
-  width: 100%; /* 전체 너비를 차지하도록 설정합니다. */
-  padding: 20px; /* 내부 여백을 설정합니다. */
-  background-color: #333; /* 배경색을 설정합니다. */
-  color: white; /* 글자 색상을 설정합니다. */
-  text-align: center; /* 텍스트를 가운데 정렬합니다. */
+@media screen and (max-height: 600px) {
+  .ChatList {
+    max-height: 50vh;
+  }
 }
 
-
-/* 푸터 내비게이션 링크의 스타일을 설정합니다. */
-.footer nav a {
-  color: white; /* 링크의 글자 색상을 설정합니다. */
-  text-decoration: none; /* 밑줄을 제거합니다. */
-  margin: 0 10px; /* 왼쪽과 오른쪽 여백을 설정합니다. */
-}
-
-
-/* 로그인 창 css*/
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; /* 화면 전체 높이를 차지합니다 */
+@media screen and (min-height: 1200px) {
+  .ChatList {
+    max-height: 90vh;
+  }
 }
 
 .login-box {

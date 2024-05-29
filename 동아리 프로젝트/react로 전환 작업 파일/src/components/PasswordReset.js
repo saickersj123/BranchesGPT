@@ -1,8 +1,7 @@
-// src/components/PasswordReset.js
-
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Modal, Form, Button, Alert } from 'react-bootstrap';
+import { sendVerificationCode, verifyCode, resetPassword } from '../api/axiosInstance'; // 함수를 가져옵니다.
 
 const StyledForm = styled(Form)`
   display: flex;
@@ -22,6 +21,7 @@ const PasswordReset = ({ show, onHide }) => {
   const [newPassword, setNewPassword] = useState('');
   const [passwordResetSuccess, setPasswordResetSuccess] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
 
   const handlePasswordResetSubmit = async (e) => {
     e.preventDefault();
@@ -31,11 +31,25 @@ const PasswordReset = ({ show, onHide }) => {
       return;
     }
 
-    setResetEmailSuccess(true);
-    setResetError('');
-    setIsVerified(true);
+    try {
+      await sendVerificationCode(resetEmail);
+      setResetEmailSuccess(true);
+      setResetError('');
+    } catch (error) {
+      setResetError('이메일 보내기에 실패했습니다.');
+    }
+  };
 
-    await delay(1000);
+  const handleVerificationCodeSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      await verifyCode(resetEmail, verificationCode);
+      setIsVerified(true);
+      setResetError('');
+    } catch (error) {
+      setResetError('인증코드 확인에 실패했습니다.');
+    }
   };
 
   const handleNewPasswordSubmit = async (e) => {
@@ -46,11 +60,14 @@ const PasswordReset = ({ show, onHide }) => {
       return;
     }
 
-    setPasswordResetSuccess(true);
-    setResetError('');
-    onHide();
-
-    await delay(1000);
+    try {
+      await resetPassword(resetEmail, newPassword);
+      setPasswordResetSuccess(true);
+      setResetError('');
+      onHide();
+    } catch (error) {
+      setResetError('비밀번호 재설정에 실패했습니다.');
+    }
   };
 
   return (
@@ -60,23 +77,41 @@ const PasswordReset = ({ show, onHide }) => {
       </Modal.Header>
       <Modal.Body>
         {!isVerified ? (
-          <StyledForm onSubmit={handlePasswordResetSubmit}>
-            <Form.Group controlId="formResetEmail">
-              <Form.Label>이메일 주소</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="이메일을 입력하세요"
-                value={resetEmail}
-                onChange={(e) => setResetEmail(e.target.value)}
-              />
-            </Form.Group>
+          <>
+            <StyledForm onSubmit={handlePasswordResetSubmit}>
+              <Form.Group controlId="formResetEmail">
+                <Form.Label>이메일 주소</Form.Label>
+                <Form.Control
+                  type="email"
+                  placeholder="이메일을 입력하세요"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                />
+              </Form.Group>
 
-            <StyledButton variant="primary" type="submit">
-              비밀번호 재설정
-            </StyledButton>
-            {resetError && <Alert variant="danger" className="mt-3">{resetError}</Alert>}
-            {resetEmailSuccess && <Alert variant="success" className="mt-3">이메일 인증이 성공했습니다.</Alert>}
-          </StyledForm>
+              <StyledButton variant="primary" type="submit">
+                비밀번호 재설정
+              </StyledButton>
+              {resetError && <Alert variant="danger" className="mt-3">{resetError}</Alert>}
+              {resetEmailSuccess && <Alert variant="success" className="mt-3">이메일로 인증코드가 전송되었습니다.</Alert>}
+            </StyledForm>
+            <StyledForm onSubmit={handleVerificationCodeSubmit}>
+              <Form.Group controlId="formVerificationCode">
+                <Form.Label>인증코드</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="인증코드를 입력하세요"
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value)}
+                />
+              </Form.Group>
+
+              <StyledButton variant="primary" type="submit">
+                인증코드 확인
+              </StyledButton>
+              {resetError && <Alert variant="danger" className="mt-3">{resetError}</Alert>}
+            </StyledForm>
+          </>
         ) : (
           <StyledForm onSubmit={handleNewPasswordSubmit}>
             <Form.Group controlId="formNewPassword">
@@ -102,5 +137,3 @@ const PasswordReset = ({ show, onHide }) => {
 };
 
 export default PasswordReset;
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));

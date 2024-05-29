@@ -23,7 +23,7 @@ const Home = ({ isLoggedIn, setIsLoggedIn }) => {
           <div className="ChatList"> {/* ChatList의 공간 */}
             <ChatList />
           </div>
-          <div>
+          <div className="ChatBoxFixed"> {/* ChatBox를 고정하는 영역 */}
             <ChatBox sendMessage={sendMessage} />
           </div>
         </>

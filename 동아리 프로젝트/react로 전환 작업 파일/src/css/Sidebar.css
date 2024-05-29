@@ -1,0 +1,66 @@
+/* css/Sidebar.css */
+.sidebar {
+    position: fixed;
+    top: 70px; /* 네비게이션 바 높이만큼 내려줍니다. */
+    left: 0;
+    width: 20%;
+    height: 100%;
+    background-color: #f4f4f4;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+  @media (max-width: 1000px) {
+    .sidebar {
+      width: 40%;
+    }
+  }
+  .sidebar.closed {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .sidebar .toggle-button {
+    position: absolute;
+    top: 40%; /* 화면의 세로 중앙에 위치 */
+    right: -50px;
+    width: 50px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black; /* 글자 색을 검정색으로 설정 */
+    background-color: transparent; /* 배경을 투명하게 설정 */
+    border: none;
+    cursor: pointer;
+    transition: right 0.3s ease;
+  }
+  
+  .sidebar.closed .toggle-button {
+    right: -50px;
+  }
+  
+  .sidebar.open .toggle-button {
+    right: -50px;
+  }
+  
+  .sidebar-menu {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .sidebar-menu a {
+    margin-bottom: 15px;
+    color: #333;
+    text-decoration: none;
+  }
+  
+  .sidebar-menu a:hover {
+    color: #007bff;
+  }
+  
