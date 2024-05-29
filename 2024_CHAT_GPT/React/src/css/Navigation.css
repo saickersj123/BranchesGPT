@@ -1,20 +1,29 @@
 .navbar {
-    position: fixed; /* 네비게이션 바를 화면 상단에 고정합니다. */
-    top: 0; /* 화면의 맨 위에 위치하도록 설정합니다. */
-    width: 100%; /* 화면 전체 너비를 차지하도록 설정합니다. */
-    z-index: 1000; /* 다른 요소 위에 표시되도록 설정합니다. */
-  }
-  
+  position: fixed; /* 네비게이션 바를 화면 상단에 고정합니다. */
+  top: 0; /* 화면의 맨 위에 위치하도록 설정합니다. */
+  width: 100%; /* 화면 전체 너비를 차지하도록 설정합니다. */
+  z-index: 1000; /* 다른 요소 위에 표시되도록 설정합니다. */
+  background-color: #fff; /* 배경 색상을 흰색으로 설정합니다. */
+}
+
 .menu-button {
   background: none;
   border: none;
   font-size: 24px;
   cursor: pointer;
   display: none; /* 기본적으로는 숨김 */
+  color: #000; /* 버튼 아이콘의 색상을 검정으로 설정합니다. */
+  margin-right: 15px; /* 버튼과 오른쪽 끝 사이에 약간의 여백을 둡니다. */
 }
 
 @media screen and (max-width: 768px) {
   .menu-button {
     display: block; /* 모바일 화면에서는 보이도록 설정 */
+  }
+  .dropdown-menu {
+    width: 100%; /* 드롭다운 메뉴가 전체 너비를 차지하도록 설정 */
+    left: 0; /* 드롭다운 메뉴가 화면의 왼쪽 끝에서 시작하도록 설정 */
+    right: 0; /* 드롭다운 메뉴가 화면의 오른쪽 끝에서 끝나도록 설정 */
+    text-align: center; /* 메뉴 아이템을 가운데 정렬 */
   }
 }

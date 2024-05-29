@@ -2,14 +2,18 @@ import React, { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import Dropdown from 'react-bootstrap/Dropdown';
 import { Link } from 'react-router-dom';
-import { logout } from '../../api/axiosInstance'; // 로그아웃 함수 가져오기
+import { logout } from '../../api/axiosInstance';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons'; // FontAwesome 아이콘 가져오기
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { useMediaQuery } from 'react-responsive';
 import '../../css/Navigation.css';
 
 const Navigation = ({ isLoggedIn, setIsLoggedIn, toggleSidebar }) => {
   const [navbarHeight, setNavbarHeight] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
 
   useEffect(() => {
     const navbar = document.querySelector('.navbar');
@@ -20,11 +24,14 @@ const Navigation = ({ isLoggedIn, setIsLoggedIn, toggleSidebar }) => {
   }, []);
 
   const handleLogout = async () => {
+    setIsLoading(true);
     try {
-      await logout();  // 로그아웃 요청 보내기
+      await logout();
     } catch (error) {
       console.error('로그아웃 실패:', error);
+      alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
     } finally {
+      setIsLoading(false);
       setIsLoggedIn(false);
       sessionStorage.removeItem('isLoggedIn');
     }
@@ -33,30 +40,49 @@ const Navigation = ({ isLoggedIn, setIsLoggedIn, toggleSidebar }) => {
   return (
     <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary fixed-top">
       <Container>
-        <Navbar.Brand href="/">Branch-GPT</Navbar.Brand>
-        <button className="menu-button" onClick={toggleSidebar}>
-          <FontAwesomeIcon icon={faBars} />
-        </button>
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="me-auto"></Nav>
-          <Nav>
-            {!isLoggedIn ? (
-              <Nav.Link eventKey={2} href="#memes">
-                <Nav.Link href="/login">로그인</Nav.Link>
-              </Nav.Link>
-            ) : (
-              <>
-                <Nav.Link as={Link} to="/mypage">
-                  마이페이지
-                </Nav.Link>
-                <Nav.Link eventKey={3} onClick={handleLogout}>
-                  로그아웃
-                </Nav.Link>
-              </>
-            )}
-          </Nav>
-        </Navbar.Collapse>
+        {isMobile ? (
+          <>
+            <button className="menu-button" onClick={toggleSidebar}>
+              <FontAwesomeIcon icon={faBars} />
+            </button>
+            <Navbar.Brand href="/">Branch-GPT</Navbar.Brand>
+            <Dropdown align="end">
+              <Dropdown.Toggle variant="success" id="dropdown-basic">
+                <FontAwesomeIcon icon={faBars} />
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {!isLoggedIn ? (
+                  <Dropdown.Item as={Link} to="/login">로그인</Dropdown.Item>
+                ) : (
+                  <>
+                    <Dropdown.Item as={Link} to="/mypage">마이페이지</Dropdown.Item>
+                    <Dropdown.Item onClick={handleLogout}>로그아웃</Dropdown.Item>
+                  </>
+                )}
+              </Dropdown.Menu>
+            </Dropdown>
+          </>
+        ) : (
+          <>
+            <Navbar.Brand href="/">Branch-GPT</Navbar.Brand>
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav">
+              <Nav className="me-auto"></Nav>
+              <Nav>
+                {!isLoggedIn ? (
+                  <Nav.Link as={Link} to="/login">로그인</Nav.Link>
+                ) : (
+                  <>
+                    <Nav.Link as={Link} to="/mypage">마이페이지</Nav.Link>
+                    <Nav.Link onClick={handleLogout}>
+                      {isLoading ? '로그아웃 중...' : '로그아웃'}
+                    </Nav.Link>
+                  </>
+                )}
+              </Nav>
+            </Navbar.Collapse>
+          </>
+        )}
       </Container>
       <div style={{ paddingTop: navbarHeight }} /> {/* 네비게이션 바 높이만큼의 여백을 만듭니다. */}
     </Navbar>
