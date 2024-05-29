@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../css/App.css'; // 필요한 경우 별도의 CSS 파일
 import ChatBox from '../components/ChatBox';
 import ChatList from '../components/ChatList';
+import Sidebar from '../components/sidebar/Sidebar'; // Import Sidebar
 import Alert from 'react-bootstrap/Alert';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignInAlt } from '@fortawesome/free-solid-svg-icons';
@@ -15,16 +16,27 @@ const sendMessage = (message) => {
 
 // 함수 컴포넌트 Home 정의
 const Home = ({ isLoggedIn, setIsLoggedIn }) => {
+  // State for managing sidebar open/close
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Function to toggle sidebar state
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <main className="main-section">
       {isLoggedIn ? (
         // 로그인이 되면 보이는 창
         <>
-          <div className="ChatList"> {/* ChatList의 공간 */}
-            <ChatList />
-          </div>
-          <div className="ChatBoxFixed"> {/* ChatBox를 고정하는 영역 */}
-            <ChatBox sendMessage={sendMessage} />
+          <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} isLoggedIn={isLoggedIn} />
+          <div className={`main-content ${isSidebarOpen && isLoggedIn ? 'shifted' : ''}`}>
+            <div className="ChatList"> {/* ChatList의 공간 */}
+              <ChatList />
+            </div>
+            <div className="ChatBoxFixed"> {/* ChatBox를 고정하는 영역 */}
+              <ChatBox sendMessage={sendMessage} />
+            </div>
           </div>
         </>
       ) : (

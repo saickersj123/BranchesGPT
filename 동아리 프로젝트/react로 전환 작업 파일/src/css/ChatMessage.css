@@ -1,4 +1,3 @@
-/* ChatMessage.css */
 .message-container {
   display: flex;
   flex-direction: column;
@@ -47,8 +46,8 @@
 }
 
 .sent-by-user .time {
-  margin-left: 5px;
-  margin-right: 0;
+  margin-left: 0; /* 왼쪽 마진 제거 */
+  margin-right: 5px; /* 오른쪽 마진 추가 */
 }
 
 .received {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { checkAuthStatus } from './api/axiosInstance';  // 추가된 부분
 import './css/App.css';
 import Navigation from './components/navbar/Navigation';
-import Sidebar from './components/sidebar/Sidebar';
 import Login from './pages/Login';
 import MyPage from './pages/MyPage';
 import Home from './pages/Home';
@@ -13,11 +13,24 @@ const App = () => {
     return savedIsLoggedIn === 'true';
   });
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  useEffect(() => {
+    const verifyAuthStatus = async () => {
+      if (isLoggedIn) {
+        try {
+          const response = await checkAuthStatus();
+          if (!response.valid) {
+            setIsLoggedIn(false);
+            sessionStorage.setItem('isLoggedIn', 'false');
+          }
+        } catch (error) {
+          console.error('Error checking auth status:', error);
+          setIsLoggedIn(false);
+          sessionStorage.setItem('isLoggedIn', 'false');
+        }
+      }
+    };
+    verifyAuthStatus();
+  }, [isLoggedIn]);
 
   useEffect(() => {
     sessionStorage.setItem('isLoggedIn', isLoggedIn);
@@ -27,10 +40,9 @@ const App = () => {
     <Router>
       <Navigation isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <div className="app-container">
-        {isLoggedIn && <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} isLoggedIn={isLoggedIn} />}
-        <div className={`main-content ${isSidebarOpen && isLoggedIn ? 'shifted' : ''}`}>
+        <div className="main-content">
           <Routes>
-            <Route path="/" element={<Home isLoggedIn={isLoggedIn} />} />
+            <Route path="/" element={<Home isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
             <Route
               path="/login"
               element={isLoggedIn ? <Navigate to="/" /> : <Login isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />}
