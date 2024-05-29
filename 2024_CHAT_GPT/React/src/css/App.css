@@ -68,6 +68,38 @@ body {
     margin-left: 3%;
     margin-right: 3%;
   }
+
+  .sidebar {
+    display: none; /* 모바일 화면에서는 사이드바 숨기기 */
+  }
+
+  .sidebar.open {
+    display: block; /* 모바일 화면에서 사이드바가 열릴 때 표시 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background-color: white;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    overflow-y: auto;
+  }
+
+  .sidebar-overlay {
+    display: none; /* 모바일 화면에서 사이드바 오버레이 숨기기 */
+  }
+
+  .sidebar-overlay.open {
+    display: block; /* 모바일 화면에서 사이드바가 열릴 때 오버레이 표시 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
 }
 
 @media screen and (max-height: 600px) {

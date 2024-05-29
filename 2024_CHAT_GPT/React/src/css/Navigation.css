@@ -4,3 +4,17 @@
     width: 100%; /* 화면 전체 너비를 차지하도록 설정합니다. */
     z-index: 1000; /* 다른 요소 위에 표시되도록 설정합니다. */
   }
+  
+.menu-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  display: none; /* 기본적으로는 숨김 */
+}
+
+@media screen and (max-width: 768px) {
+  .menu-button {
+    display: block; /* 모바일 화면에서는 보이도록 설정 */
+  }
+}

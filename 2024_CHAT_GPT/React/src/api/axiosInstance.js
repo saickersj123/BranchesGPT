@@ -68,13 +68,13 @@ export const fetchMessages = async (non_server_test = false) => {
   if (non_server_test) {
     return [
       { text: '테스트 메시지 1', time: '2024-05-08T11:59', sentByUser: true, username: 'Client(User)' },
-      { text: '테스트 메시지 2', time: '2024-05-08T12:00', sentByUser: false, username: 'GPT-3.5' },
+      { text: '테스트 메시지 2', time: '2024-05-08T12:00', sentByUser: false, username: 'GPT_API' },
       { text: '테스트 메시지 3', time: '2024-05-08T15:51', sentByUser: true, username: 'Client(User)' },
-      { text: '테스트 메시지 4', time: '2024-05-08T15:51', sentByUser: false, username: 'GPT-3.5' }
+      { text: '테스트 메시지 4', time: '2024-05-08T15:51', sentByUser: false, username: 'GPT_API' }
     ]; // 테스트 데이터 반환
   } else {
     try {
-      const response = await axiosInstance.get('/chat/messages'); // 메시지를 가져올 서버의 엔드포인트
+      const response = await axiosInstance.get('/chat/new'); // 메시지를 가져올 서버의 엔드포인트
       return response.data; // 서버 응답 데이터 반환
     } catch (error) {
       console.error('메시지 가져오기 실패:', error);

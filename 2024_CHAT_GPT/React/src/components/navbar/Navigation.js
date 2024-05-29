@@ -4,9 +4,11 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { Link } from 'react-router-dom';
 import { logout } from '../../api/axiosInstance'; // 로그아웃 함수 가져오기
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons'; // FontAwesome 아이콘 가져오기
 import '../../css/Navigation.css';
 
-const Navigation = ({ isLoggedIn, setIsLoggedIn }) => {
+const Navigation = ({ isLoggedIn, setIsLoggedIn, toggleSidebar }) => {
   const [navbarHeight, setNavbarHeight] = useState(0);
 
   useEffect(() => {
@@ -23,7 +25,6 @@ const Navigation = ({ isLoggedIn, setIsLoggedIn }) => {
     } catch (error) {
       console.error('로그아웃 실패:', error);
     } finally {
-      // 로그아웃 요청이 성공하든 실패하든 상관없이 브라우저의 로그인 상태를 갱신합니다.
       setIsLoggedIn(false);
       sessionStorage.removeItem('isLoggedIn');
     }
@@ -33,6 +34,9 @@ const Navigation = ({ isLoggedIn, setIsLoggedIn }) => {
     <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary fixed-top">
       <Container>
         <Navbar.Brand href="/">Branch-GPT</Navbar.Brand>
+        <button className="menu-button" onClick={toggleSidebar}>
+          <FontAwesomeIcon icon={faBars} />
+        </button>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto"></Nav>
