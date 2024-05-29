@@ -12,7 +12,7 @@ async createToken(id, email, expiresIn) {
 },
 
 async verifyToken(req,res,next) {
-	const token = req.signedCookies[COOKIE_NAME]; // signed cookies is an object which can contain all of the cookies data
+	const token = req.signedCookies[`${COOKIE_NAME}`]; // signed cookies is an object which can contain all of the cookies data
 	console.log("token:",token);
 	if (!token || token.trim() === "") {
 		return res.status(401).json({ message: "Token Not Received" });
