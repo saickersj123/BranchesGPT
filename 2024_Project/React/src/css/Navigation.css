@@ -1,3 +1,4 @@
+/* Navigation.css */
 .navbar {
   position: fixed; /* 네비게이션 바를 화면 상단에 고정합니다. */
   top: 0; /* 화면의 맨 위에 위치하도록 설정합니다. */
@@ -16,14 +17,38 @@
   margin-right: 15px; /* 버튼과 오른쪽 끝 사이에 약간의 여백을 둡니다. */
 }
 
+.custom-dropdown-toggle {
+  color: #000 !important; /* 버튼 아이콘의 색상을 검정으로 설정합니다. */
+  background: none !important; /* 배경색 제거 */
+  border: none !important; /* 테두리 제거 */
+  padding: 0 !important; /* 기본 padding 제거 */
+  display: flex;
+  align-items: center;
+}
+
+.custom-dropdown-toggle::after {
+  display: none !important; /* 기본 드롭다운 화살표 제거 */
+}
+
 @media screen and (max-width: 768px) {
   .menu-button {
     display: block; /* 모바일 화면에서는 보이도록 설정 */
   }
+
   .dropdown-menu {
     width: 100%; /* 드롭다운 메뉴가 전체 너비를 차지하도록 설정 */
     left: 0; /* 드롭다운 메뉴가 화면의 왼쪽 끝에서 시작하도록 설정 */
     right: 0; /* 드롭다운 메뉴가 화면의 오른쪽 끝에서 끝나도록 설정 */
     text-align: center; /* 메뉴 아이템을 가운데 정렬 */
+  }
+
+  .navbar-brand {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .navbar-collapse {
+    display: flex !important;
+    justify-content: space-between; /* 모바일 화면에서 네비게이션 아이템 간 간격 조정 */
   }
 }

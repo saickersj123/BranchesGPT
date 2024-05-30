@@ -20,12 +20,12 @@ const ChatMessage = ({ message, sentByUser, username, time }) => {
   );
 };
 
-const ChatList = () => {
+const ChatList = ({ roomId }) => {
   const [messages, setMessages] = useState([]);
 
   const loadMessages = async () => {
     try {
-      const data = await fetchMessages(true); // non_server_test 변수를 true로 전달
+      const data = await fetchMessages(roomId, true); // roomId를 fetchMessages에 전달하고, 테스트 데이터를 가져오도록 설정
       setMessages(data);
     } catch (error) {
       console.error('Error loading messages:', error);
@@ -34,7 +34,7 @@ const ChatList = () => {
 
   useEffect(() => {
     loadMessages();
-  }, []);
+  }, [roomId]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>

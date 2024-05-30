@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../css/ChatBox.css';
 import { sendMessage } from '../api/axiosInstance'; // sendMessage 함수를 가져옵니다.
 
-const ChatBox = () => {
+const ChatBox = ({ roomId }) => {
   const [message, setMessage] = useState('');
 
   const handleMessageChange = (event) => {
@@ -12,8 +12,14 @@ const ChatBox = () => {
   const sendMessageToChatList = async () => {
     if (message.trim() === '') return;
 
+    const email = sessionStorage.getItem('email');
+    if (!email) {
+      console.error('User email is not found in session storage.');
+      return;
+    }
+
     try {
-      const response = await sendMessage(message);
+      const response = await sendMessage(message, email, roomId);
       console.log('Message sent:', response);
     } catch (error) {
       console.error('Error sending message:', error);

@@ -40,7 +40,7 @@ const MyPage = () => {
       if (response.success) {
         setIsPasswordVerified(true);
       } else {
-        alert('현재 비밀번호가 일치하지 않습니다.');
+        alert('비밀번호가 일치하지 않습니다.');
         setPassword(''); // Clear the password input
       }
     } catch (error) {
@@ -118,7 +118,7 @@ const MyPage = () => {
             <Card.Body>
               {!isPasswordVerified ? (
                 <>
-                  <Card.Title>현재 비밀번호를 입력하세요</Card.Title>
+                  <Card.Title>비밀번호를 입력하세요</Card.Title>
                   <Form onSubmit={handleVerifyPassword}>
                     <Form.Group className="password-input-container">
                       <Form.Label className="password-label">비밀번호: </Form.Label>

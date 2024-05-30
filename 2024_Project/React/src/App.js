@@ -13,6 +13,12 @@ const App = () => {
     return savedIsLoggedIn === 'true';
   });
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   useEffect(() => {
     const verifyAuthStatus = async () => {
       if (isLoggedIn) {
@@ -48,6 +54,7 @@ const App = () => {
               element={isLoggedIn ? <Navigate to="/" /> : <Login isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />}
             />
             <Route path="/mypage" element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} />
+            <Route path="/chat/:roomId" element={isLoggedIn ? <Home isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/login" />} /> {/* Home으로 라우트 */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>

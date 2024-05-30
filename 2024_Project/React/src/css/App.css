@@ -9,7 +9,7 @@ body {
   font-family: Arial, sans-serif;
   line-height: 1.6;
   margin: 0;
-  padding-top: 70px;
+  padding-top: 8vb;
 }
 
 .app-container {
@@ -18,12 +18,11 @@ body {
 
 .main-content {
   flex-grow: 1;
-  padding: 20px;
   transition: margin-left 0.3s ease;
 }
 
 .main-content.shifted {
-  margin-left: 200px;
+  margin-left: 0;
 }
 
 .ChatBoxFixed {
@@ -78,12 +77,12 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    width: 250px;
+    width: 30dvh;
     height: 100%;
     background-color: white;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
     z-index: 1000;
-    overflow-y: auto;
+    overflow-y: hidden;
   }
 
   .sidebar-overlay {
@@ -120,4 +119,27 @@ body {
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #f9f9f9;
+}
+
+.non_login_text {
+  background-color: transparent !important; /* 배경색 제거 */
+  border: none !important; /* 테두리 제거 */
+  color: #8a6d3b; /* 텍스트 색상 */
+  text-align: center;
+  padding: 10%;
+  margin: auto;
+  position: absolute;
+  top: 30vb;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.non_login_text .alert-heading {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.non_login_text p {
+  font-size: 16px;
+  margin-top: 10px;
 }

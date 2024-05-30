@@ -7,10 +7,11 @@ import { Link } from 'react-router-dom';
 import { logout } from '../../api/axiosInstance';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { FiMoreVertical } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
 import '../../css/Navigation.css';
 
-const Navigation = ({ isLoggedIn, setIsLoggedIn, toggleSidebar }) => {
+const Navigation = ({ isLoggedIn, setIsLoggedIn, toggleSidebar, closeSidebar }) => {
   const [navbarHeight, setNavbarHeight] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
@@ -34,33 +35,34 @@ const Navigation = ({ isLoggedIn, setIsLoggedIn, toggleSidebar }) => {
       setIsLoading(false);
       setIsLoggedIn(false);
       sessionStorage.removeItem('isLoggedIn');
+      if (isMobile) {
+        closeSidebar();
+      }
     }
   };
 
   return (
-    <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary fixed-top">
-      <Container>
+    <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary fixed-top justify-content-between">
+      <Container className="d-flex justify-content-between align-items-center">
         {isMobile ? (
           <>
-            <button className="menu-button" onClick={toggleSidebar}>
-              <FontAwesomeIcon icon={faBars} />
-            </button>
-            <Navbar.Brand href="/">Branch-GPT</Navbar.Brand>
-            <Dropdown align="end">
-              <Dropdown.Toggle variant="success" id="dropdown-basic">
+            {isLoggedIn && (
+              <button className="menu-button" onClick={toggleSidebar}>
                 <FontAwesomeIcon icon={faBars} />
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                {!isLoggedIn ? (
-                  <Dropdown.Item as={Link} to="/login">로그인</Dropdown.Item>
-                ) : (
-                  <>
-                    <Dropdown.Item as={Link} to="/mypage">마이페이지</Dropdown.Item>
-                    <Dropdown.Item onClick={handleLogout}>로그아웃</Dropdown.Item>
-                  </>
-                )}
-              </Dropdown.Menu>
-            </Dropdown>
+              </button>
+            )}
+            <Navbar.Brand href="/" className="mx-auto">Branch-GPT</Navbar.Brand>
+            {isLoggedIn && (
+              <Dropdown align="end">
+                <Dropdown.Toggle variant="success" id="dropdown-basic" className="custom-dropdown-toggle">
+                  <FiMoreVertical />
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item as={Link} to="/mypage" onClick={closeSidebar}>마이페이지</Dropdown.Item>
+                  <Dropdown.Item onClick={handleLogout}>로그아웃</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
           </>
         ) : (
           <>

@@ -5,7 +5,7 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
-import Spinner from 'react-bootstrap/Spinner'; // Spinner 추가
+import Spinner from 'react-bootstrap/Spinner';
 import backgroundImage from '../img/login_background_image.png';
 import Signup from '../components/NewSignup';
 import PasswordReset from '../components/PasswordReset';
