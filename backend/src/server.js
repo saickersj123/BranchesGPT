@@ -6,7 +6,6 @@ const cookieParser = require('cookie-parser');
 const userRoutes = require('./routes/UserRoutes');
 const chatRoutes = require('./routes/ChatRoutes');
 const dotenv = require('dotenv');
-const { verifyToken } = require('./utils/Token');
 
 dotenv.config();
 
