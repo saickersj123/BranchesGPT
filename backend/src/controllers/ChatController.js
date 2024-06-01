@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const { configureOpenAI } = require('../config/OpenAIconfig');
+const { configureOpenAI } = require('../config/openai');
 const { OpenAIApi } = require('openai');
 
 module.exports = {
@@ -28,7 +28,7 @@ async generateChatCompletion(req, res){
 
 		// make request to openAi
 		// get latest response
-		const chatResponse = await openai.createChatCompletion({
+		const chatResponse = await openai.complietions.create({
 			model: "gpt-3.5-turbo",
 			messages: chats,
 		});
@@ -44,7 +44,7 @@ async generateChatCompletion(req, res){
 	}
 },
 
-async getAllChats(res) {
+async getAllChats(req, res) {
 	try {
 		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
         
@@ -66,7 +66,7 @@ async getAllChats(res) {
 	}
 },
 
-async deleteAllChats(res) {
+async deleteAllChats(req, res) {
 	try {
 		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
         
