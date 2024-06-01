@@ -8,4 +8,4 @@ const configureOpenAI = () => {
     return config;
 };
 
-module.exports = configureOpenAI;
+module.exports = {configureOpenAI};
