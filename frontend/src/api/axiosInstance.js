@@ -1,16 +1,18 @@
 // api/axiosInstance.js
 import axios from 'axios';
-
+axios.defaults.withCredentials = true;
 // 전역 변수 설정
 const non_server_test = true;  // true이면 항상 성공으로 처리, false이면 실제 서버와 통신
 
 // axios 인스턴스 생성. 모든 요청에 사용됩니다.
 const axiosInstance = axios.create({
-  baseURL: '서버의 url을 적으면 되는 공간', // API 요청의 기본 URL 설정
-  headers: { 
+  baseURL: 'http:/localhost:5001', // API 요청의 기본 URL 설정
+  headers: {
     'Content-Type': 'application/json', // 요청 헤더에 Content-Type을 application/json으로 설정
   },
+  withCredentials: true,
 });
+
 
 // 로그인 유지(?)상태 확인
 export const checkAuthStatus = async () => {
