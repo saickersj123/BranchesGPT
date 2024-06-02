@@ -12,7 +12,9 @@ const createToken = (id, email, expiresIn) => {
 
 const verifyToken = async (req,res,next) => {
 	try {
-        const token = req.signedCookies[`${COOKIE_NAME}`]; // Assume the token is in the cookies header
+        const authHeader = req.headers['authorization']; // Assume the token is in the cookies header
+        const token = authHeader && authHeader.split(' ')[1];
+        //const token = req.signedCookies[`${COOKIE_NAME}`];
         console.log("token:", token);
 
         if (!token || token.trim() === "") {

@@ -9,6 +9,7 @@
     "dev": "nodemon src/server.js"
   },
   "dependencies": {
+    "@types/express-serve-static-core": "^4.19.3",
     "bcrypt": "^5.1.1",
     "cookie": "^0.6.0",
     "cookie-parser": "^1.4.6",

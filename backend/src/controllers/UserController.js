@@ -4,7 +4,7 @@ const { createToken } = require('../utils/Token')
 const { COOKIE_NAME } = require('../utils/Constants');
 
 module.exports = {
- async getAllUsers(res) {
+ async getAllUsers(req, res, next) {
 	try {
 		const users = await User.find();
 		return res.status(200).json({ message: "OK", users });
@@ -14,7 +14,7 @@ module.exports = {
 	}
 },
 
-async userSignUp(req, res) {
+async userSignUp(req, res, next) {
 	try {
 		const { name, email, password } = req.body;
 		const existingUser = await User.findOne({ email });
@@ -52,8 +52,6 @@ async userSignUp(req, res) {
 			expires, // same as token expiration time
 			httpOnly: true,
 			signed: true,
-			sameSite: 'none',
-			secure: true,
 		});
 
 		return res
@@ -65,7 +63,7 @@ async userSignUp(req, res) {
 	}
 },
 
-async userLogin(req, res) {
+async userLogin(req, res, next) {
 	try {
 		const { email, password } = req.body;
 		console.log(email, password);
@@ -104,8 +102,6 @@ async userLogin(req, res) {
 			expires, // same as token expiration time
 			httpOnly: true,
 			signed: true,
-			sameSite: 'none',
-			secure: true,
 		});
 		console.log("token created on login:",token);
 		return res
@@ -117,7 +113,7 @@ async userLogin(req, res) {
 	}
 },
 
-async verifyUserStatus(res) {
+async verifyUserStatus(req, res, next) {
 	try {
 		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
 
@@ -144,7 +140,7 @@ async verifyUserStatus(res) {
 	}
 },
 
-async logoutUser(res) {
+async logoutUser(req, res, next) {
 	try {
 		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
 

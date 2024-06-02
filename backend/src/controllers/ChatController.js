@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const { configureOpenAI } = require('../config/openai');
-const { OpenAIApi } = require('openai');
+const OpenAI = require('openai');
 
 module.exports = {
 async generateChatCompletion(req, res){
@@ -24,11 +24,11 @@ async generateChatCompletion(req, res){
 
 		// send all chats with new ones to OpenAI API
 		const config = configureOpenAI();
-		const openai = new OpenAIApi(config);
+		const openai = new OpenAI(config);
 
 		// make request to openAi
 		// get latest response
-		const chatResponse = await openai.complietions.create({
+		const chatResponse = await openai.completions.create({
 			model: "gpt-3.5-turbo",
 			messages: chats,
 		});
