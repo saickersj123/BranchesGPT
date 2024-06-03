@@ -1,18 +1,22 @@
-// api/axiosInstance.js
 import axios from 'axios';
 
+
 // 전역 변수 설정
-const non_server_test = true;  // true이면 항상 성공으로 처리, false이면 실제 서버와 통신
+const non_server_test = true; // true이면 항상 성공으로 처리, false이면 실제 서버와 통신
+
+// 모든 요청에 withCredentials 옵션을 설정
+axios.defaults.withCredentials = true;
 
 // axios 인스턴스 생성. 모든 요청에 사용됩니다.
 const axiosInstance = axios.create({
-  baseURL: '서버의 url을 적으면 되는 공간', // API 요청의 기본 URL 설정
-  headers: { 
+  baseURL: 'http://localhost:5001/api/', // API 요청의 기본 URL 설정
+  headers: {
     'Content-Type': 'application/json', // 요청 헤더에 Content-Type을 application/json으로 설정
   },
+  withCredentials: true, // 인스턴스 레벨에서 withCredentials 설정
 });
 
-// 로그인 유지(?)상태 확인
+// 인증 상태 확인
 export const checkAuthStatus = async () => {
   if (non_server_test) {
     return { valid: true }; // 항상 성공으로 처리
@@ -27,12 +31,11 @@ export const checkAuthStatus = async () => {
   }
 };
 
-// 서버에 로그인을 시도합니다.
+// 로그인
 export const loginUser = async (email, password) => {
   if (non_server_test) {
     return {
-      success: true,
-      message: "로그인 성공",
+      message: "OK",
       data: {
         name: "사용자닉네임",
         email: "user@example.com"
@@ -41,7 +44,7 @@ export const loginUser = async (email, password) => {
   } else {
     try {
       const response = await axiosInstance.post('/user/login', { email, password });
-      return response.data; // 서버로부터 받은 응답 데이터를 반환합니다.
+      return response.data; // 서버로부터 받은 응답 데이터를 반환
     } catch (error) {
       console.error('로그인 요청 실패:', error);
       throw error;
@@ -49,7 +52,7 @@ export const loginUser = async (email, password) => {
   }
 };
 
-// 서버에게 로그아웃을 알립니다.
+// 로그아웃
 export const logout = async () => {
   if (non_server_test) {
     console.log('로그아웃 성공'); // 항상 성공으로 처리
@@ -63,7 +66,7 @@ export const logout = async () => {
   }
 };
 
-//각 룸별로 채팅기록 불러오기
+// 각 룸별로 채팅 기록 불러오기
 export const fetchMessages = async (roomId) => {
   if (non_server_test) {
     const testMessages = {
@@ -103,17 +106,15 @@ export const fetchMessages = async (roomId) => {
   } else {
     try {
       const response = await axiosInstance.get(`/chat/${roomId}`); // 메시지를 가져올 서버의 엔드포인트
-      return response.data; // 서버 응답 데이터 반환
+      return response.data || []; // 서버 응답 데이터 반환, 없을 경우 빈 배열 반환
     } catch (error) {
       console.error('메시지 가져오기 실패:', error);
-      throw error;
+      return []; // 에러 발생 시 빈 배열 반환
     }
   }
 };
 
-
-
-// 과거에 채팅했던 채팅방들을 사이드바로 불러오는 기능
+// 채팅방 기록 불러오기
 export const fetchChatHistory = async () => {
   if (non_server_test) {
     return [
@@ -125,27 +126,27 @@ export const fetchChatHistory = async () => {
   } else {
     try {
       const response = await axiosInstance.get('/chat/history'); // 채팅 기록을 가져올 서버의 엔드포인트
-      return response.data; // 서버 응답 데이터 반환
+      return response.data || []; // 서버 응답 데이터 반환, 없을 경우 빈 배열 반환
     } catch (error) {
       console.error('채팅 기록 가져오기 실패:', error);
-      throw error;
+      return []; // 에러 발생 시 빈 배열 반환
     }
   }
 };
 
-// 사용자가 입력한 메시지를 서버로 전송
+// 메시지 전송
 export const sendMessage = async (chat_Message, user_Email, roomId) => {
   const Message = {
     text: chat_Message,
     email: user_Email,
-    sentByUser: true,  // 사용자가 보낸 메시지므로, sentByUser는 true가 된다.
-    roomId: roomId    // 메시지 전송 시 roomId 포함
+    sentByUser: true, // 사용자가 보낸 메시지
+    roomId: roomId // 메시지 전송 시 roomId 포함
   };
   if (non_server_test) {
     return { id: Message.email, text: Message.text, time: '12:02', sentByUser: true, roomId: roomId }; // 항상 성공으로 처리
   } else {
     try {
-      const response = await axiosInstance.post(`/chat/${roomId}/new`, Message); // 사용자가 보낸 것으로 서버에 전송
+      const response = await axiosInstance.post(`/chat/${roomId}/new`, Message); // 메시지를 서버에 전송
       return response.data;
     } catch (error) {
       console.error('메시지 보내기 실패:', error);
@@ -154,8 +155,9 @@ export const sendMessage = async (chat_Message, user_Email, roomId) => {
   }
 };
 
-// 회원가입의 과정에 있어 이메일 중복검사를 진행한다.
+// 이메일 중복 검사
 export const checkEmail = async (email) => {
+  return { available: true }; // 항상 성공으로 처리
   if (non_server_test) {
     return { available: true }; // 항상 성공으로 처리
   } else {
@@ -168,7 +170,7 @@ export const checkEmail = async (email) => {
   }
 };
 
-// 사용자를 회원가입 시킵니다.
+// 회원가입
 export const signupUser = async (email, password, name) => {
   if (non_server_test) {
     console.log('회원가입 성공:', { email, password, name });
@@ -176,7 +178,10 @@ export const signupUser = async (email, password, name) => {
   } else {
     try {
       const response = await axiosInstance.post('/user/signup', { email, password, name });
-      return response.data;
+      return {
+        success: response.status === 201,
+        ...response.data
+      };
     } catch (error) {
       console.error('회원가입 실패:', error);
       throw error;
@@ -184,7 +189,7 @@ export const signupUser = async (email, password, name) => {
   }
 };
 
-// 이메일로 인증 코드를 보냅니다.
+// 인증 코드 전송
 export const sendVerificationCode = async (email) => {
   if (non_server_test) {
     return { success: true, message: '인증 코드 전송 성공' }; // 항상 성공으로 처리
@@ -199,7 +204,7 @@ export const sendVerificationCode = async (email) => {
   }
 };
 
-// 받은 인증 코드를 검증합니다.
+// 인증 코드 검증
 export const verifyCode = async (email, code) => {
   if (non_server_test) {
     return { success: true, message: '코드 검증 성공' }; // 항상 성공으로 처리
@@ -214,7 +219,7 @@ export const verifyCode = async (email, code) => {
   }
 };
 
-// 사용자의 비밀번호를 재설정합니다.
+// 비밀번호 재설정
 export const resetPassword = async (email, newPassword) => {
   if (non_server_test) {
     return { success: true, message: '비밀번호 재설정 성공' }; // 항상 성공으로 처리
@@ -236,7 +241,7 @@ export const updatename = async (newname) => {
   } else {
     try {
       const response = await axiosInstance.put('/user/update-name', { newname });
-      return response.data;  // 서버 응답을 반환
+      return response.data; // 서버 응답을 반환
     } catch (error) {
       throw new Error('닉네임 변경에 실패했습니다.');
     }
@@ -250,7 +255,7 @@ export const updatePassword = async (newPassword) => {
   } else {
     try {
       const response = await axiosInstance.put('/user/update-password', { newPassword });
-      return response.data;  // 서버 응답을 반환
+      return response.data; // 서버 응답을 반환
     } catch (error) {
       throw new Error('비밀번호 변경에 실패했습니다.');
     }

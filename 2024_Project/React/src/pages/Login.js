@@ -50,9 +50,11 @@ const PasswordGroup = styled.div`
   max-height: 0;
   transition: max-height 0.5s ease;
 
-  ${props => props.show && css`
-    max-height: 550px; // Adjusted to fit the content including the button
-  `}
+  ${(props) =>
+    props.show &&
+    css`
+      max-height: 550px; // Adjusted to fit the content including the button
+    `}
 `;
 
 const Login = ({ setIsLoggedIn }) => {
@@ -64,36 +66,69 @@ const Login = ({ setIsLoggedIn }) => {
   const [showPasswordResetModal, setShowPasswordResetModal] = useState(false);
   const navigate = useNavigate();
 
-  // 이메일에 '@' 포함 여부에 따라 비밀번호 입력란 표시
   const showPasswordInput = email.includes('@');
-  // 비밀번호 유효성 검사 (8자리 이상)
   const isPasswordValid = password.length >= 8;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      setError('이메일과 비밀번호를 입력하세요.');
+    if (!email) {
+      setError('이메일을 입력하세요.');
+      return;
+    }
+
+    if (!password) {
+      setError('비밀번호를 입력하세요.');
+      return;
+    }
+
+    if (!showPasswordInput) {
+      setError('올바른 이메일 형식을 입력하세요.');
+      return;
+    }
+
+    if (!isPasswordValid) {
+      setError('비밀번호는 8~15자리 입니다.');
       return;
     }
 
     setLoading(true);
+    setError(''); // Clear error message before trying to login
     try {
       const response = await loginUser(email, password);
-      if (response.success) {
-        const { nickname, email } = response.data;
-        sessionStorage.setItem('nickname', nickname);
+      if (response.message === 'OK') {
+        const { name, email } = response;
+        sessionStorage.setItem('name', name);
         sessionStorage.setItem('email', email);
         setTimeout(() => {
           setIsLoggedIn(true);
           navigate('/');
         }, 1000); // 로그인 성공 후 1초 후 홈 페이지로 이동
       } else {
-        setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.');
+        setError(response.cause || '로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.');
         setLoading(false);
       }
     } catch (error) {
-      setError('로그인 중 오류가 발생했습니다. 다시 시도하세요.');
+      if (error.response) {
+        switch (error.response.status) {
+          case 404:
+            setError('서버를 찾을 수 없습니다.');
+            break;
+          case 409:
+            setError('해당 정보로 가입된 계정이 없습니다.');
+            break;
+          case 422:
+            setError('비밀번호가 올바르지 않습니다.');
+            break;
+          case 403:
+            setError('비밀번호가 올바르지 않습니다.');
+            break;
+          default:
+            setError('해당 정보로 가입된 계정이 없습니다.');
+        }
+      } else {
+        setError('서버와의 통신 중 오류가 발생했습니다. 다시 시도하세요.');
+      }
       setLoading(false);
     }
   };

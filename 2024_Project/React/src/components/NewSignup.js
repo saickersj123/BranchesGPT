@@ -69,7 +69,7 @@ const Signup = ({ show, onHide }) => {
         await delay(1000);
         onHide();
       } else {
-        setError('회원가입에 실패했습니다. 다시 시도하세요.');
+        setError('회원가입 중 오류가 발생했습니다. 다시 시도하세요.');
       }
     } catch (error) {
       setError('회원가입 중 오류가 발생했습니다. 다시 시도하세요.');
