@@ -1,9 +1,13 @@
-const User = require('../models/User');
-const { configureOpenAI } = require('../config/openai');
-const OpenAI = require('openai');
+import { Request, Response, NextFunction } from "express";
+import User from "../models/User.js";
+import { configureOpenAI } from "../config/openai.js";
+import OpenAI from "openai";
 
-module.exports = {
-async generateChatCompletion(req, res){
+export const generateChatCompletion = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
 		const { message } = req.body;
 
@@ -13,10 +17,11 @@ async generateChatCompletion(req, res){
 		}
 
 		// grab chats of users
+
 		const chats = user.chats.map(({ role, content }) => ({
 			role,
 			content,
-		}));
+		})) as OpenAI.Chat.CreateChatCompletionRequestMessage[];
 		chats.push({ content: message, role: "user" });
 
 		// save chats inside real user object
@@ -28,13 +33,13 @@ async generateChatCompletion(req, res){
 
 		// make request to openAi
 		// get latest response
-		const chatResponse = await openai.completions.create({
+		const chatResponse = await openai.chat.completions.create({
 			model: "gpt-3.5-turbo",
 			messages: chats,
 		});
 
 		// push latest response to db
-		user.chats.push(chatResponse.data.choices[0].message);
+		user.chats.push(chatResponse.choices[0].message);
 		await user.save();
 
 		return res.status(200).json({ chats: user.chats });
@@ -42,9 +47,13 @@ async generateChatCompletion(req, res){
 		console.log(error);
 		return res.status(500).json({ message: error.message });
 	}
-},
+};
 
-async getAllChats(req, res) {
+export const getAllChats = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
 		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
         
@@ -62,11 +71,15 @@ async getAllChats(req, res) {
 		return res.status(200).json({ message: "OK", chats: user.chats });
 	} catch (err) {
 		console.log(err);
-		return res.status(500).json({ message: "ERROR", cause: err.message });
+		return res.status(200).json({ message: "ERROR", cause: err.message });
 	}
-},
+};
 
-async deleteAllChats(req, res) {
+export const deleteAllChats = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
 		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
         
@@ -82,12 +95,12 @@ async deleteAllChats(req, res) {
 				.json({ message: "ERROR", cause: "Permissions didn't match" });
 		}
 
-        user.chats = [];
-        await user.save();
+        //@ts-ignore
+        user.chats = []
+        await user.save()
 		return res.status(200).json({ message: "OK", chats: user.chats });
 	} catch (err) {
 		console.log(err);
-		return res.status(500).json({ message: "ERROR", cause: err.message });
+		return res.status(200).json({ message: "ERROR", cause: err.message });
 	}
-}
-}
+};

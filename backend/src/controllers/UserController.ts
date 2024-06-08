@@ -1,10 +1,15 @@
-const bcrypt = require('bcrypt')
-const User = require('../models/User')
-const { createToken } = require('../utils/Token')
-const { COOKIE_NAME } = require('../utils/Constants');
+import { Request, Response, NextFunction } from "express";
+import { hash, compare } from "bcrypt";
 
-module.exports = {
- async getAllUsers(req, res, next) {
+import User from "../models/User.js";
+import { createToken } from "../utils/Token.js";
+import { COOKIE_NAME } from "../utils/Constants.js";
+
+export const getAllUsers = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
 		const users = await User.find();
 		return res.status(200).json({ message: "OK", users });
@@ -12,9 +17,13 @@ module.exports = {
 		console.log(error);
 		return res.status(500).json({ message: "ERROR", cause: error.message });
 	}
-},
+};
 
-async userSignUp(req, res, next) {
+export const userSignUp = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
 		const { name, email, password } = req.body;
 		const existingUser = await User.findOne({ email });
@@ -25,7 +34,7 @@ async userSignUp(req, res, next) {
 				cause: "User with same email already exists",
 			});
 
-		const hashedPassword = await bcrypt.hash(password, 10);
+		const hashedPassword = await hash(password, 10);
 
 		const user = new User({ name, email, password: hashedPassword });
 		await user.save();
@@ -52,6 +61,8 @@ async userSignUp(req, res, next) {
 			expires, // same as token expiration time
 			httpOnly: true,
 			signed: true,
+			sameSite: 'none',
+			secure: true,
 		});
 
 		return res
@@ -61,9 +72,13 @@ async userSignUp(req, res, next) {
 		console.log(error);
 		return res.status(500).json({ message: "ERROR", cause: error.message });
 	}
-},
+};
 
-async userLogin(req, res, next) {
+export const userLogin = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
 		const { email, password } = req.body;
 		console.log(email, password);
@@ -75,7 +90,7 @@ async userLogin(req, res, next) {
 				cause: "No account with given emailID found",
 			});
 
-		const isPasswordCorrect = await bcrypt.compare(password, user.password);
+		const isPasswordCorrect = await compare(password, user.password);
 		if (!isPasswordCorrect)
 			return res
 				.status(403)
@@ -102,8 +117,10 @@ async userLogin(req, res, next) {
 			expires, // same as token expiration time
 			httpOnly: true,
 			signed: true,
+			sameSite: 'none',
+			secure: true,
 		});
-		console.log("token created on login:",token);
+
 		return res
 			.status(200)
 			.json({ message: "OK", name: user.name, email: user.email });
@@ -111,9 +128,13 @@ async userLogin(req, res, next) {
 		console.log(error);
 		return res.status(500).json({ message: "ERROR", cause: error.message });
 	}
-},
+};
 
-async verifyUserStatus(req, res, next) {
+export const verifyUserStatus = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
 		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
 
@@ -138,9 +159,13 @@ async verifyUserStatus(req, res, next) {
 			.status(200)
 			.json({ message: "ERROR", cause: err.message});
 	}
-},
+};
 
-async logoutUser(req, res, next) {
+export const logoutUser = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
 		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
 
@@ -155,14 +180,14 @@ async logoutUser(req, res, next) {
 				.status(401)
 				.json({ message: "ERROR", cause: "Permissions didn't match" });
 		}
-		
-		res.clearCookie(COOKIE_NAME),
-		{
-			path: "/", //cookie directory in browser
-			domain: process.env.DOMAIN, // our website domain
-			httpOnly: true,
-			signed: true,
-		};
+
+        res.clearCookie(COOKIE_NAME),
+        {
+            path: "/", //cookie directory in browser
+            domain: process.env.DOMAIN, // our website domain
+            httpOnly: true,
+            signed: true,
+        };
 
 		return res
 			.status(200)
@@ -173,5 +198,4 @@ async logoutUser(req, res, next) {
 			.status(200)
 			.json({ message: "ERROR", cause: err.message});
 	}
-}
-}
+};
