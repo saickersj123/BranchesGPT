@@ -1,20 +1,23 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const morgan = require('morgan');
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
-const userRoutes = require('./routes/UserRoutes');
-const chatRoutes = require('./routes/ChatRoutes');
-const dotenv = require('dotenv');
+import express from "express";
+import mongoose from "mongoose";
+import morgan from "morgan";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 
-dotenv.config();
+import userRoutes from "./routes/UserRoutes.js";
+import chatRoutes from "./routes/ChatRoutes.js";
+
+import { config } from "dotenv";
+
+config();
 
 const app = express();
 
 // Middlewares
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+
+app.use(cors({origin:"http://localhost:5173", credentials: true}));
 app.use(express.json());
-app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(cookieParser(process.env.COOKIE_SECRET))
 app.use(morgan("dev")); // for development
 
 // routes

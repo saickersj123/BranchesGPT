@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const { randomUUID } = require('crypto');
+import mongoose from "mongoose";
+import { randomUUID } from "crypto";
 
 const chatSchema = new mongoose.Schema({
 	id: {
@@ -13,7 +13,7 @@ const chatSchema = new mongoose.Schema({
 	content: {
 		type: String,
 		required: true,
-	}
-})
+	},
+});
 
-module.exports = chatSchema;
+export default chatSchema;
