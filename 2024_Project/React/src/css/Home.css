@@ -6,7 +6,7 @@
 }
 
 /* 모바일 장치에서 middle-login-button 보이기 */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
   .middle-login-button {
     display: flex;
     align-items: center;

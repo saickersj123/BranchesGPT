@@ -97,9 +97,10 @@ const Login = ({ setIsLoggedIn }) => {
     try {
       const response = await loginUser(email, password);
       if (response.message === 'OK') {
-        const { name, email } = response;
+        const { name, email, token } = response;
         sessionStorage.setItem('name', name);
         sessionStorage.setItem('email', email);
+        localStorage.setItem('authToken', token); // 토큰 저장
         setTimeout(() => {
           setIsLoggedIn(true);
           navigate('/');

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 // 전역 변수 설정
-const non_server_test = true; // true이면 항상 성공으로 처리, false이면 실제 서버와 통신
+const non_server_test = false; // true이면 항상 성공으로 처리, false이면 실제 서버와 통신
 
 // 모든 요청에 withCredentials 옵션을 설정
 axios.defaults.withCredentials = true;
@@ -16,35 +16,76 @@ const axiosInstance = axios.create({
   withCredentials: true, // 인스턴스 레벨에서 withCredentials 설정
 });
 
+// 요청을 보낼 때마다 인증 토큰을 자동으로 추가
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
+// 응답 인터셉터를 추가하여 인증 오류를 처리
+axiosInstance.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      // 인증 오류가 발생하면 로컬 스토리지에서 토큰을 제거하고 로그인 상태를 false로 설정
+      localStorage.removeItem('authToken');
+      sessionStorage.setItem('isLoggedIn', 'false');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+
 // 인증 상태 확인
 export const checkAuthStatus = async () => {
+  console.log('checkAuthStatus 호출');
   if (non_server_test) {
-    return { valid: true }; // 항상 성공으로 처리
+    return { valid: true };
   } else {
     try {
       const response = await axiosInstance.get('/user/auth-status');
-      return response.data;
+      console.log('서버 응답:', response.data);
+      if (response.data && response.data.message === "OK") {
+        return { valid: true };
+      } else {
+        return { valid: false };
+      }
     } catch (error) {
       console.error('인증 상태 확인 실패:', error);
-      throw error;
+      return { valid: false };
     }
   }
 };
 
-// 로그인
+
+
+//로그인
 export const loginUser = async (email, password) => {
   if (non_server_test) {
-    return {
+    const mockResponse = {
+      success: true,
       message: "OK",
       data: {
         name: "사용자닉네임",
-        email: "user@example.com"
+        email: "user@example.com",
+        token: "mockToken" // 테스트 토큰 추가
       }
-    }; // 항상 성공으로 처리
+    };
+    localStorage.setItem('authToken', mockResponse.data.token);
+    return mockResponse;
   } else {
     try {
       const response = await axiosInstance.post('/user/login', { email, password });
-      return response.data; // 서버로부터 받은 응답 데이터를 반환
+      if (response.data.token) {
+        localStorage.setItem('authToken', response.data.token); // 토큰 저장
+      }
+      return response.data;
     } catch (error) {
       console.error('로그인 요청 실패:', error);
       throw error;
@@ -101,15 +142,14 @@ export const fetchMessages = async (roomId) => {
         { text: `네 내일 뵙겠습니다. (4)`, time: '2024-05-10T15:51', sentByUser: false, username: 'OPEN_AI_API' }
       ]
     };
-
-    return testMessages[roomId] || []; // 해당 roomId의 테스트 데이터 반환
+    return testMessages[roomId] || [];
   } else {
     try {
-      const response = await axiosInstance.get(`/chat/${roomId}`); // 메시지를 가져올 서버의 엔드포인트
-      return response.data || []; // 서버 응답 데이터 반환, 없을 경우 빈 배열 반환
+      const response = await axiosInstance.get(`/chat/${roomId}`);
+      return response.data || [];
     } catch (error) {
       console.error('메시지 가져오기 실패:', error);
-      return []; // 에러 발생 시 빈 배열 반환
+      return [];
     }
   }
 };
@@ -135,18 +175,18 @@ export const fetchChatHistory = async () => {
 };
 
 // 메시지 전송
+// 메시지 전송
 export const sendMessage = async (chat_Message, user_Email, roomId) => {
   const Message = {
-    text: chat_Message,
-    email: user_Email,
-    sentByUser: true, // 사용자가 보낸 메시지
-    roomId: roomId // 메시지 전송 시 roomId 포함
+    content: chat_Message, // 메시지 내용을 content로 변경
+    role: "user", // 사용자가 보낸 메시지 역할 설정
   };
+
   if (non_server_test) {
-    return { id: Message.email, text: Message.text, time: '12:02', sentByUser: true, roomId: roomId }; // 항상 성공으로 처리
+    return { id: user_Email, content: Message.content, role: Message.role, time: '12:02', sentByUser: true, roomId: roomId }; // 항상 성공으로 처리
   } else {
     try {
-      const response = await axiosInstance.post(`/chat/${roomId}/new`, Message); // 메시지를 서버에 전송
+      const response = await axiosInstance.post(`/chat/new`, Message); // 메시지를 서버에 전송
       return response.data;
     } catch (error) {
       console.error('메시지 보내기 실패:', error);
@@ -155,9 +195,10 @@ export const sendMessage = async (chat_Message, user_Email, roomId) => {
   }
 };
 
+
+
 // 이메일 중복 검사
 export const checkEmail = async (email) => {
-  return { available: true }; // 항상 성공으로 처리
   if (non_server_test) {
     return { available: true }; // 항상 성공으로 처리
   } else {

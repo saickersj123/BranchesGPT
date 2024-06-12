@@ -1,4 +1,3 @@
-/* /css/Sidebar.css */
 .sidebar {
   position: fixed;
   top: 70px; /* 네비게이션 바 높이만큼 내려줍니다. */
@@ -103,20 +102,8 @@
   text-overflow: ellipsis; /* 넘친 텍스트를 생략 부호(...)로 표시 */
 }
 
-
 .sidebar-menu p:hover {
   color: #007bff;
-}
-
-.chat-date-group {
-  margin-bottom: 20px;
-}
-
-.chat-date {
-  font-size: 16px;
-  font-weight: bold;
-  color: #555;
-  margin-bottom: 10px;
 }
 
 .chat-date-group {
@@ -140,4 +127,18 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* 새로운 스타일 추가 */
+.no-chat-rooms {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+}
+
+.no-chat-rooms p {
+  font-size: 16px;
+  font-weight: bold;
+  color: #555;
+  white-space: normal; /* 텍스트가 줄 바꿈되도록 설정 */
 }

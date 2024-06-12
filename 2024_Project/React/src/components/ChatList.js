@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import '../css/ChatMessage.css';
-import { fetchMessages } from '../api/axiosInstance'; // fetchMessages 함수를 가져옵니다.
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../css/ChatList.css';
+import { fetchMessages } from '../api/axiosInstance';
 
 const ChatMessage = ({ message, sentByUser, username, time }) => {
   const timeString = new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
@@ -25,7 +26,7 @@ const ChatList = ({ roomId }) => {
 
   const loadMessages = async () => {
     try {
-      const data = await fetchMessages(roomId, true); // roomId를 fetchMessages에 전달하고, 테스트 데이터를 가져오도록 설정
+      const data = await fetchMessages(roomId, true);
       setMessages(data);
     } catch (error) {
       console.error('Error loading messages:', error);
@@ -37,18 +38,22 @@ const ChatList = ({ roomId }) => {
   }, [roomId]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div>
-        {messages.map((message, index) => (
+    <div className="chat-list-container container mt-3">
+      {messages.length === 0 ? (
+        <div className="alert alert-info text-center">
+          새로운 채팅을 시작해 보세요!
+        </div>
+      ) : (
+        messages.map((message, index) => (
           <ChatMessage
             key={index}
-            message={message.text}
-            sentByUser={message.sentByUser}
-            username={message.username}
+            message={message.content}  // 메시지 내용
+            sentByUser={message.role === 'user'}  // 메시지 역할
+            username={message.role === 'user' ? 'You' : 'AI'}  // 사용자명
             time={message.time}
           />
-        ))}
-      </div>
+        ))
+      )}
     </div>
   );
 };

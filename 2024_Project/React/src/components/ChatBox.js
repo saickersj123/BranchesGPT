@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../css/ChatBox.css';
-import { sendMessage } from '../api/axiosInstance'; // sendMessage 함수를 가져옵니다.
+import { sendMessage } from '../api/axiosInstance';
 
 const ChatBox = ({ roomId }) => {
   const [message, setMessage] = useState('');
@@ -24,13 +24,13 @@ const ChatBox = ({ roomId }) => {
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
-      setMessage(''); // 메시지 전송 시도 후 항상 메시지 입력 필드를 지웁니다.
+      setMessage('');
     }
   };
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault(); // 엔터 키 기본 동작 방지
+      event.preventDefault();
       sendMessageToChatList();
     }
   };
