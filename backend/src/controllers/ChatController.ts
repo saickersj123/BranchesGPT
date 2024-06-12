@@ -21,7 +21,7 @@ export const generateChatCompletion = async (
 		const chats = user.chats.map(({ role, content }) => ({
 			role,
 			content,
-		})) as OpenAI.Chat.CreateChatCompletionRequestMessage[];
+		})) ;
 		chats.push({ content: message, role: "user" });
 
 		// save chats inside real user object
@@ -35,7 +35,7 @@ export const generateChatCompletion = async (
 		// get latest response
 		const chatResponse = await openai.chat.completions.create({
 			model: "gpt-3.5-turbo",
-			messages: chats,
+			messages: chats as OpenAI.Chat.ChatCompletionMessageParam[],
 		});
 
 		// push latest response to db
