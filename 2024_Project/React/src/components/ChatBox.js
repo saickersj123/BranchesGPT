@@ -12,14 +12,8 @@ const ChatBox = ({ roomId }) => {
   const sendMessageToChatList = async () => {
     if (message.trim() === '') return;
 
-    const email = sessionStorage.getItem('email');
-    if (!email) {
-      console.error('User email is not found in session storage.');
-      return;
-    }
-
     try {
-      const response = await sendMessage(message, email, roomId);
+      const response = await sendMessage(message, roomId);
       console.log('Message sent:', response);
     } catch (error) {
       console.error('Error sending message:', error);

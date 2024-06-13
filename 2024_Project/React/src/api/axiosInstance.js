@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 // 전역 변수 설정
-const non_server_test = false; // true이면 항상 성공으로 처리, false이면 실제 서버와 통신
+const non_server_test = true; // true이면 항상 성공으로 처리, false이면 실제 서버와 통신
 
 // 모든 요청에 withCredentials 옵션을 설정
 axios.defaults.withCredentials = true;
@@ -112,36 +112,36 @@ export const fetchMessages = async (roomId) => {
   if (non_server_test) {
     const testMessages = {
       room1: [
-        { text: `안녕하세요, 무엇을 도와드릴까요? (1)`, time: '2024-05-08T11:59', sentByUser: false, username: 'OPEN_AI_API' },
-        { text: `저는 주문에 문제가 있어요. (1)`, time: '2024-05-08T12:00', sentByUser: true, username: 'Client(User)' },
-        { text: `어떤 문제가 있으신가요? (1)`, time: '2024-05-08T12:01', sentByUser: false, username: 'OPEN_AI_API' },
-        { text: `제가 주문한 상품이 아직 도착하지 않았어요. (1)`, time: '2024-05-08T12:03', sentByUser: true, username: 'Client(User)' },
-        { text: `주문 번호를 알려주시면 확인해드리겠습니다. (1)`, time: '2024-05-08T12:04', sentByUser: false, username: 'OPEN_AI_API' },
-        { text: `주문 번호는 123456 입니다. (1)`, time: '2024-05-08T12:05', sentByUser: true, username: 'Client(User)' },
-        { text: `주문을 확인 중입니다... (1)`, time: '2024-05-08T12:06', sentByUser: false, username: 'OPEN_AI_API' },
-        { text: `주문이 아직 배송 중인 것으로 확인되었습니다. 곧 도착할 예정입니다. (1)`, time: '2024-05-08T12:07', sentByUser: false, username: 'OPEN_AI_API' },
-        { text: `감사합니다. (1)`, time: '2024-05-08T12:08', sentByUser: true, username: 'Client(User)' },
-        { text: `더 도와드릴 것이 있나요? (1)`, time: '2024-05-08T12:09', sentByUser: false, username: 'OPEN_AI_API' },
-        { text: `아니요, 이만 할게요. 좋은 하루 되세요. (1)`, time: '2024-05-08T12:10', sentByUser: true, username: 'Client(User)' },
-        { text: `네, 감사합니다. 좋은 하루 되세요! (1)`, time: '2024-05-08T12:11', sentByUser: false, username: 'OPEN_AI_API' }
-      ],
-      room2: [
-        { text: `서비스에 대해 문의드리고 싶습니다. (2)`, time: '2024-05-08T12:01', sentByUser: true, username: 'Client(User)' },
-        { text: `어떤 서비스에 대해 궁금하신가요? (2)`, time: '2024-05-08T12:02', sentByUser: false, username: 'OPEN_AI_API' },
-        { text: `프리미엄 서비스에 대해 알고 싶습니다. (2)`, time: '2024-05-08T12:03', sentByUser: true, username: 'Client(User)' },
-        { text: `프리미엄 서비스는 다양한 혜택을 제공합니다. (2)`, time: '2024-05-08T12:04', sentByUser: false, username: 'OPEN_AI_API' },
-        { text: `자세한 내용을 알고 싶어요. (2)`, time: '2024-05-08T12:05', sentByUser: true, username: 'Client(User)' },
-        { text: `물론입니다. 프리미엄 서비스는... (2)`, time: '2024-05-08T12:06', sentByUser: false, username: 'OPEN_AI_API' }
-      ],
-      room3: [
-        { text: `좋은 하루 되세요! (3)`, time: '2024-05-04T15:51', sentByUser: true, username: 'Client(User)' },
-        { text: `감사합니다. 좋은 하루 되세요. (3)`, time: '2024-05-04T15:51', sentByUser: false, username: 'OPEN_AI_API' }
-      ],
-      room4: [
-        { text: `내일 뵙겠습니다. (4)`, time: '2024-05-10T15:51', sentByUser: true, username: 'Client(User)' },
-        { text: `네 내일 뵙겠습니다. (4)`, time: '2024-05-10T15:51', sentByUser: false, username: 'OPEN_AI_API' }
-      ]
-    };
+    { content: `안녕하세요, 무엇을 도와드릴까요? (1)`, time: '2024-05-08T11:59', role: "assistant" },
+    { content: `저는 주문에 문제가 있어요. (1)`, time: '2024-05-08T12:00', role: "user" },
+    { content: `어떤 문제가 있으신가요? (1)`, time: '2024-05-08T12:01', role: "assistant" },
+    { content: `제가 주문한 상품이 아직 도착하지 않았어요. (1)`, time: '2024-05-08T12:03', role: "user" },
+    { content: `주문 번호를 알려주시면 확인해드리겠습니다. (1)`, time: '2024-05-08T12:04', role: "assistant" },
+    { content: `주문 번호는 123456 입니다. (1)`, time: '2024-05-08T12:05', role: "user" },
+    { content: `주문을 확인 중입니다... (1)`, time: '2024-05-08T12:06', role: "assistant" },
+    { content: `주문이 아직 배송 중인 것으로 확인되었습니다. 곧 도착할 예정입니다. (1)`, time: '2024-05-08T12:07', role: "assistant" },
+    { content: `감사합니다. (1)`, time: '2024-05-08T12:08', role: "user" },
+    { content: `더 도와드릴 것이 있나요? (1)`, time: '2024-05-08T12:09', role: "assistant" },
+    { content: `아니요, 이만 할게요. 좋은 하루 되세요. (1)`, time: '2024-05-08T12:10', role: "user" },
+    { content: `네, 감사합니다. 좋은 하루 되세요! (1)`, time: '2024-05-08T12:11', role: "assistant" }
+  ],
+  room2: [
+    { content: `서비스에 대해 문의드리고 싶습니다. (2)`, time: '2024-05-08T12:01', role: "user" },
+    { content: `어떤 서비스에 대해 궁금하신가요? (2)`, time: '2024-05-08T12:02', role: "assistant" },
+    { content: `프리미엄 서비스에 대해 알고 싶습니다. (2)`, time: '2024-05-08T12:03', role: "user" },
+    { content: `프리미엄 서비스는 다양한 혜택을 제공합니다. (2)`, time: '2024-05-08T12:04', role: "assistant" },
+    { content: `자세한 내용을 알고 싶어요. (2)`, time: '2024-05-08T12:05', role: "user" },
+    { content: `물론입니다. 프리미엄 서비스는... (2)`, time: '2024-05-08T12:06', role: "assistant" }
+  ],
+  room3: [
+    { content: `좋은 하루 되세요! (3)`, time: '2024-05-04T15:51', role: "user" },
+    { content: `감사합니다. 좋은 하루 되세요. (3)`, time: '2024-05-04T15:51', role: "assistant" }
+  ],
+  room4: [
+    { content: `내일 뵙겠습니다. (4)`, time: '2024-05-10T15:51', role: "user" },
+    { content: `네 내일 뵙겠습니다. (4)`, time: '2024-05-10T15:51', role: "assistant" }
+  ]
+    }
     return testMessages[roomId] || [];
   } else {
     try {
@@ -175,24 +175,23 @@ export const fetchChatHistory = async () => {
 };
 
 // 메시지 전송
-// 메시지 전송
-export const sendMessage = async (chat_Message, user_Email, roomId) => {
+export const sendMessage = async (chat_Message, chat_roomId) => {
   const Message = {
-    content: chat_Message, // 메시지 내용을 content로 변경
-    role: "user", // 사용자가 보낸 메시지 역할 설정
+    content: chat_Message, // 메시지 내용을 content로 변경  
+    role: "user" | "assistant", // 사용자가 보낸 메시지 역할 설정
+    //-----미구현 범위-------------
+    //roomId: chat_roomId //각각의 채팅방을 ID로 구분
   };
-
-  if (non_server_test) {
-    return { id: user_Email, content: Message.content, role: Message.role, time: '12:02', sentByUser: true, roomId: roomId }; // 항상 성공으로 처리
-  } else {
     try {
+      if(non_server_test == 1){
+        return { id: "user", text: chat_Message, time: '12:02', roomId: chat_roomId }; // 항상 성공으로 처리
+      }
       const response = await axiosInstance.post(`/chat/new`, Message); // 메시지를 서버에 전송
       return response.data;
     } catch (error) {
       console.error('메시지 보내기 실패:', error);
       throw error;
     }
-  }
 };
 
 
@@ -296,7 +295,7 @@ export const updatePassword = async (newPassword) => {
   } else {
     try {
       const response = await axiosInstance.put('/user/update-password', { newPassword });
-      return response.data; // 서버 응답을 반환
+      return response.data; // 서버 응답을 반환 
     } catch (error) {
       throw new Error('비밀번호 변경에 실패했습니다.');
     }

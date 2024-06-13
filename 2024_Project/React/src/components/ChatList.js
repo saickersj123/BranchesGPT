@@ -3,17 +3,17 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/ChatList.css';
 import { fetchMessages } from '../api/axiosInstance';
 
-const ChatMessage = ({ message, sentByUser, username, time }) => {
+const ChatMessage = ({ content, role, time }) => {
   const timeString = new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+  const storedName = sessionStorage.getItem('name');
+  const username = role === 'assistant' ? 'AI' : (storedName ? storedName : 'You');
 
   return (
-    <div className={`message-container ${sentByUser ? 'sent-by-user' : 'received'}`}>
-      {username && (
-        <div className="username">{username}</div>
-      )}
+    <div className={`message-container ${role === 'user' ? 'sent-by-user' : 'received'}`}>
+      <div className="username">{username}</div>
       <div className="bubble-container">
         <div className="bubble">
-          {message}
+          {content}
         </div>
         <div className="time">{timeString}</div>
       </div>
@@ -47,9 +47,8 @@ const ChatList = ({ roomId }) => {
         messages.map((message, index) => (
           <ChatMessage
             key={index}
-            message={message.content}  // 메시지 내용
-            sentByUser={message.role === 'user'}  // 메시지 역할
-            username={message.role === 'user' ? 'You' : 'AI'}  // 사용자명
+            content={message.content}  // 메시지 내용
+            role={message.role}  // 메시지 역할
             time={message.time}
           />
         ))
