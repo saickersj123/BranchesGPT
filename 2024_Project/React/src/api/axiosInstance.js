@@ -42,6 +42,19 @@ axiosInstance.interceptors.response.use(
 
 // 메시지 전송
 export const sendMessage = async (chat_Message, role = 'user') => {
+  if (non_server_test) {
+    console.log('Mocking sendMessage');
+    const mockResponse = {
+      data: {
+        chats: [
+          { content: chat_Message, role: role, createdAt: new Date().toISOString() },
+          { content: "AI 응답 메시지", role: "assistant", createdAt: new Date().toISOString() }
+        ]
+      }
+    };
+    return mockResponse.data.chats;
+  }
+
   let messageContent;
 
   if (typeof chat_Message === 'object' && chat_Message !== null) {
@@ -63,7 +76,6 @@ export const sendMessage = async (chat_Message, role = 'user') => {
     throw error;
   }
 };
-
 
 // 인증 상태 확인
 export const checkAuthStatus = async () => {
@@ -130,21 +142,29 @@ export const logout = async () => {
 
 // 각 채팅 기록 불러오기
 export const fetchMessages = async () => {
+  if (non_server_test) {
+    console.log('Mocking fetchMessages');
+    const mockMessages = [
+      { content: '안녕하세요?', role: 'user', createdAt: '2024-06-14T12:00:00.000Z' },
+      { content: '무엇을 도와드릴까요?', role: 'assistant', createdAt: '2024-06-14T12:01:00.000Z' }
+    ];
+    return mockMessages;
+  }
+
   try {
-    console.log('Fetching messages...'); // 디버깅 로그 추가
+    console.log('Fetching messages...');
     const response = await axiosInstance.get('/chat/all-chats', {
       headers: {
         'Cache-Control': 'no-cache'
       }
     });
-    console.log('Response:', response); // 디버깅 로그 추가
+    console.log('Response:', response);
     return Array.isArray(response.data.chats) ? response.data.chats : [];
   } catch (error) {
     console.error('메시지 가져오기 실패:', error);
     return [];
   }
 };
-
 
 // 채팅방 기록 불러오기
 export const fetchChatHistory = async () => {

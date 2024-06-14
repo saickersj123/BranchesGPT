@@ -26,7 +26,7 @@ const ChatList = ({ messages, setMessages }) => {
 
   useEffect(() => {
     if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      chatEndRef.current.scrollIntoView({ behavior: 'auto' });
     }
 
     const lastMessage = messages[messages.length - 1];
