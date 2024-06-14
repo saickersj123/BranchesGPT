@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/ChatList.css';
-import { fetchMessages } from '../api/axiosInstance';
+import { sendMessage } from '../api/axiosInstance';
 
 const ChatMessage = ({ content, role, time }) => {
   const timeString = new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
@@ -21,21 +21,44 @@ const ChatMessage = ({ content, role, time }) => {
   );
 };
 
-const ChatList = ({ roomId }) => {
-  const [messages, setMessages] = useState([]);
-
-  const loadMessages = async () => {
-    try {
-      const data = await fetchMessages(roomId, true);
-      setMessages(data);
-    } catch (error) {
-      console.error('Error loading messages:', error);
-    }
-  };
+const ChatList = ({ messages, setMessages }) => {
+  const chatEndRef = useRef(null);
 
   useEffect(() => {
-    loadMessages();
-  }, [roomId]);
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage && lastMessage.role === 'user') {
+      const fetchAIResponse = async () => {
+        try {
+          const aiResponse = await sendMessage('...'); // AI 응답을 가져옴 (실제 메시지를 변경해야 함)
+          const aiMessage = {
+            content: '',
+            role: 'assistant',
+            createdAt: new Date().toISOString()
+          };
+          setMessages((prevMessages) => [...prevMessages, aiMessage]);
+
+          // AI의 응답을 한 글자씩 출력
+          const content = aiResponse[aiResponse.length - 1].content;
+          for (let i = 0; i < content.length; i++) {
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            setMessages((prevMessages) => {
+              const updatedMessages = [...prevMessages];
+              updatedMessages[updatedMessages.length - 1].content += content[i];
+              return updatedMessages;
+            });
+          }
+        } catch (error) {
+          console.error('Error getting AI response:', error);
+        }
+      };
+
+      fetchAIResponse();
+    }
+  }, [messages, setMessages]);
 
   return (
     <div className="chat-list-container container mt-3">
@@ -44,14 +67,17 @@ const ChatList = ({ roomId }) => {
           새로운 채팅을 시작해 보세요!
         </div>
       ) : (
-        messages.map((message, index) => (
-          <ChatMessage
-            key={index}
-            content={message.content}  // 메시지 내용
-            role={message.role}  // 메시지 역할
-            time={message.time}
-          />
-        ))
+        <>
+          {messages.map((message, index) => (
+            <ChatMessage
+              key={index}
+              content={message.content}
+              role={message.role}
+              time={message.createdAt}
+            />
+          ))}
+          <div ref={chatEndRef} />
+        </>
       )}
     </div>
   );

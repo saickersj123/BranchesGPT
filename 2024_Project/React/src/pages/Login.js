@@ -100,7 +100,7 @@ const Login = ({ setIsLoggedIn }) => {
         const { name, email, token } = response;
         sessionStorage.setItem('name', name);
         sessionStorage.setItem('email', email);
-        localStorage.setItem('authToken', token); // 토큰 저장
+        sessionStorage.setItem('authToken', token); // 토큰 저장
         setTimeout(() => {
           setIsLoggedIn(true);
           navigate('/');

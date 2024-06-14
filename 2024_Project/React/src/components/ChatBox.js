@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../css/ChatBox.css';
 import { sendMessage } from '../api/axiosInstance';
 
-const ChatBox = ({ roomId }) => {
+const ChatBox = ({ onNewMessage }) => {
   const [message, setMessage] = useState('');
 
   const handleMessageChange = (event) => {
@@ -12,13 +12,20 @@ const ChatBox = ({ roomId }) => {
   const sendMessageToChatList = async () => {
     if (message.trim() === '') return;
 
+    const newMessage = {
+      content: message,
+      role: 'user',
+      createdAt: new Date().toISOString()
+    };
+
+    onNewMessage(newMessage); // 새로운 메시지를 바로 추가
+
     try {
-      const response = await sendMessage(message, roomId);
+      const response = await sendMessage(message);
       console.log('Message sent:', response);
+      setMessage(''); // 메시지 전송 후 입력 필드 초기화
     } catch (error) {
       console.error('Error sending message:', error);
-    } finally {
-      setMessage('');
     }
   };
 

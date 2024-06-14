@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-
 // 전역 변수 설정
-const non_server_test = true; // true이면 항상 성공으로 처리, false이면 실제 서버와 통신
+const non_server_test = false; // true이면 항상 성공으로 처리, false이면 실제 서버와 통신
 
 // 모든 요청에 withCredentials 옵션을 설정
 axios.defaults.withCredentials = true;
@@ -18,7 +17,7 @@ const axiosInstance = axios.create({
 
 // 요청을 보낼 때마다 인증 토큰을 자동으로 추가
 axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
+  const token = sessionStorage.getItem('authToken');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -33,13 +32,37 @@ axiosInstance.interceptors.response.use(
   error => {
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
       // 인증 오류가 발생하면 로컬 스토리지에서 토큰을 제거하고 로그인 상태를 false로 설정
-      localStorage.removeItem('authToken');
+      sessionStorage.removeItem('authToken');
       sessionStorage.setItem('isLoggedIn', 'false');
       window.location.href = '/login';
     }
     return Promise.reject(error);
   }
 );
+
+// 메시지 전송
+export const sendMessage = async (chat_Message, role = 'user') => {
+  let messageContent;
+
+  if (typeof chat_Message === 'object' && chat_Message !== null) {
+    messageContent = chat_Message.content;
+  } else {
+    messageContent = chat_Message;
+  }
+
+  const message = {
+    role: role,
+    content: messageContent
+  };
+
+  try {
+    const response = await axiosInstance.post(`/chat/new`, { message: message.content });
+    return response.data.chats;
+  } catch (error) {
+    console.error('메시지 보내기 실패:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
 
 
 // 인증 상태 확인
@@ -63,9 +86,7 @@ export const checkAuthStatus = async () => {
   }
 };
 
-
-
-//로그인
+// 로그인
 export const loginUser = async (email, password) => {
   if (non_server_test) {
     const mockResponse = {
@@ -77,13 +98,13 @@ export const loginUser = async (email, password) => {
         token: "mockToken" // 테스트 토큰 추가
       }
     };
-    localStorage.setItem('authToken', mockResponse.data.token);
+    sessionStorage.setItem('authToken', mockResponse.data.token);
     return mockResponse;
   } else {
     try {
       const response = await axiosInstance.post('/user/login', { email, password });
       if (response.data.token) {
-        localStorage.setItem('authToken', response.data.token); // 토큰 저장
+        sessionStorage.setItem('authToken', response.data.token); // 토큰 저장
       }
       return response.data;
     } catch (error) {
@@ -107,52 +128,23 @@ export const logout = async () => {
   }
 };
 
-// 각 룸별로 채팅 기록 불러오기
-export const fetchMessages = async (roomId) => {
-  if (non_server_test) {
-    const testMessages = {
-      room1: [
-    { content: `안녕하세요, 무엇을 도와드릴까요? (1)`, time: '2024-05-08T11:59', role: "assistant" },
-    { content: `저는 주문에 문제가 있어요. (1)`, time: '2024-05-08T12:00', role: "user" },
-    { content: `어떤 문제가 있으신가요? (1)`, time: '2024-05-08T12:01', role: "assistant" },
-    { content: `제가 주문한 상품이 아직 도착하지 않았어요. (1)`, time: '2024-05-08T12:03', role: "user" },
-    { content: `주문 번호를 알려주시면 확인해드리겠습니다. (1)`, time: '2024-05-08T12:04', role: "assistant" },
-    { content: `주문 번호는 123456 입니다. (1)`, time: '2024-05-08T12:05', role: "user" },
-    { content: `주문을 확인 중입니다... (1)`, time: '2024-05-08T12:06', role: "assistant" },
-    { content: `주문이 아직 배송 중인 것으로 확인되었습니다. 곧 도착할 예정입니다. (1)`, time: '2024-05-08T12:07', role: "assistant" },
-    { content: `감사합니다. (1)`, time: '2024-05-08T12:08', role: "user" },
-    { content: `더 도와드릴 것이 있나요? (1)`, time: '2024-05-08T12:09', role: "assistant" },
-    { content: `아니요, 이만 할게요. 좋은 하루 되세요. (1)`, time: '2024-05-08T12:10', role: "user" },
-    { content: `네, 감사합니다. 좋은 하루 되세요! (1)`, time: '2024-05-08T12:11', role: "assistant" }
-  ],
-  room2: [
-    { content: `서비스에 대해 문의드리고 싶습니다. (2)`, time: '2024-05-08T12:01', role: "user" },
-    { content: `어떤 서비스에 대해 궁금하신가요? (2)`, time: '2024-05-08T12:02', role: "assistant" },
-    { content: `프리미엄 서비스에 대해 알고 싶습니다. (2)`, time: '2024-05-08T12:03', role: "user" },
-    { content: `프리미엄 서비스는 다양한 혜택을 제공합니다. (2)`, time: '2024-05-08T12:04', role: "assistant" },
-    { content: `자세한 내용을 알고 싶어요. (2)`, time: '2024-05-08T12:05', role: "user" },
-    { content: `물론입니다. 프리미엄 서비스는... (2)`, time: '2024-05-08T12:06', role: "assistant" }
-  ],
-  room3: [
-    { content: `좋은 하루 되세요! (3)`, time: '2024-05-04T15:51', role: "user" },
-    { content: `감사합니다. 좋은 하루 되세요. (3)`, time: '2024-05-04T15:51', role: "assistant" }
-  ],
-  room4: [
-    { content: `내일 뵙겠습니다. (4)`, time: '2024-05-10T15:51', role: "user" },
-    { content: `네 내일 뵙겠습니다. (4)`, time: '2024-05-10T15:51', role: "assistant" }
-  ]
-    }
-    return testMessages[roomId] || [];
-  } else {
-    try {
-      const response = await axiosInstance.get(`/chat/${roomId}`);
-      return response.data || [];
-    } catch (error) {
-      console.error('메시지 가져오기 실패:', error);
-      return [];
-    }
+// 각 채팅 기록 불러오기
+export const fetchMessages = async () => {
+  try {
+    console.log('Fetching messages...'); // 디버깅 로그 추가
+    const response = await axiosInstance.get('/chat/all-chats', {
+      headers: {
+        'Cache-Control': 'no-cache'
+      }
+    });
+    console.log('Response:', response); // 디버깅 로그 추가
+    return Array.isArray(response.data.chats) ? response.data.chats : [];
+  } catch (error) {
+    console.error('메시지 가져오기 실패:', error);
+    return [];
   }
 };
+
 
 // 채팅방 기록 불러오기
 export const fetchChatHistory = async () => {
@@ -173,28 +165,6 @@ export const fetchChatHistory = async () => {
     }
   }
 };
-
-// 메시지 전송
-export const sendMessage = async (chat_Message, chat_roomId) => {
-  const Message = {
-    content: chat_Message, // 메시지 내용을 content로 변경  
-    role: "user" | "assistant", // 사용자가 보낸 메시지 역할 설정
-    //-----미구현 범위-------------
-    //roomId: chat_roomId //각각의 채팅방을 ID로 구분
-  };
-    try {
-      if(non_server_test == 1){
-        return { id: "user", text: chat_Message, time: '12:02', roomId: chat_roomId }; // 항상 성공으로 처리
-      }
-      const response = await axiosInstance.post(`/chat/new`, Message); // 메시지를 서버에 전송
-      return response.data;
-    } catch (error) {
-      console.error('메시지 보내기 실패:', error);
-      throw error;
-    }
-};
-
-
 
 // 이메일 중복 검사
 export const checkEmail = async (email) => {

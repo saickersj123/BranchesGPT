@@ -91,3 +91,11 @@
   border-radius: 10px;
   margin-top: 20px; /* 문구를 아래로 이동시키기 위해 상단 마진 추가 */
 }
+
+/* 로딩 스피너 스타일 */
+.loading-spinner {
+  text-align: center;
+  font-size: 1.2em;
+  color: gray;
+  margin: 20px 0;
+}
