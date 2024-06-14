@@ -26,6 +26,10 @@ const Home = ({ isLoggedIn, setIsLoggedIn }) => {
     setMessages((prevMessages) => [...prevMessages, newMessage]);
   }, []);
 
+  const handleUpdateMessage = useCallback((aiMessage) => {
+    setMessages((prevMessages) => [...prevMessages, aiMessage]);
+  }, []);
+
   const loadMessages = useCallback(async () => {
     try {
       const data = await fetchMessages();
@@ -61,10 +65,10 @@ const Home = ({ isLoggedIn, setIsLoggedIn }) => {
           />
           <div className={`main-content ${isSidebarOpen && isLoggedIn ? 'shifted' : ''}`}>
             <div className="ChatList">
-              <ChatList messages={messages} setMessages={setMessages} />
+              <ChatList messages={messages} />
             </div>
             <div className="ChatBoxFixed">
-              <ChatBox onNewMessage={handleNewMessage} />
+              <ChatBox onNewMessage={handleNewMessage} onUpdateMessage={handleUpdateMessage} />
             </div>
           </div>
         </>
