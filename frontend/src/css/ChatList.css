@@ -1,0 +1,101 @@
+/* ChatList.css */
+
+/* 채팅 메시지 컨테이너 스타일 */
+.message-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.bubble-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  max-width: 100%; /* 기본적으로 최대 너비를 100%로 설정 */
+}
+
+.bubble {
+  padding: 10px;
+  border-radius: 10px;
+  word-wrap: break-word;
+  word-break: break-all;
+  background-color: #F0F0F0;
+}
+
+.time {
+  font-size: 0.8em;
+  color: gray;
+  white-space: nowrap;
+}
+
+.username {
+  font-size: 0.9em;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.sent-by-user {
+  margin-left: auto;
+  align-items: flex-end;
+}
+
+.sent-by-user .bubble-container {
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+
+.sent-by-user .bubble {
+  background-color: #DCF8C6;
+}
+
+.sent-by-user .time {
+  margin-left: 0; /* 왼쪽 마진 제거 */
+  margin-right: 5px; /* 오른쪽 마진 추가 */
+}
+
+.received {
+  margin-right: auto;
+  align-items: flex-start;
+}
+
+.received .bubble-container {
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+.received .bubble {
+  background-color: #F0F0F0;
+}
+
+.received .time {
+  margin-left: 5px;
+}
+
+/* 미디어 쿼리 추가 */
+@media (min-width: 900px) {
+  .bubble-container {
+    max-width: 70%; /* 큰 화면에서는 최대 너비를 70%로 설정 */
+  }
+}
+
+/* 새로운 채팅을 시작해 보세요! 알림 스타일 */
+.alert-info {
+  background-color: #cce5ff;
+  border-color: #b8daff;
+  color: #004085;
+}
+
+.alert-info.text-center {
+  text-align: center;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px; /* 문구를 아래로 이동시키기 위해 상단 마진 추가 */
+}
+
+/* 로딩 스피너 스타일 */
+.loading-spinner {
+  text-align: center;
+  font-size: 1.2em;
+  color: gray;
+  margin: 20px 0;
+}
