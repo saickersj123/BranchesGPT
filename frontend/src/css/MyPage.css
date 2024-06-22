@@ -1,3 +1,5 @@
+/* MyPage.css */
+
 /* 비밀번호 입력 필드와 버튼을 포함하는 컨테이너 */
 .password-input-container {
     display: flex;        /* 자식 요소들(input과 button)에 플렉스박스 레이아웃 적용 */

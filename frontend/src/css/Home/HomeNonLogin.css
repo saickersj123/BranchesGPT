@@ -1,30 +1,22 @@
-/* home.css */
-
-/* middle-login-button 기본적으로 숨기기 */
 .middle-login-button {
   display: none;
 }
 
-/* 모바일 장치에서 middle-login-button 보이기 */
 @media (max-width: 1000px) {
   .middle-login-button {
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 20px auto;
-    padding: 10px 15px; /* 좌우 길이를 줄이기 위해 padding 값을 조정 */
+    padding: 10px 15px;
     background-color: transparent;
     color: blueviolet;
     text-align: center;
-    border: none; /* 테두리 없게 설정 */
+    border: none;
     border-radius: 5px;
     text-decoration: none;
     font-size: 16px;
     font-weight: bold;
-  }
-
-  .middle-login-button:hover {
-    background-color: transparent;
   }
 
   .middle-login-button .icon {

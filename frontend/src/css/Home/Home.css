@@ -1,0 +1,153 @@
+/* Home.css */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.main-section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  margin-top: 5px;
+  transition: margin-left 0.3s ease;
+  overflow: auto; 
+}
+
+.main-content.chat-page {
+  margin-top: 5px;
+}
+
+.main-content.shifted {
+  margin-left: 250px;
+}
+
+.grid-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background: url('../../img/login_background_image.png') no-repeat center center;
+  background-size: cover; /* 배경 이미지가 그리드 전체를 덮도록 설정 */
+}
+
+.grid-item {
+  box-sizing: border-box;
+  background: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  justify-content: center; /* 수직 중앙 정렬 */
+  align-items: center; /* 수평 중앙 정렬 */
+}
+
+.grid-drag-handle {
+  cursor: move;
+  padding: 5px;
+  background: #ddd;
+  border-bottom: 1px solid #ccc;
+  text-align: center;
+}
+
+.chat-list-container {
+  overflow-y: auto; /* 스크롤 허용 */
+  overflow-x: hidden;
+  flex: 1;
+  padding: 10px; /* 말풍선과의 여백 추가 */
+  margin: 0;
+}
+
+.chat-box-container {
+  overflow-y: hidden; /* 스크롤 제거 */
+  flex: 1;
+  padding: 0;
+  margin: 0;
+}
+
+.edit-buttons {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.non-login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.non-login-text {
+  text-align: center;
+}
+
+@media (max-width: 1000px) {
+  .main-content.shifted {
+    margin-left: 0;
+  }
+
+  .ChatBoxFixed {
+    width: 100%;
+  }
+}
+
+/* 추가된 부분: 마우스 휠 사용 시와 마우스 오버 시 스크롤 바를 잠시 보이도록 설정 */
+.show-scrollbar {
+  overflow: auto !important; /* 스크롤 바를 보이도록 설정 */
+}
+
+/* 크기 조절 핸들을 시각적으로 표시 */
+.react-resizable-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: gray;
+  z-index: 1;
+}
+
+.react-resizable-handle-s {
+  bottom: 0;
+  left: 50%;
+  margin-left: -5px;
+  cursor: s-resize;
+}
+
+.react-resizable-handle-e {
+  right: 0;
+  top: 50%;
+  margin-top: -5px;
+  cursor: e-resize;
+}
+
+.react-resizable-handle-w {
+  left: 0;
+  top: 50%;
+  margin-top: -5px;
+  cursor: w-resize;
+}
+
+.react-resizable-handle-n {
+  top: 0;
+  left: 50%;
+  margin-left: -5px;
+  cursor: n-resize;
+}
+
+/* 설정 모드가 아닐 때 크기 조절 핸들을 숨기기 */
+.grid-item:not(.edit-mode) .react-resizable-handle {
+  display: none;
+}

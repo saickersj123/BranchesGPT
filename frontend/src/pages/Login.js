@@ -10,6 +10,7 @@ import backgroundImage from '../img/login_background_image.png';
 import Signup from '../components/NewSignup';
 import PasswordReset from '../components/PasswordReset';
 import { loginUser } from '../api/axiosInstance';
+import '../css/Login.css'; // 로그인 페이지의 CSS 파일
 
 const BackgroundContainer = styled.div`
   background-image: url(${backgroundImage});
