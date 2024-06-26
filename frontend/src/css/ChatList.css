@@ -1,3 +1,6 @@
+/* ChatList.css */
+
+/* 채팅 메시지 컨테이너 스타일 */
 .message-container {
   display: flex;
   flex-direction: column;
@@ -73,4 +76,26 @@
   .bubble-container {
     max-width: 70%; /* 큰 화면에서는 최대 너비를 70%로 설정 */
   }
+}
+
+/* 새로운 채팅을 시작해 보세요! 알림 스타일 */
+.alert-info {
+  background-color: #cce5ff;
+  border-color: #b8daff;
+  color: #004085;
+}
+
+.alert-info.text-center {
+  text-align: center;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px; /* 문구를 아래로 이동시키기 위해 상단 마진 추가 */
+}
+
+/* 로딩 스피너 스타일 */
+.loading-spinner {
+  text-align: center;
+  font-size: 1.2em;
+  color: gray;
+  margin: 20px 0;
 }

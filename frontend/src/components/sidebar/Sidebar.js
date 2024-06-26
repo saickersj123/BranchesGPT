@@ -8,7 +8,7 @@ import '../../css/Sidebar.css';
 const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar }) => {
   const [chatRooms, setChatRooms] = useState([]);
   const navigate = useNavigate();
-  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+  const isMobile = useMediaQuery({ query: '(max-width: 1000px)' });
 
   useEffect(() => {
     const getChatRooms = async () => {
@@ -33,7 +33,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar }) => {
 
   const groupByDate = (rooms) => {
     return rooms.reduce((groups, room) => {
-      const date = room.time.split('T')[0]; // 날짜만 추출
+      const date = room.time.split('T')[0];
       if (!groups[date]) {
         groups[date] = [];
       }
@@ -45,7 +45,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar }) => {
   const sortedChatRooms = () => {
     const grouped = groupByDate(chatRooms);
     return Object.keys(grouped)
-      .sort((a, b) => new Date(b) - new Date(a))  // 날짜를 내림차순으로 정렬
+      .sort((a, b) => new Date(b) - new Date(a))
       .map(date => ({
         date,
         rooms: grouped[date]
@@ -65,16 +65,22 @@ const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar }) => {
         {isOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
       </button>
       <div className="sidebar-menu">
-        {sortedChatRooms().map((group, index) => (
-          <div key={index} className="chat-date-group">
-            <h3 className="chat-date">{formatDate(group.date)}</h3>
-            {group.rooms.map((room, idx) => (
-              <div key={idx} className="chat-room" onClick={() => handleRoomClick(room.roomId)}>
-                <p className="last-message">{room.lastMessage}</p>
-              </div>
-            ))}
+        {chatRooms.length === 0 ? (
+          <div className="no-chat-rooms">
+            <p>대화 기록이 없습니다.<br /> 새로운 채팅을 시작해 보세요!</p>
           </div>
-        ))}
+        ) : (
+          sortedChatRooms().map((group, index) => (
+            <div key={index} className="chat-date-group">
+              <h3 className="chat-date">{formatDate(group.date)}</h3>
+              {group.rooms.map((room, idx) => (
+                <div key={idx} className="chat-room" onClick={() => handleRoomClick(room.roomId)}>
+                  <p className="last-message">{room.lastMessage}</p>
+                </div>
+              ))}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

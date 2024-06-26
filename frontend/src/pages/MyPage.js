@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Container, Row, Col, Alert, Card } from 'react-bootstrap';
+import { Button, Form, Container, Row, Col, Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faPen } from '@fortawesome/free-solid-svg-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/MyPage.css';
-import {updatename, updatePassword, loginUser } from '../api/axiosInstance'; // loginUser 함수 추가
+import { updatename, updatePassword, loginUser } from '../api/axiosInstance'; // loginUser 함수 추가
 
 const MyPage = () => {
   const [password, setPassword] = useState('');
@@ -37,15 +37,12 @@ const MyPage = () => {
     try {
       // loginUser 함수를 사용하여 비밀번호 검증
       const response = await loginUser(email, password);
-      if (response.success) {
+      setPassword(''); // Clear the password input
+      if (response.message === 'OK') {
         setIsPasswordVerified(true);
-      } else {
-        alert('비밀번호가 일치하지 않습니다.');
-        setPassword(''); // Clear the password input
       }
     } catch (error) {
-      alert('비밀번호 검증에 실패했습니다.');
-      setPassword(''); // Clear the password input
+      alert('비밀번호가 일치하지 않습니다.');
     }
   };
 
@@ -111,7 +108,7 @@ const MyPage = () => {
   };
 
   return (
-    <Container className="mypage-container">
+    <Container className="mypage-container" style={{ marginTop: '100px' }}>
       <Row className="justify-content-center">
         <Col xs={12} md={6}>
           <Card className="center-box">
@@ -138,18 +135,20 @@ const MyPage = () => {
                   <Card.Title>마이페이지</Card.Title>
                   <Form>
                     <Form.Group as={Row} className="name-section">
-                      <Form.Label column sm={4}>현재 닉네임:</Form.Label>
+                      <Form.Label column sm={4}>현재 닉네임 :</Form.Label>
                       <Col sm={6}>
                         <Form.Control plaintext readOnly value={name} />
                       </Col>
                       <Col sm={2} className="text-right">
-                        <Button onClick={handleEditname} variant="secondary">수정</Button>
+                        <Button onClick={handleEditname} variant="link">
+                          <FontAwesomeIcon icon={faPen} />
+                        </Button>
                       </Col>
                     </Form.Group>
                     {isEditingname && (
-                      <Alert variant="secondary" className="edit-section">
+                      <div className="edit-section">
                         <Form.Group>
-                          <Form.Label>새 닉네임:</Form.Label>
+                          <Form.Label>새 닉네임 :</Form.Label>
                           <Form.Control
                             type="text"
                             value={newname}
@@ -158,16 +157,21 @@ const MyPage = () => {
                         </Form.Group>
                         <Button onClick={handleSaveNewname} variant="primary" className="mt-3">저장</Button>
                         <Button onClick={handleCancelEditname} variant="secondary" className="mt-3 ml-2">닫기</Button>
-                      </Alert>
+                      </div>
                     )}
                     <Form.Group as={Row} className="password-section mt-4">
-                      <Form.Label column sm={4}>비밀번호 수정:</Form.Label>
-                      <Col sm={8} className="text-right">
-                        <Button onClick={handleEditPassword} variant="secondary">수정</Button>
+                      <Form.Label column sm={4}>비 밀 번 호 :</Form.Label>
+                      <Col sm={6}>
+                        <Form.Control plaintext readOnly value="********" />
+                      </Col>
+                      <Col sm={2} className="text-right">
+                        <Button onClick={handleEditPassword} variant="link">
+                          <FontAwesomeIcon icon={faPen} />
+                        </Button>
                       </Col>
                     </Form.Group>
                     {isEditingPassword && (
-                      <Alert variant="secondary" className="edit-section">
+                      <div className="edit-section">
                         <Form.Group>
                           <Form.Label>새 비밀번호:</Form.Label>
                           <Form.Control
@@ -178,7 +182,7 @@ const MyPage = () => {
                         </Form.Group>
                         <Button onClick={handleSaveNewPassword} variant="primary" className="mt-3">저장</Button>
                         <Button onClick={handleCancelEditPassword} variant="secondary" className="mt-3 ml-2">닫기</Button>
-                      </Alert>
+                      </div>
                     )}
                   </Form>
                 </>

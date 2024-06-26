@@ -6,15 +6,15 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import { Link } from 'react-router-dom';
 import { logout } from '../../api/axiosInstance';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faCog, faSave, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FiMoreVertical } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
 import '../../css/Navigation.css';
 
-const Navigation = ({ isLoggedIn, setIsLoggedIn, toggleSidebar, closeSidebar }) => {
+const Navigation = ({ isLoggedIn, setIsLoggedIn, toggleSidebar, closeSidebar, toggleEditMode, isEditMode, handleSaveClick, handleCancelClick }) => {
   const [navbarHeight, setNavbarHeight] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+  const isMobile = useMediaQuery({ query: '(max-width: 1000px)' });
 
   useEffect(() => {
     const navbar = document.querySelector('.navbar');
@@ -71,6 +71,24 @@ const Navigation = ({ isLoggedIn, setIsLoggedIn, toggleSidebar, closeSidebar }) 
             <Navbar.Collapse id="responsive-navbar-nav">
               <Nav className="me-auto"></Nav>
               <Nav>
+                {isLoggedIn && (
+                  <>
+                    {isEditMode ? (
+                      <>
+                        <Nav.Link onClick={handleSaveClick}>
+                          <FontAwesomeIcon icon={faSave} /> 저장
+                        </Nav.Link>
+                        <Nav.Link onClick={handleCancelClick}>
+                          <FontAwesomeIcon icon={faTimes} /> 취소
+                        </Nav.Link>
+                      </>
+                    ) : (
+                      <Nav.Link onClick={toggleEditMode}>
+                        <FontAwesomeIcon icon={faCog} />
+                      </Nav.Link>
+                    )}
+                  </>
+                )}
                 {!isLoggedIn ? (
                   <Nav.Link as={Link} to="/login">로그인</Nav.Link>
                 ) : (
@@ -86,7 +104,7 @@ const Navigation = ({ isLoggedIn, setIsLoggedIn, toggleSidebar, closeSidebar }) 
           </>
         )}
       </Container>
-      <div style={{ paddingTop: navbarHeight }} /> {/* 네비게이션 바 높이만큼의 여백을 만듭니다. */}
+      <div style={{ paddingTop: navbarHeight }} />
     </Navbar>
   );
 };

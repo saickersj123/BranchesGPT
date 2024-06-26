@@ -1,0 +1,25 @@
+.middle-login-button {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  .middle-login-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+    padding: 10px 15px;
+    background-color: transparent;
+    color: blueviolet;
+    text-align: center;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .middle-login-button .icon {
+    margin-right: 10px;
+  }
+}
