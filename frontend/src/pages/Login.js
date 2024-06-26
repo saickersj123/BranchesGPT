@@ -8,7 +8,6 @@ import Alert from 'react-bootstrap/Alert';
 import Spinner from 'react-bootstrap/Spinner';
 import backgroundImage from '../img/login_background_image.png';
 import Signup from '../components/NewSignup';
-import PasswordReset from '../components/PasswordReset';
 import { loginUser } from '../api/axiosInstance';
 import '../css/Login.css'; // 로그인 페이지의 CSS 파일
 
@@ -64,7 +63,6 @@ const Login = ({ setIsLoggedIn }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
-  const [showPasswordResetModal, setShowPasswordResetModal] = useState(false);
   const navigate = useNavigate();
 
   const showPasswordInput = email.includes('@');
@@ -98,16 +96,14 @@ const Login = ({ setIsLoggedIn }) => {
     try {
       const response = await loginUser(email, password);
       if (response.message === 'OK') {
-        const { name, email, token } = response;
-        sessionStorage.setItem('name', name);
-        sessionStorage.setItem('email', email);
+        const { token } = response.data; // 토큰만 사용
         sessionStorage.setItem('authToken', token); // 토큰 저장
         setTimeout(() => {
           setIsLoggedIn(true);
           navigate('/');
         }, 1000); // 로그인 성공 후 1초 후 홈 페이지로 이동
       } else {
-        setError(response.cause || '로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.');
+        setError(response.message || '로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.');
         setLoading(false);
       }
     } catch (error) {
@@ -171,12 +167,8 @@ const Login = ({ setIsLoggedIn }) => {
         <StyledButton variant="secondary" onClick={() => setShowSignupModal(true)}>
           회원가입
         </StyledButton>
-        <StyledButton variant="link" onClick={() => setShowPasswordResetModal(true)}>
-          비밀번호 찾기
-        </StyledButton>
 
         {showSignupModal && <Signup show={showSignupModal} onHide={() => setShowSignupModal(false)} />}
-        {showPasswordResetModal && <PasswordReset show={showPasswordResetModal} onHide={() => setShowPasswordResetModal(false)} />}
       </StyledContainer>
     </BackgroundContainer>
   );

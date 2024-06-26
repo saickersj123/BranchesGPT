@@ -26,15 +26,24 @@ axiosInstance.interceptors.request.use((config) => {
   return Promise.reject(error);
 });
 
-// 응답 인터셉터를 추가하여 인증 오류를 처리
+// 응답 인터셉터 
 axiosInstance.interceptors.response.use(
-  response => response,
-  error => {
+  (response) => response,
+  (error) => {
+    const originalRequest = error.config;
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      // 인증 오류가 발생하면 로컬 스토리지에서 토큰을 제거하고 로그인 상태를 false로 설정
+      // 특정 요청에 대해 인터셉터 무시
+      if (originalRequest.url.includes('/user/mypage')) {
+        return Promise.reject(error);
+      }
+      // 인증 오류 발생 시 처리
       sessionStorage.removeItem('authToken');
       sessionStorage.setItem('isLoggedIn', 'false');
-      window.location.href = '/login';
+
+      // 무한 루프 방지를 위해 현재 페이지가 로그인 페이지가 아닌 경우에만 리디렉션
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
@@ -98,6 +107,28 @@ export const checkAuthStatus = async () => {
   }
 };
 
+//마이페이지에서 비밀번호 검증
+export const mypage = async (password) => {
+  if (non_server_test) {
+    return { message: 'OK' };
+  } else {
+    try {
+      const response = await axiosInstance.post('/user/mypage', { password });
+      return response.data;
+    } catch (error) {
+      // 403 에러를 직접 처리
+      if (error.response && error.response.status === 403) {
+        return {
+          message: "ERROR",
+          cause: "Incorrect Password"
+        };
+      }
+      console.error('비밀번호 인증 실패:', error);
+      throw error;
+    }
+  }
+};
+
 // 로그인
 export const loginUser = async (email, password) => {
   if (non_server_test) {
@@ -107,7 +138,7 @@ export const loginUser = async (email, password) => {
       data: {
         name: "사용자닉네임",
         email: "user@example.com",
-        token: "mockToken" // 테스트 토큰 추가
+        token: "mockToken"
       }
     };
     sessionStorage.setItem('authToken', mockResponse.data.token);
@@ -115,10 +146,18 @@ export const loginUser = async (email, password) => {
   } else {
     try {
       const response = await axiosInstance.post('/user/login', { email, password });
-      if (response.data.token) {
-        sessionStorage.setItem('authToken', response.data.token); // 토큰 저장
+      if (response.status === 200) {
+        return {
+          success: true,
+          message: "OK",
+          data: response.data
+        };
+      } else {
+        return {
+          success: false,
+          message: response.data.message || '로그인에 실패했습니다.'
+        };
       }
-      return response.data;
     } catch (error) {
       console.error('로그인 요청 실패:', error);
       throw error;
@@ -184,21 +223,7 @@ export const fetchChatHistory = async () => {
       return []; // 에러 발생 시 빈 배열 반환
     }
   }
-};
-
-// 이메일 중복 검사
-export const checkEmail = async (email) => {
-  if (non_server_test) {
-    return { available: true }; // 항상 성공으로 처리
-  } else {
-    try {
-      const response = await axiosInstance.post('/user/check-email', { email });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  }
-};
+}; 
 
 // 회원가입
 export const signupUser = async (email, password, name) => {
@@ -214,36 +239,6 @@ export const signupUser = async (email, password, name) => {
       };
     } catch (error) {
       console.error('회원가입 실패:', error);
-      throw error;
-    }
-  }
-};
-
-// 인증 코드 전송
-export const sendVerificationCode = async (email) => {
-  if (non_server_test) {
-    return { success: true, message: '인증 코드 전송 성공' }; // 항상 성공으로 처리
-  } else {
-    try {
-      const response = await axiosInstance.post('/user/sendVerificationCode', { email });
-      return response.data;
-    } catch (error) {
-      console.error('인증 코드 보내기 실패:', error);
-      throw error;
-    }
-  }
-};
-
-// 인증 코드 검증
-export const verifyCode = async (email, code) => {
-  if (non_server_test) {
-    return { success: true, message: '코드 검증 성공' }; // 항상 성공으로 처리
-  } else {
-    try {
-      const response = await axiosInstance.post('/user/verifyCode', { email, code });
-      return response.data;
-    } catch (error) {
-      console.error('코드 검증 실패:', error);
       throw error;
     }
   }
@@ -265,12 +260,12 @@ export const resetPassword = async (email, newPassword) => {
 };
 
 // 닉네임 업데이트
-export const updatename = async (newname) => {
+export const updatename = async (name) => {
   if (non_server_test) {
     return { success: true, message: '닉네임 변경 성공' }; // 항상 성공으로 처리
   } else {
     try {
-      const response = await axiosInstance.put('/user/update-name', { newname });
+      const response = await axiosInstance.put('/user/update-name', { name });
       return response.data; // 서버 응답을 반환
     } catch (error) {
       throw new Error('닉네임 변경에 실패했습니다.');
@@ -279,12 +274,12 @@ export const updatename = async (newname) => {
 };
 
 // 비밀번호 업데이트
-export const updatePassword = async (newPassword) => {
+export const updatePassword = async (password) => {
   if (non_server_test) {
     return { success: true, message: '비밀번호 변경 성공' }; // 항상 성공으로 처리
   } else {
     try {
-      const response = await axiosInstance.put('/user/update-password', { newPassword });
+      const response = await axiosInstance.put('/user/update-password', { password });
       return response.data; // 서버 응답을 반환 
     } catch (error) {
       throw new Error('비밀번호 변경에 실패했습니다.');

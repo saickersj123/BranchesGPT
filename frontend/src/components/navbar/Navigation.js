@@ -3,18 +3,22 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { logout } from '../../api/axiosInstance';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faCog, faSave, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faCog, faSave, faTimes, faRedo } from '@fortawesome/free-solid-svg-icons';
 import { FiMoreVertical } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
 import '../../css/Navigation.css';
 
-const Navigation = ({ isLoggedIn, setIsLoggedIn, toggleSidebar, closeSidebar, toggleEditMode, isEditMode, handleSaveClick, handleCancelClick }) => {
+const Navigation = ({ isLoggedIn, setIsLoggedIn, toggleSidebar, closeSidebar, toggleEditMode, isEditMode, handleSaveClick, handleCancelClick, handleResetLayout }) => {
   const [navbarHeight, setNavbarHeight] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const isMobile = useMediaQuery({ query: '(max-width: 1000px)' });
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isHomePage = location.pathname === '/';
+  const isMyPage = location.pathname === '/mypage';
 
   useEffect(() => {
     const navbar = document.querySelector('.navbar');
@@ -28,13 +32,14 @@ const Navigation = ({ isLoggedIn, setIsLoggedIn, toggleSidebar, closeSidebar, to
     setIsLoading(true);
     try {
       await logout();
+      setIsLoggedIn(false);
+      sessionStorage.removeItem('authToken');
+      navigate('/login'); // 로그아웃 후 로그인 페이지로 리디렉트
     } catch (error) {
       console.error('로그아웃 실패:', error);
       alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsLoading(false);
-      setIsLoggedIn(false);
-      sessionStorage.removeItem('isLoggedIn');
       if (isMobile) {
         closeSidebar();
       }
@@ -46,22 +51,30 @@ const Navigation = ({ isLoggedIn, setIsLoggedIn, toggleSidebar, closeSidebar, to
       <Container className="d-flex justify-content-between align-items-center">
         {isMobile ? (
           <>
-            {isLoggedIn && (
+            {isLoggedIn && !isMyPage && (
               <button className="menu-button" onClick={toggleSidebar}>
                 <FontAwesomeIcon icon={faBars} />
               </button>
             )}
             <Navbar.Brand href="/" className="mx-auto">Branch-GPT</Navbar.Brand>
-            {isLoggedIn && (
+            {isLoggedIn && !isMyPage && (
               <Dropdown align="end">
                 <Dropdown.Toggle variant="success" id="dropdown-basic" className="custom-dropdown-toggle">
                   <FiMoreVertical />
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
+                  {isHomePage && <Dropdown.Item onClick={toggleEditMode}>위치조정</Dropdown.Item>}
                   <Dropdown.Item as={Link} to="/mypage" onClick={closeSidebar}>마이페이지</Dropdown.Item>
-                  <Dropdown.Item onClick={handleLogout}>로그아웃</Dropdown.Item>
+                  <Dropdown.Item onClick={handleLogout}>
+                    {isLoading ? '로그아웃 중...' : '로그아웃'}
+                  </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
+            )}
+            {isLoggedIn && isMyPage && (
+              <Nav.Link onClick={handleLogout} className="mx-auto">
+                {isLoading ? '로그아웃 중...' : '로그아웃'}
+              </Nav.Link>
             )}
           </>
         ) : (
@@ -81,23 +94,37 @@ const Navigation = ({ isLoggedIn, setIsLoggedIn, toggleSidebar, closeSidebar, to
                         <Nav.Link onClick={handleCancelClick}>
                           <FontAwesomeIcon icon={faTimes} /> 취소
                         </Nav.Link>
+                        <Nav.Link onClick={handleResetLayout}>
+                          <FontAwesomeIcon icon={faRedo} /> 초기화
+                        </Nav.Link>
                       </>
                     ) : (
-                      <Nav.Link onClick={toggleEditMode}>
-                        <FontAwesomeIcon icon={faCog} />
-                      </Nav.Link>
+                      <>
+                        {!isMyPage && (
+                          <Dropdown align="end">
+                            <Dropdown.Toggle variant="success" id="dropdown-settings" className="custom-dropdown-toggle">
+                              <FontAwesomeIcon icon={faCog} />
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                              {isHomePage && <Dropdown.Item onClick={toggleEditMode}>위치조정</Dropdown.Item>}
+                              <Dropdown.Item as={Link} to="/mypage">마이페이지</Dropdown.Item>
+                              <Dropdown.Item onClick={handleLogout}>
+                                {isLoading ? '로그아웃 중...' : '로그아웃'}
+                              </Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                        )}
+                        {isMyPage && (
+                          <Nav.Link onClick={handleLogout}>
+                            {isLoading ? '로그아웃 중...' : '로그아웃'}
+                          </Nav.Link>
+                        )}
+                      </>
                     )}
                   </>
                 )}
-                {!isLoggedIn ? (
+                {!isLoggedIn && (
                   <Nav.Link as={Link} to="/login">로그인</Nav.Link>
-                ) : (
-                  <>
-                    <Nav.Link as={Link} to="/mypage">마이페이지</Nav.Link>
-                    <Nav.Link onClick={handleLogout}>
-                      {isLoading ? '로그아웃 중...' : '로그아웃'}
-                    </Nav.Link>
-                  </>
                 )}
               </Nav>
             </Navbar.Collapse>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'; // React와 useState 훅을 가져옵니다.
 import { Modal, Form, Button, Alert, InputGroup } from 'react-bootstrap'; // react-bootstrap에서 필요한 컴포넌트를 가져옵니다.
 import styled from 'styled-components'; // styled-components를 가져옵니다.
-import { signupUser, checkEmail } from '../api/axiosInstance'; // signupUser와 checkEmail 함수를 가져옵니다.
+import { signupUser } from '../api/axiosInstance'; // signupUser 함수를 가져옵니다.
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // FontAwesome 아이콘을 가져옵니다.
 
 const StyledForm = styled(Form)` // 스타일을 적용한 Form 컴포넌트를 정의합니다.
@@ -22,9 +22,6 @@ const Signup = ({ show, onHide }) => { // Signup 컴포넌트를 정의합니다
   const [error, setError] = useState(''); // 에러 메시지 상태를 정의합니다.
   const [success, setSuccess] = useState(false); // 성공 메시지 상태를 정의합니다.
   const [validate, setValidate] = useState(false); // 검증 상태를 정의합니다.
-  const [emailAvailable, setEmailAvailable] = useState(null); // 이메일 사용 가능 여부 상태를 정의합니다.
-  const [emailCheckSuccess, setEmailCheckSuccess] = useState(false); // 이메일 확인 성공 여부 상태를 정의합니다.
-  const [showEmailModal, setShowEmailModal] = useState(false); // 이메일 확인 모달 표시 상태를 정의합니다.
 
   const isValidEmail = (email) => { // 이메일 형식을 검증하는 함수를 정의합니다.
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -54,15 +51,10 @@ const Signup = ({ show, onHide }) => { // Signup 컴포넌트를 정의합니다
       return;
     }
 
-    if (emailAvailable === false) { // 이메일이 사용 중인지 확인합니다.
-      setError('이메일이 이미 사용 중입니다.');
-      return;
-    }
-
     try {
       const response = await signupUser(email, password, name); // 회원가입 요청을 보냅니다.
 
-      if (response.success) {
+      if (response.status === 201) {
         setSuccess(true);
         setError('');
         setValidate(false);
@@ -72,30 +64,11 @@ const Signup = ({ show, onHide }) => { // Signup 컴포넌트를 정의합니다
         setError('회원가입 중 오류가 발생했습니다. 다시 시도하세요.');
       }
     } catch (error) {
-      setError('회원가입 중 오류가 발생했습니다. 다시 시도하세요.');
-    }
-  };
-
-  const handleCheckEmail = async () => { // 이메일 중복 확인을 처리하는 비동기 함수입니다.
-    if (!email) {
-      setError('이메일을 입력하세요.');
-      return;
-    }
-
-    try {
-      const response = await checkEmail(email); // 이메일 중복 확인 요청을 보냅니다.
-      setEmailAvailable(response.available);
-      if (response.available) {
-        setError('');
-        setEmailCheckSuccess(true);
-        setShowEmailModal(true); // 이메일 사용 가능 모달을 표시합니다.
+      if (error.response && error.response.status === 409) {
+        setError('이미 사용 중인 이메일입니다.');
       } else {
-        setError('이메일이 이미 사용 중입니다.');
-        setEmailCheckSuccess(false);
+        setError('회원가입 중 오류가 발생했습니다. 다시 시도하세요.');
       }
-    } catch (error) {
-      setError('이메일 확인 중 오류가 발생했습니다. 다시 시도하세요.');
-      setEmailCheckSuccess(false);
     }
   };
 
@@ -111,31 +84,12 @@ const Signup = ({ show, onHide }) => { // Signup 컴포넌트를 정의합니다
           <StyledForm onSubmit={handleSubmit}>
             <Form.Group controlId="formEmail">
               <Form.Label>이메일 주소</Form.Label>
-              <InputGroup>
-                <Form.Control
-                  type="email"
-                  placeholder="이메일을 입력하세요"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setEmailAvailable(null);
-                    setEmailCheckSuccess(false);
-                  }}
-                  disabled={emailCheckSuccess}
-                />
-                <Button variant="outline-secondary" onClick={handleCheckEmail} disabled={emailCheckSuccess}>
-                  중복확인
-                </Button>
-                {validate && email && (
-                  <InputGroup.Text>
-                    {emailAvailable === true ? (
-                      <FaCheckCircle color="green" />
-                    ) : emailAvailable === false ? (
-                      <FaTimesCircle color="red" />
-                    ) : null}
-                  </InputGroup.Text>
-                )}
-              </InputGroup>
+              <Form.Control
+                type="email"
+                placeholder="이메일을 입력하세요"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </Form.Group>
 
             <Form.Group controlId="formPassword">
@@ -146,9 +100,8 @@ const Signup = ({ show, onHide }) => { // Signup 컴포넌트를 정의합니다
                   placeholder="8~15자리의 비밀번호를 입력하세요"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  disabled={emailAvailable !== true}
                 />
-                {password && emailAvailable === true && (
+                {password && (
                   <InputGroup.Text>
                     {isValidPassword(password) ? (
                       <FaCheckCircle color="green" />
@@ -167,27 +120,14 @@ const Signup = ({ show, onHide }) => { // Signup 컴포넌트를 정의합니다
                 placeholder="닉네임을 입력하세요"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                disabled={emailAvailable !== true}
               />
             </Form.Group>
 
-            <StyledButton variant="primary" type="submit" disabled={emailAvailable !== true}>
+            <StyledButton variant="primary" type="submit">
               회원가입
             </StyledButton>
           </StyledForm>
         </Modal.Body>
-      </Modal>
-
-      <Modal show={showEmailModal} onHide={() => setShowEmailModal(false)}> {/* 이메일 확인 모달을 렌더링합니다. */}
-        <Modal.Header closeButton>
-          <Modal.Title>이메일 확인</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>사용 가능한 이메일입니다.</Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={() => setShowEmailModal(false)}>
-            확인
-          </Button>
-        </Modal.Footer>
       </Modal>
     </>
   );

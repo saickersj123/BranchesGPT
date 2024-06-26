@@ -3,8 +3,7 @@ body, html {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow-y: hidden;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 .main-section {
@@ -17,13 +16,10 @@ body, html {
 .main-content {
   display: flex;
   flex: 1;
-  margin-top: 5px;
+  margin-top: 56px; /* 네비게이션바 높이 */
   transition: margin-left 0.3s ease;
-  overflow: auto; 
-}
-
-.main-content.chat-page {
-  margin-top: 5px;
+  overflow: hidden; /* 스크롤 바를 숨깁니다 */
+  width: 100%;
 }
 
 .main-content.shifted {
@@ -33,11 +29,9 @@ body, html {
 .grid-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100%;
+  align-items: flex-start;
+  height: calc(100% - 56px); /* 네비게이션바를 고려한 높이 설정 */
   width: 100%;
-  background: url('../../img/login_background_image.png') no-repeat center center;
-  background-size: cover; /* 배경 이미지가 그리드 전체를 덮도록 설정 */
 }
 
 .grid-item {
@@ -48,8 +42,6 @@ body, html {
   overflow: hidden;
   padding: 0;
   margin: 0;
-  justify-content: center; /* 수직 중앙 정렬 */
-  align-items: center; /* 수평 중앙 정렬 */
 }
 
 .grid-drag-handle {
@@ -64,15 +56,15 @@ body, html {
   overflow-y: auto; /* 스크롤 허용 */
   overflow-x: hidden;
   flex: 1;
-  padding: 10px; /* 말풍선과의 여백 추가 */
   margin: 0;
+  padding: 10px; /* 말풍선과의 여백 추가 */
 }
 
 .chat-box-container {
   overflow-y: hidden; /* 스크롤 제거 */
-  flex: 1;
-  padding: 0;
+  flex: 0 0 60px; /* 고정된 높이 설정 */
   margin: 0;
+  padding: 10px; /* 간격을 동일하게 맞추기 위해 padding 추가 */
 }
 
 .edit-buttons {
@@ -83,16 +75,14 @@ body, html {
   gap: 10px;
 }
 
-.non-login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  width: 100%;
-}
-
-.non-login-text {
-  text-align: center;
+.layout-info {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  font-size: 14px;
+  z-index: 1000;
 }
 
 @media (max-width: 1000px) {
@@ -150,4 +140,22 @@ body, html {
 /* 설정 모드가 아닐 때 크기 조절 핸들을 숨기기 */
 .grid-item:not(.edit-mode) .react-resizable-handle {
   display: none;
+}
+
+.grid-item.edit-mode.chat-list-container .react-resizable-handle {
+  display: block;
+}
+
+.grid-item.edit-mode.chat-box-container .react-resizable-handle {
+  display: block;
+  display: none;
+  cursor: e-resize;
+}
+
+.grid-item.edit-mode.chat-box-container .react-resizable-handle-e {
+  display: block;
+}
+
+.grid-item.edit-mode.chat-box-container .react-resizable-handle-w {
+  display: block;
 }

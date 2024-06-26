@@ -1,29 +1,37 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Button, Alert } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 import ChatBox from '../components/ChatBox';
 import ChatList from '../components/ChatList';
 import Sidebar from '../components/sidebar/Sidebar';
 import GridLayout from 'react-grid-layout';
 import { fetchMessages } from '../api/axiosInstance';
-import '../css/Home/Home.css'; // 공통 CSS 파일
+import '../css/Home.css'; // 공통 CSS 파일
+
+const MAX_Y_H_SUM = 9; // y와 h 값의 합의 최댓값을 전역 변수로 설정
+const test_X_Y_coordinates = false; //true일 경우 chatlist, chatbox의 좌표가 보임
+
+
+const INITIAL_LAYOUT = [
+  { i: 'chatList', x: 2, y: 0, w: 8, h: 7, minH: 3, maxW: 16, maxH: 7.5 },
+  { i: 'chatBox', x: 2, y: 6, w: 8, h: 1.5, minH: 1.5, minW: 3, maxW: 16, maxH: 1.5 }
+];
 
 const Home = ({ isLoggedIn, isEditMode, isChatPage, currentLayout, setCurrentLayout }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
-  const [layout, setLayout] = useState(currentLayout.length > 0 ? currentLayout : [
-    { i: 'chatList', x: 0, y: 1, w: 12, h: 6, minH: 1, maxW: 16, maxH: 9 },
-    { i: 'chatBox', x: 0, y: 7, w: 12, h: 3, minH: 1, maxW: 16, maxH: 2 }
-  ]);
+  const [maxYHSum, setMaxYHSum] = useState(MAX_Y_H_SUM); // state로 관리하여 상단에서 조절 가능
 
   useEffect(() => {
-    if (currentLayout.length > 0) {
-      setLayout(currentLayout);
-    }
-  }, [currentLayout]);
+    const handleResize = () => {
+      setViewportHeight(window.innerHeight);
+      setViewportWidth(window.innerWidth);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -57,160 +65,124 @@ const Home = ({ isLoggedIn, isEditMode, isChatPage, currentLayout, setCurrentLay
     }
   }, [isLoggedIn, loadMessages]);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setViewportHeight(window.innerHeight);
-      setViewportWidth(window.innerWidth);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
+  const validateLayout = (layout) => {
+    const occupiedPositions = new Set();
+    return layout.map(item => {
+      let { x, y, w, h } = item;
+      if (y < 0) y = 0; // Ensure y is not negative
+      if (y + h > maxYHSum) y = 0; // Move to top if y + h exceeds maxYHSum
+      while (isPositionOccupied(x, y, w, h, occupiedPositions)) {
+        x = (x + 1) % 12; // Adjust x to avoid overlap
+        if (x === 0) {
+          y = (y + 1) % maxYHSum; // Adjust y to avoid overlap and stay within maxYHSum
+        }
+        if (y + h > maxYHSum) {
+          y = 0; // Move to top if y + h exceeds maxYHSum
+        }
+      }
+      markPosition(x, y, w, h, occupiedPositions);
+      return { ...item, x, y, w, h };
+    });
+  };
+
+  const isPositionOccupied = (x, y, w, h, occupiedPositions) => {
+    for (let i = 0; i < w; i++) {
+      for (let j = 0; j < h; j++) {
+        if (occupiedPositions.has(`${x + i},${y + j}`)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  const markPosition = (x, y, w, h, occupiedPositions) => {
+    for (let i = 0; i < w; i++) {
+      for (let j = 0; j < h; j++) {
+        occupiedPositions.add(`${x + i},${y + j}`);
+      }
+    }
+  };
 
   const handleLayoutChange = (newLayout) => {
-    const updatedLayout = newLayout.map(item => {
-      if (item.y < 1) {
-        item.y = 1;
-      }
-      return item;
-    });
-    setLayout(updatedLayout);
-    setCurrentLayout(updatedLayout);
+    const validatedLayout = validateLayout(newLayout);
+    setCurrentLayout(validatedLayout);
   };
 
-  const handleResizeStop = (layout, oldItem, newItem) => {
-    if (newItem.y < 1) {
-      newItem.y = 1;
-    }
-    setLayout(layout.map(item => item.i === newItem.i ? newItem : item));
-    setCurrentLayout(layout.map(item => item.i === newItem.i ? newItem : item));
+  const handleResizeStop = (layout) => {
+    const validatedLayout = validateLayout(layout);
+    setCurrentLayout(validatedLayout);
   };
 
-  const handleDragStop = (layout, oldItem, newItem) => {
-    if (newItem.y < 1) {
-      newItem.y = 1;
-    }
-    setLayout(layout.map(item => item.i === newItem.i ? newItem : item));
-    setCurrentLayout(layout.map(item => item.i === newItem.i ? newItem : item));
+  const handleDragStop = (layout) => {
+    const validatedLayout = validateLayout(layout);
+    setCurrentLayout(validatedLayout);
   };
 
-  useEffect(() => {
-    const loadCSS = async () => {
-      if (isLoggedIn) {
-        try {
-          const module = await import('../css/Home/HomeLogin.css');
-          const cssRef = module.default;
-          console.log('Logged in CSS loaded');
-        } catch (error) {
-          console.error('Error loading logged-in CSS:', error);
-        }
-      } else {
-        try {
-          await import('../css/Home/HomeNonLogin.css');
-          console.log('Logged out CSS loaded');
-        } catch (error) {
-          console.error('Error loading logged-out CSS:', error);
-        }
-      }
-    };
-    loadCSS();
-  }, [isLoggedIn]);
-
-  useEffect(() => {
-    const chatListContainer = document.querySelector('.chat-list-container');
-    if (chatListContainer) {
-      const showScrollbar = () => {
-        chatListContainer.classList.add('show-scrollbar');
-        clearTimeout(chatListContainer.scrollbarTimeout);
-        chatListContainer.scrollbarTimeout = setTimeout(() => {
-          chatListContainer.classList.remove('show-scrollbar');
-        }, 1000); // 1초 동안 스크롤 바 보이기
-      };
-
-      chatListContainer.addEventListener('wheel', showScrollbar);
-      chatListContainer.addEventListener('mouseenter', showScrollbar);
-      chatListContainer.addEventListener('mouseleave', () => {
-        chatListContainer.classList.remove('show-scrollbar');
-      });
-
-      return () => {
-        chatListContainer.removeEventListener('wheel', showScrollbar);
-        chatListContainer.removeEventListener('mouseenter', showScrollbar);
-        chatListContainer.removeEventListener('mouseleave', () => {
-          chatListContainer.classList.remove('show-scrollbar');
-        });
-      };
-    }
-  }, []);
+  const handleResetLayout = () => {
+    setCurrentLayout(INITIAL_LAYOUT);
+  };
 
   return (
     <main className="main-section">
-      {isLoggedIn ? (
-        <>
-          <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={toggleSidebar}></div>
-          <Sidebar
-            isOpen={isSidebarOpen}
-            toggleSidebar={toggleSidebar}
-            isLoggedIn={isLoggedIn}
-            closeSidebar={closeSidebar}
-          />
-          <div className={`main-content ${isSidebarOpen && isLoggedIn ? 'shifted' : ''} ${isChatPage ? 'chat-page' : ''}`}>
-            <div className="grid-container">
-              <GridLayout
-                className="layout"
-                layout={layout}
-                cols={16}
-                rowHeight={(viewportHeight - 56) / 9}
-                width={viewportWidth}
-                isResizable={isEditMode} // 설정 모드에서만 크기 조절 가능
-                isDraggable={isEditMode} // 설정 모드에서만 드래그 가능
-                resizeHandles={isEditMode ? ['s', 'e', 'w', 'n'] : []} // 설정 모드에서만 핸들 표시
-                onLayoutChange={handleLayoutChange}
-                onResizeStop={handleResizeStop}
-                onDragStop={handleDragStop}
-                margin={[0, 0]}
-                containerPadding={[0, 0]}
-                compactType={null} // 항목을 자동으로 정렬하지 않도록 설정
-                preventCollision={true} // 항목 겹침 방지
-                verticalCompact={false} // 자동 압축 방지
+      <>
+        <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={toggleSidebar}></div>
+        <Sidebar
+          isOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+          isLoggedIn={isLoggedIn}
+          closeSidebar={closeSidebar}
+        />
+        <div className={`main-content ${isSidebarOpen ? 'shifted' : ''} ${isChatPage ? 'chat-page' : ''}`}>
+          <div className="grid-container">
+            <GridLayout
+              className="layout"
+              layout={currentLayout}
+              cols={12} // 그리드 항목을 12열로 설정
+              rowHeight={(viewportHeight - 56) / 9} // 네비게이션바 높이를 고려
+              width={viewportWidth} // 전체 너비 사용
+              isResizable={isEditMode} // 설정 모드에서만 크기 조절 가능
+              isDraggable={isEditMode} // 설정 모드에서만 드래그 가능
+              onLayoutChange={handleLayoutChange}
+              onResizeStop={handleResizeStop}
+              onDragStop={handleDragStop}
+              margin={[0, 0]} // 그리드 항목 간의 margin을 0으로 설정
+              containerPadding={[0, 0]} // 그리드 전체의 padding을 0으로 설정
+              compactType={null} // 자동 정렬 비활성화
+              preventCollision={true} // 항목 겹침 방지
+              verticalCompact={false} // 자동 압축 비활성화
+            >
+              <div 
+                key="chatList" 
+                className={`grid-item chat-list-container ${isEditMode ? 'edit-mode' : ''}`} 
+                data-grid={{...currentLayout.find(item => item.i === 'chatList'), resizeHandles: isEditMode ? ['s', 'e', 'w', 'n'] : [] }}
               >
-                <div key="chatList" className={`grid-item chat-list-container ${isEditMode ? 'edit-mode' : ''}`}>
-                  <ChatList messages={messages} />
-                </div>
-                <div key="chatBox" className={`grid-item chat-box-container ${isEditMode ? 'edit-mode' : ''}`}>
-                  <ChatBox onNewMessage={handleNewMessage} onUpdateMessage={handleUpdateMessage} />
-                </div>
-              </GridLayout>
-            </div>
+                <ChatList messages={messages} />
+              </div>
+              <div 
+                key="chatBox" 
+                className={`grid-item chat-box-container ${isEditMode ? 'edit-mode' : ''}`} 
+                data-grid={{...currentLayout.find(item => item.i === 'chatBox'), resizeHandles: isEditMode ? ['e', 'w'] : [] }}
+              >
+                <ChatBox 
+                  onNewMessage={handleNewMessage} 
+                  onUpdateMessage={handleUpdateMessage} 
+                  isEditMode={isEditMode} 
+                />
+              </div>
+            </GridLayout>
           </div>
-        </>
-      ) : (
-        <div className="non-login-container">
-          <GridLayout
-            className="layout"
-            layout={[{ i: 'non-login', x: 4, y: 3.5, w: 8, h: 2 }]}
-            cols={16}
-            rowHeight={(viewportHeight - 56) / 9}
-            width={viewportWidth}
-            isResizable={false}
-            isDraggable={false}
-            margin={[0, 0]}
-            containerPadding={[0, 0]}
-          >
-            <div key="non-login" className="grid-item" style={{ background: 'url("../../assets/images/background-image.png") no-repeat center center', backgroundSize: 'cover' }}>
-              <Alert className="non-login-text">
-                <Alert.Heading>로그인이 필요합니다.</Alert.Heading>
-                <p>로그인하여 채팅을 이용해보세요!</p>
-                <Button href="/login" className="middle-login-button" variant="primary">
-                  <FontAwesomeIcon icon={faSignInAlt} className="icon" />
-                  Login
-                </Button>
-              </Alert>
-            </div>
-          </GridLayout>
+          {test_X_Y_coordinates && (
+                <div className="layout-info">
+                  {currentLayout.map(item => (
+                    <div key={item.i}>
+                      {item.i}: (x: {item.x}, y: {item.y}, w: {item.w}, h: {item.h})
+                    </div>
+                  ))}
+                </div>
+              )}
         </div>
-      )}
+      </>
     </main>
   );
 };
