@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faPen } from '@fortawesome/free-solid-svg-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/MyPage.css';
-import { updatename, updatePassword, loginUser } from '../api/axiosInstance'; // loginUser 함수 추가
+import { updatename, updatePassword, mypage } from '../api/axiosInstance'; // loginUser 함수 추가
 
 const MyPage = () => {
   const [password, setPassword] = useState('');
@@ -36,7 +36,7 @@ const MyPage = () => {
     event.preventDefault(); // Prevent default form submission
     try {
       // loginUser 함수를 사용하여 비밀번호 검증
-      const response = await loginUser(email, password);
+      const response = await mypage(password);
       setPassword(''); // Clear the password input
       if (response.message === 'OK') {
         setIsPasswordVerified(true);

@@ -5,7 +5,10 @@ import {
 	userSignUp,
 	userLogin,
 	verifyUserStatus,
-    logoutUser
+    logoutUser,
+	checkpassword,
+	changename,
+	changepassword
 } from "../controllers/UserController.js";
 
 import {
@@ -27,5 +30,11 @@ userRoutes.post("/login", validate(loginValidator), userLogin);
 userRoutes.get("/auth-status", verifyToken, verifyUserStatus); // check if user cookies are valid so he doesnt have to login again
 
 userRoutes.get("/logout", verifyToken, logoutUser)
+
+userRoutes.post("/mypage", verifyToken, checkpassword)
+
+userRoutes.put("/update-name", verifyToken, changename)
+
+userRoutes.put("/update-password", verifyToken, changepassword)
 
 export default userRoutes;

@@ -97,7 +97,16 @@ export const checkAuthStatus = async () => {
     }
   }
 };
-
+export const mypage = async (password) => {
+    try {
+      const response = await axiosInstance.post('/user/mypage', { password });
+      return response.data;
+    } catch (error) {
+      console.error('비밀번호 인증 실패:', error);
+      throw error;
+    }
+  
+};
 // 로그인
 export const loginUser = async (email, password) => {
   if (non_server_test) {
@@ -265,12 +274,12 @@ export const resetPassword = async (email, newPassword) => {
 };
 
 // 닉네임 업데이트
-export const updatename = async (newname) => {
+export const updatename = async (name) => {
   if (non_server_test) {
     return { success: true, message: '닉네임 변경 성공' }; // 항상 성공으로 처리
   } else {
     try {
-      const response = await axiosInstance.put('/user/update-name', { newname });
+      const response = await axiosInstance.put('/user/update-name', { name });
       return response.data; // 서버 응답을 반환
     } catch (error) {
       throw new Error('닉네임 변경에 실패했습니다.');
@@ -279,12 +288,12 @@ export const updatename = async (newname) => {
 };
 
 // 비밀번호 업데이트
-export const updatePassword = async (newPassword) => {
+export const updatePassword = async (password) => {
   if (non_server_test) {
     return { success: true, message: '비밀번호 변경 성공' }; // 항상 성공으로 처리
   } else {
     try {
-      const response = await axiosInstance.put('/user/update-password', { newPassword });
+      const response = await axiosInstance.put('/user/update-password', { password });
       return response.data; // 서버 응답을 반환 
     } catch (error) {
       throw new Error('비밀번호 변경에 실패했습니다.');
