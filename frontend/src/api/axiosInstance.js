@@ -86,6 +86,22 @@ export const sendMessage = async (chat_Message, role = 'user') => {
   }
 };
 
+// 모든 채팅 기록 삭제
+export const deleteAllChats = async () => {
+  if (non_server_test) {
+    console.log('Mocking deleteAllChats');
+    return { message: 'OK', chats: [] }; // 항상 성공으로 처리
+  } else {
+    try {
+      const response = await axiosInstance.delete('/chat/delete-all-chats');
+      return response.data;
+    } catch (error) {
+      console.error('모든 채팅 기록 삭제 실패:', error);
+      throw error;
+    }
+  }
+};
+
 // 인증 상태 확인
 export const checkAuthStatus = async () => {
   console.log('checkAuthStatus 호출');

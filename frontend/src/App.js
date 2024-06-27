@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import './css/App.css';
 import Navigation from './components/navbar/Navigation';
 import Login from './pages/Login';
 import MyPage from './pages/MyPage';
 import Home from './pages/Home';
-import { checkAuthStatus } from './api/axiosInstance';
+import { checkAuthStatus, fetchMessages } from './api/axiosInstance';
 
 const INITIAL_LAYOUT = [
   { i: 'chatList', x: 2, y: 0, w: 8, h: 7, minH: 3, minW: 2, maxW: 16, maxH: 7.5 },
@@ -16,6 +16,8 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentLayout, setCurrentLayout] = useState(INITIAL_LAYOUT);
+  const [messages, setMessages] = useState([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const originalLayoutRef = useRef(currentLayout);
 
   useEffect(() => {
@@ -61,6 +63,30 @@ const App = () => {
     toggleEditMode();
   };
 
+  const loadMessages = useCallback(async () => {
+    try {
+      const data = await fetchMessages();
+      console.log('Loaded messages:', data);
+      setMessages(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      loadMessages();
+    }
+  }, [isLoggedIn, loadMessages]);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
   return (
     <Router>
       <Navigation 
@@ -71,6 +97,9 @@ const App = () => {
         handleSaveClick={handleSaveClick}
         handleCancelClick={handleCancelClick}
         handleResetLayout={resetLayout}
+        loadMessages={loadMessages} // loadMessages 함수 전달
+        toggleSidebar={toggleSidebar} // toggleSidebar 함수 전달
+        closeSidebar={closeSidebar} // closeSidebar 함수 전달
       />
       <Routes>
         <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login setIsLoggedIn={setIsLoggedIn} />} />
@@ -85,6 +114,11 @@ const App = () => {
                     isChatPage={true}
                     currentLayout={currentLayout}
                     setCurrentLayout={setCurrentLayout}
+                    loadMessages={loadMessages} // loadMessages 함수 전달
+                    messages={messages} // 메시지 상태 전달
+                    setMessages={setMessages} // 메시지 상태 업데이트 함수 전달
+                    toggleSidebar={toggleSidebar} // toggleSidebar 함수 전달
+                    closeSidebar={closeSidebar} // closeSidebar 함수 전달
                   />
                 } />
                 <Route path="/mypage" element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} />
@@ -95,6 +129,11 @@ const App = () => {
                     isChatPage={true}
                     currentLayout={currentLayout}
                     setCurrentLayout={setCurrentLayout}
+                    loadMessages={loadMessages} // loadMessages 함수 전달
+                    messages={messages} // 메시지 상태 전달
+                    setMessages={setMessages} // 메시지 상태 업데이트 함수 전달
+                    toggleSidebar={toggleSidebar} // toggleSidebar 함수 전달
+                    closeSidebar={closeSidebar} // closeSidebar 함수 전달
                   />
                 ) : (
                   <Navigate to="/login" />

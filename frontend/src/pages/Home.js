@@ -1,23 +1,20 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import ChatBox from '../components/ChatBox';
 import ChatList from '../components/ChatList';
 import Sidebar from '../components/sidebar/Sidebar';
 import GridLayout from 'react-grid-layout';
-import { fetchMessages } from '../api/axiosInstance';
 import '../css/Home.css'; // 공통 CSS 파일
 
 const MAX_Y_H_SUM = 9; // y와 h 값의 합의 최댓값을 전역 변수로 설정
 const test_X_Y_coordinates = false; //true일 경우 chatlist, chatbox의 좌표가 보임
-
 
 const INITIAL_LAYOUT = [
   { i: 'chatList', x: 2, y: 0, w: 8, h: 7, minH: 3, maxW: 16, maxH: 7.5 },
   { i: 'chatBox', x: 2, y: 6, w: 8, h: 1.5, minH: 1.5, minW: 3, maxW: 16, maxH: 1.5 }
 ];
 
-const Home = ({ isLoggedIn, isEditMode, isChatPage, currentLayout, setCurrentLayout }) => {
+const Home = ({ isLoggedIn, isEditMode, isChatPage, currentLayout, setCurrentLayout, loadMessages, messages, setMessages }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [messages, setMessages] = useState([]);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
   const [maxYHSum, setMaxYHSum] = useState(MAX_Y_H_SUM); // state로 관리하여 상단에서 조절 가능
@@ -43,27 +40,11 @@ const Home = ({ isLoggedIn, isEditMode, isChatPage, currentLayout, setCurrentLay
 
   const handleNewMessage = useCallback((newMessage) => {
     setMessages((prevMessages) => [...prevMessages, newMessage]);
-  }, []);
+  }, [setMessages]);
 
   const handleUpdateMessage = useCallback((aiMessage) => {
     setMessages((prevMessages) => [...prevMessages, aiMessage]);
-  }, []);
-
-  const loadMessages = useCallback(async () => {
-    try {
-      const data = await fetchMessages();
-      console.log('Loaded messages:', data);
-      setMessages(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error('Error loading messages:', error);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      loadMessages();
-    }
-  }, [isLoggedIn, loadMessages]);
+  }, [setMessages]);
 
   const validateLayout = (layout) => {
     const occupiedPositions = new Set();
