@@ -1,8 +1,13 @@
 import express from "express";
 import { verifyToken } from "../utils/Token.js";
 import { chatCompletionValidator, validate } from "../utils/Validators.js";
-import { deleteAllChats, generateChatCompletion, getAllChats } from "../controllers/ChatController.js";
-
+import { deleteConversation, 
+		 getConversation, 
+		 deleteAllConversatoins, 
+		 generateChatCompletion, 
+		 getAllConversations, 
+		 startNewConversation } from "../controllers/ChatController.js";
+ 
 const chatRoutes = express.Router();
 
 // test
@@ -13,23 +18,49 @@ chatRoutes.get("/", (req, res, next) => {
 
 // protected API
 
+//new conversation
 chatRoutes.post(
 	"/new",
+	validate(chatCompletionValidator),
+	verifyToken,
+	startNewConversation,
+	generateChatCompletion
+);
+
+//resume conversation
+chatRoutes.post(
+	"/conversation/:conversationId",
 	validate(chatCompletionValidator),
 	verifyToken,
 	generateChatCompletion
 );
 
+//get all conversations
 chatRoutes.get(
-	"/all-chats",
+	"/all-conversations",
 	verifyToken,
-	getAllChats
+	getAllConversations
 );
 
+//get a conversation
+chatRoutes.get(
+	"/conversation/:conversationId",
+	verifyToken,
+	getConversation
+);
+
+//delete a conversation
 chatRoutes.delete(
-    "/delete-all-chats",
+    "/delete-conversations/:converstionId",
     verifyToken,
-    deleteAllChats
+    deleteConversation
+)
+
+//delete all conversations
+chatRoutes.delete(
+    "/delete-all-conversations",
+    verifyToken,
+    deleteAllConversatoins
 )
 
 export default chatRoutes;
