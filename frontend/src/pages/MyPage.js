@@ -6,33 +6,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/MyPage.css';
 import { updatename, updatePassword, mypage } from '../api/axiosInstance';
 
-const MyPage = ({ token }) => {
+const MyPage = () => {
   const [password, setPassword] = useState('');
   const [isPasswordVerified, setIsPasswordVerified] = useState(false);
-  const [name, setName] = useState('');
-  const [newName, setNewName] = useState('');
+  const [name, setname] = useState('');
+  const [newname, setNewname] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [isEditingName, setIsEditingName] = useState(false);
+  const [isEditingname, setIsEditingname] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [email, setEmail] = useState('');
-
-  useEffect(() => {
-    if (isPasswordVerified) {
-      const fetchUserData = async () => {
-        try {
-          const response = await mypage(password, token); // 서버에서 사용자 정보 가져오는 API 호출
-          if (response.message === 'OK') {
-            setName(response.name);
-            setEmail(response.email);
-          }
-        } catch (error) {
-          console.error('사용자 정보를 불러오는 중 오류가 발생했습니다.', error);
-        }
-      };
-  
-      fetchUserData();
-    }
-  }, [isPasswordVerified, password, token]);
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
@@ -41,10 +23,12 @@ const MyPage = ({ token }) => {
   const handleVerifyPassword = async (event) => {
     event.preventDefault();
     try {
-      const response = await mypage(password, token); // 서버에서 비밀번호 검증
+      const response = await mypage(password); // 서버에서 비밀번호 검증
       setPassword('');
       if (response.message === 'OK') {
         setIsPasswordVerified(true);
+        setname(response.name);
+        setEmail(response.email);
       } else if (response.cause === 'Incorrect Password') {
         alert('비밀번호가 일치하지 않습니다.');
       }
@@ -53,29 +37,29 @@ const MyPage = ({ token }) => {
     }
   };
 
-  const handleNewNameChange = (event) => {
-    setNewName(event.target.value);
+  const handleNewnameChange = (event) => {
+    setNewname(event.target.value);
   };
 
   const handleNewPasswordChange = (event) => {
     setNewPassword(event.target.value);
   };
 
-  const handleEditName = () => {
-    setIsEditingName(true);
+  const handleEditname = () => {
+    setIsEditingname(true);
   };
 
   const handleEditPassword = () => {
     setIsEditingPassword(true);
   };
 
-  const handleSaveNewName = async () => {
-    if (newName.trim()) {
+  const handleSaveNewname = async () => {
+    if (newname.trim()) {
       try {
-        await updatename(newName, token);
-        setName(newName);
-        setIsEditingName(false);
-        setNewName('');
+        await updatename(newname);
+        setname(newname);
+        setIsEditingname(false);
+        setNewname('');
       } catch (error) {
         alert('닉네임 변경에 실패했습니다.');
       }
@@ -87,7 +71,7 @@ const MyPage = ({ token }) => {
   const handleSaveNewPassword = async () => {
     if (newPassword.trim()) {
       try {
-        await updatePassword(newPassword, token);
+        await updatePassword(newPassword);
         alert('새 비밀번호가 저장되었습니다.');
         setIsEditingPassword(false);
         setNewPassword('');
@@ -99,9 +83,9 @@ const MyPage = ({ token }) => {
     }
   };
 
-  const handleCancelEditName = () => {
-    setIsEditingName(false);
-    setNewName('');
+  const handleCancelEditname = () => {
+    setIsEditingname(false);
+    setNewname('');
   };
 
   const handleCancelEditPassword = () => {
@@ -146,23 +130,23 @@ const MyPage = ({ token }) => {
                         <Form.Control plaintext readOnly value={name} />
                       </Col>
                       <Col sm={2} className="text-right">
-                        <Button onClick={handleEditName} variant="link">
+                        <Button onClick={handleEditname} variant="link">
                           <FontAwesomeIcon icon={faPen} />
                         </Button>
                       </Col>
                     </Form.Group>
-                    {isEditingName && (
+                    {isEditingname && (
                       <div className="edit-section">
                         <Form.Group>
                           <Form.Label>새 닉네임 :</Form.Label>
                           <Form.Control
                             type="text"
-                            value={newName}
-                            onChange={handleNewNameChange}
+                            value={newname}
+                            onChange={handleNewnameChange}
                           />
                         </Form.Group>
-                        <Button onClick={handleSaveNewName} variant="primary" className="mt-3">저장</Button>
-                        <Button onClick={handleCancelEditName} variant="secondary" className="mt-3 ml-2">닫기</Button>
+                        <Button onClick={handleSaveNewname} variant="primary" className="mt-3">저장</Button>
+                        <Button onClick={handleCancelEditname} variant="secondary" className="mt-3 ml-2">닫기</Button>
                       </div>
                     )}
                     <Form.Group as={Row} className="password-section mt-4">
