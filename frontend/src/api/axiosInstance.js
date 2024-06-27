@@ -17,7 +17,7 @@ const axiosInstance = axios.create({
 
 // 요청을 보낼 때마다 인증 토큰을 자동으로 추가
 axiosInstance.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem('authToken');
+  const token = config.token; // 세션 스토리지 대신 매개변수로 전달된 토큰 사용
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -37,10 +37,6 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(error);
       }
       // 인증 오류 발생 시 처리
-      sessionStorage.removeItem('authToken');
-      sessionStorage.setItem('isLoggedIn', 'false');
-
-      // 무한 루프 방지를 위해 현재 페이지가 로그인 페이지가 아닌 경우에만 리디렉션
       if (window.location.pathname !== '/login') {
         window.location.href = '/login';
       }
@@ -50,7 +46,7 @@ axiosInstance.interceptors.response.use(
 );
 
 // 메시지 전송
-export const sendMessage = async (chat_Message, role = 'user') => {
+export const sendMessage = async (chat_Message, role = 'user', token) => {
   if (non_server_test) {
     console.log('Mocking sendMessage');
     const mockResponse = {
@@ -78,7 +74,11 @@ export const sendMessage = async (chat_Message, role = 'user') => {
   };
 
   try {
-    const response = await axiosInstance.post(`/chat/new`, { message: message.content });
+    const response = await axiosInstance.post(`/chat/new`, { message: message.content }, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     return response.data.chats;
   } catch (error) {
     console.error('메시지 보내기 실패:', error.response ? error.response.data : error.message);
@@ -87,13 +87,17 @@ export const sendMessage = async (chat_Message, role = 'user') => {
 };
 
 // 모든 채팅 기록 삭제
-export const deleteAllChats = async () => {
+export const deleteAllChats = async (token) => {
   if (non_server_test) {
     console.log('Mocking deleteAllChats');
     return { message: 'OK', chats: [] }; // 항상 성공으로 처리
   } else {
     try {
-      const response = await axiosInstance.delete('/chat/delete-all-chats');
+      const response = await axiosInstance.delete('/chat/delete-all-chats', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       return response.data;
     } catch (error) {
       console.error('모든 채팅 기록 삭제 실패:', error);
@@ -103,13 +107,17 @@ export const deleteAllChats = async () => {
 };
 
 // 인증 상태 확인
-export const checkAuthStatus = async () => {
+export const checkAuthStatus = async (token) => {
   console.log('checkAuthStatus 호출');
   if (non_server_test) {
     return { valid: true };
   } else {
     try {
-      const response = await axiosInstance.get('/user/auth-status');
+      const response = await axiosInstance.get('/user/auth-status', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log('서버 응답:', response.data);
       if (response.data && response.data.message === "OK") {
         return { valid: true };
@@ -124,12 +132,16 @@ export const checkAuthStatus = async () => {
 };
 
 //마이페이지에서 비밀번호 검증
-export const mypage = async (password) => {
+export const mypage = async (password, token) => {
   if (non_server_test) {
     return { message: 'OK' };
   } else {
     try {
-      const response = await axiosInstance.post('/user/mypage', { password });
+      const response = await axiosInstance.post('/user/mypage', { password }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       return response.data;
     } catch (error) {
       // 403 에러를 직접 처리
@@ -157,7 +169,6 @@ export const loginUser = async (email, password) => {
         token: "mockToken"
       }
     };
-    sessionStorage.setItem('authToken', mockResponse.data.token);
     return mockResponse;
   } else {
     try {
@@ -182,12 +193,16 @@ export const loginUser = async (email, password) => {
 };
 
 // 로그아웃
-export const logout = async () => {
+export const logout = async (token) => {
   if (non_server_test) {
     console.log('로그아웃 성공'); // 항상 성공으로 처리
   } else {
     try {
-      await axiosInstance.get('/user/logout');
+      await axiosInstance.get('/user/logout', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
     } catch (error) {
       console.error('로그아웃 실패:', error);
       throw error;
@@ -196,7 +211,7 @@ export const logout = async () => {
 };
 
 // 각 채팅 기록 불러오기
-export const fetchMessages = async () => {
+export const fetchMessages = async (token) => {
   if (non_server_test) {
     console.log('Mocking fetchMessages');
     const mockMessages = [
@@ -210,6 +225,7 @@ export const fetchMessages = async () => {
     console.log('Fetching messages...');
     const response = await axiosInstance.get('/chat/all-chats', {
       headers: {
+        Authorization: `Bearer ${token}`,
         'Cache-Control': 'no-cache'
       }
     });
@@ -222,7 +238,7 @@ export const fetchMessages = async () => {
 };
 
 // 채팅방 기록 불러오기
-export const fetchChatHistory = async () => {
+export const fetchChatHistory = async (token) => {
   if (non_server_test) {
     return [
       { roomId: 'room1', lastMessage: '안녕하세요?', time: '2024-05-04T11:59' },
@@ -232,14 +248,18 @@ export const fetchChatHistory = async () => {
     ]; // 테스트 데이터 반환
   } else {
     try {
-      const response = await axiosInstance.get('/chat/history'); // 채팅 기록을 가져올 서버의 엔드포인트
+      const response = await axiosInstance.get('/chat/history', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }); // 채팅 기록을 가져올 서버의 엔드포인트
       return response.data || []; // 서버 응답 데이터 반환, 없을 경우 빈 배열 반환
     } catch (error) {
       console.error('채팅 기록 가져오기 실패:', error);
       return []; // 에러 발생 시 빈 배열 반환
     }
   }
-}; 
+};
 
 // 회원가입
 export const signupUser = async (email, password, name) => {
@@ -276,12 +296,16 @@ export const resetPassword = async (email, newPassword) => {
 };
 
 // 닉네임 업데이트
-export const updatename = async (name) => {
+export const updatename = async (name, token) => {
   if (non_server_test) {
     return { success: true, message: '닉네임 변경 성공' }; // 항상 성공으로 처리
   } else {
     try {
-      const response = await axiosInstance.put('/user/update-name', { name });
+      const response = await axiosInstance.put('/user/update-name', { name }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       return response.data; // 서버 응답을 반환
     } catch (error) {
       throw new Error('닉네임 변경에 실패했습니다.');
@@ -290,12 +314,16 @@ export const updatename = async (name) => {
 };
 
 // 비밀번호 업데이트
-export const updatePassword = async (password) => {
+export const updatePassword = async (password, token) => {
   if (non_server_test) {
     return { success: true, message: '비밀번호 변경 성공' }; // 항상 성공으로 처리
   } else {
     try {
-      const response = await axiosInstance.put('/user/update-password', { password });
+      const response = await axiosInstance.put('/user/update-password', { password }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       return response.data; // 서버 응답을 반환 
     } catch (error) {
       throw new Error('비밀번호 변경에 실패했습니다.');

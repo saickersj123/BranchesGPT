@@ -17,14 +17,20 @@ const MyPage = () => {
   const [email, setEmail] = useState('');
 
   useEffect(() => {
-    const storedname = sessionStorage.getItem('name');
-    const storedEmail = sessionStorage.getItem('email');
-    if (storedname) {
-      setname(storedname);
-    }
-    if (storedEmail) {
-      setEmail(storedEmail);
-    }
+    // 필요한 데이터는 서버에서 가져오거나 부모 컴포넌트에서 props로 전달받도록 구현
+    const fetchUserData = async () => {
+      try {
+        const response = await mypage(); // 서버에서 사용자 정보 가져오는 API 호출
+        if (response.data) {
+          setname(response.data.name);
+          setEmail(response.data.email);
+        }
+      } catch (error) {
+        console.error('사용자 정보를 불러오는 중 오류가 발생했습니다.', error);
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   const handlePasswordChange = (event) => {
@@ -34,7 +40,7 @@ const MyPage = () => {
   const handleVerifyPassword = async (event) => {
     event.preventDefault();
     try {
-      const response = await mypage(password);
+      const response = await mypage(password); // 서버에서 비밀번호 검증
       setPassword('');
       if (response.message === 'OK') {
         setIsPasswordVerified(true);
@@ -67,7 +73,6 @@ const MyPage = () => {
       try {
         await updatename(newname);
         setname(newname);
-        sessionStorage.setItem('name', newname);
         setIsEditingname(false);
         setNewname('');
       } catch (error) {

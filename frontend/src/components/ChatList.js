@@ -2,14 +2,13 @@ import React, { useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/ChatList.css';
 
-const ChatMessage = ({ content, role, time }) => {
+const ChatMessage = ({ content, role, time, username }) => {
   const timeString = new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-  const storedName = sessionStorage.getItem('name');
-  const username = role === 'assistant' ? 'AI' : (storedName ? storedName : 'You');
+  const displayUsername = role === 'assistant' ? 'AI' : (username || 'You');
 
   return (
     <div className={`message-container ${role === 'user' ? 'sent-by-user' : 'received'}`}>
-      <div className="username">{username}</div>
+      <div className="username">{displayUsername}</div>
       <div className="bubble-container">
         <div className="bubble">
           {content}
@@ -20,7 +19,7 @@ const ChatMessage = ({ content, role, time }) => {
   );
 };
 
-const ChatList = ({ messages }) => {
+const ChatList = ({ messages, username = 'You' }) => {
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -43,6 +42,7 @@ const ChatList = ({ messages }) => {
               content={message.content}
               role={message.role}
               time={message.createdAt}
+              username={username}
             />
           ))}
           <div ref={chatEndRef} />
