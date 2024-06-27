@@ -199,3 +199,109 @@ export const logoutUser = async (
 			.json({ message: "ERROR", cause: err.message});
 	}
 };
+export const changename = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const { name } = req.body;
+		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
+
+		if (!user)
+			return res.status(401).json({
+				message: "ERROR",
+				cause: "User doesn't exist or token malfunctioned",
+			});
+
+		if (user._id.toString() !== res.locals.jwtData.id) {
+			return res
+				.status(401)
+				.json({ message: "ERROR", cause: "Permissions didn't match" });
+		}
+
+		user.name = name;
+		await user.save();
+
+		return res
+			.status(200)
+			.json({ message: "OK", name: user.name, email: user.email });
+	} catch (err) {
+		console.log(err);
+		return res
+			.status(200)
+			.json({ message: "ERROR", cause: err.message});
+	}
+};
+export const changepassword = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const { password } = req.body;
+		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
+
+		if (!user)
+			return res.status(401).json({
+				message: "ERROR",
+				cause: "User doesn't exist or token malfunctioned",
+			});
+
+		if (user._id.toString() !== res.locals.jwtData.id) {
+			return res
+				.status(401)
+				.json({ message: "ERROR", cause: "Permissions didn't match" });
+		}
+
+		const hashedPassword = await hash(password, 10);
+		user.password = hashedPassword;
+		await user.save();
+
+		return res
+			.status(200)
+			.json({ message: "OK", name: user.name, email: user.email });
+	} catch (err) {
+		console.log(err);
+		return res
+			.status(200)
+			.json({ message: "ERROR", cause: err.message});
+	}
+};
+export const checkpassword = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const { password } = req.body;
+		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
+
+		if (!user)
+			return res.status(401).json({
+				message: "ERROR",
+				cause: "User doesn't exist or token malfunctioned",
+			});
+
+		if (user._id.toString() !== res.locals.jwtData.id) {
+			return res
+				.status(401)
+				.json({ message: "ERROR", cause: "Permissions didn't match" });
+		}
+
+		const isPasswordCorrect = await compare(password, user.password);
+		if (!isPasswordCorrect)
+			return res
+				.status(403)
+				.json({ message: "ERROR", cause: "Incorrect Password" });
+
+		return res
+			.status(200)
+			.json({ message: "OK", name: user.name, email: user.email });
+	} catch (err) {
+		console.log(err);
+		return res
+			.status(200)
+			.json({ message: "ERROR", cause: err.message});
+	}
+};

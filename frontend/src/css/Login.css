@@ -1,0 +1,73 @@
+.background-container {
+  background-image: url('../img/login_background_image.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.styled-container {
+  max-width: 500px;
+  padding: 20px;
+  margin-top: 20vh;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  background-color: #fff;
+  transition: margin-top 0.5s ease;
+}
+
+.styled-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.styled-button {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.password-group {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.5s ease;
+}
+
+.password-group.show {
+  max-height: 550px; /* Adjusted to fit the content including the button */
+}
+
+.middle-login-button {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  .middle-login-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+    padding: 10px 15px;
+    background-color: transparent;
+    color: blueviolet;
+    text-align: center;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .middle-login-button {
+    background-color: transparent;
+  }
+
+  .middle-login-button .icon {
+    margin-right: 10px;
+  }
+}
