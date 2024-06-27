@@ -6,7 +6,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { logout, deleteAllChats } from '../../api/axiosInstance'; // deleteAllChats 추가
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faCog, faSave, faTimes, faRedo, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faSave, faTimes, faRedo, faPlus, faUser, faTrash, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'; // 적절한 아이콘 추가
 import { FiMoreVertical } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
 import '../../css/Navigation.css';
@@ -14,14 +14,13 @@ import '../../css/Navigation.css';
 const Navigation = ({
   isLoggedIn,
   setIsLoggedIn,
-  toggleSidebar,
-  closeSidebar,
   toggleEditMode,
   isEditMode,
   handleSaveClick,
   handleCancelClick,
   handleResetLayout,
-  loadMessages, // loadMessages 함수 추가
+  loadMessages,
+  startNewChat,
 }) => {
   const [navbarHeight, setNavbarHeight] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,9 +50,6 @@ const Navigation = ({
       alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsLoading(false);
-      if (isMobile) {
-        closeSidebar();
-      }
     }
   };
 
@@ -68,49 +64,46 @@ const Navigation = ({
       alert('대화기록 삭제에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsDeleting(false);
-      if (isMobile) {
-        closeSidebar();
-      }
     }
   };
 
   return (
     <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary fixed-top justify-content-between">
       <Container className="d-flex justify-content-between align-items-center">
-        {isMobile ? (
+        <Navbar.Brand href="/" className="mx-auto">Branch-GPT</Navbar.Brand>
+        {isLoggedIn && !isMyPage && isMobile && (
+          <Dropdown align="end">
+            <Dropdown.Toggle variant="success" id="dropdown-basic" className="custom-dropdown-toggle">
+              <FiMoreVertical />
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              {isHomePage && (
+                <Dropdown.Item onClick={toggleEditMode}>
+                  <FontAwesomeIcon icon={faCog} /> 위치조정
+                </Dropdown.Item>
+              )}
+              <Dropdown.Item as={Link} to="/mypage">
+                <FontAwesomeIcon icon={faUser} /> 마이페이지
+              </Dropdown.Item>
+              <Dropdown.Item onClick={handleDeleteAllChats}>
+                {isDeleting ? <FontAwesomeIcon icon={faTrash} spin /> : <FontAwesomeIcon icon={faTrash} />} 대화기록 삭제
+              </Dropdown.Item>
+              <Dropdown.Item onClick={startNewChat}>
+                <FontAwesomeIcon icon={faPlus} /> 새로운 채팅
+              </Dropdown.Item>
+              <Dropdown.Item onClick={handleLogout}>
+                {isLoading ? <FontAwesomeIcon icon={faSignOutAlt} spin /> : <FontAwesomeIcon icon={faSignOutAlt} />} 로그아웃
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
+        {isLoggedIn && isMyPage && isMobile && (
+          <Nav.Link onClick={handleLogout} className="mx-auto">
+            {isLoading ? '로그아웃 중...' : '로그아웃'}
+          </Nav.Link>
+        )}
+        {!isMobile && (
           <>
-            {isLoggedIn && !isMyPage && (
-              <button className="menu-button" onClick={toggleSidebar}>
-                <FontAwesomeIcon icon={faBars} />
-              </button>
-            )}
-            <Navbar.Brand href="/" className="mx-auto">Branch-GPT</Navbar.Brand>
-            {isLoggedIn && !isMyPage && (
-              <Dropdown align="end">
-                <Dropdown.Toggle variant="success" id="dropdown-basic" className="custom-dropdown-toggle">
-                  <FiMoreVertical />
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  {isHomePage && <Dropdown.Item onClick={toggleEditMode}>위치조정</Dropdown.Item>}
-                  <Dropdown.Item as={Link} to="/mypage" onClick={closeSidebar}>마이페이지</Dropdown.Item>
-                  <Dropdown.Item onClick={handleDeleteAllChats}>
-                    {isDeleting ? '삭제 중...' : '대화기록 삭제'}
-                  </Dropdown.Item>
-                  <Dropdown.Item onClick={handleLogout}>
-                    {isLoading ? '로그아웃 중...' : '로그아웃'}
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            )}
-            {isLoggedIn && isMyPage && (
-              <Nav.Link onClick={handleLogout} className="mx-auto">
-                {isLoading ? '로그아웃 중...' : '로그아웃'}
-              </Nav.Link>
-            )}
-          </>
-        ) : (
-          <>
-            <Navbar.Brand href="/">Branch-GPT</Navbar.Brand>
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">
               <Nav className="me-auto"></Nav>
@@ -138,19 +131,24 @@ const Navigation = ({
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               {isHomePage && <Dropdown.Item onClick={toggleEditMode}>위치조정</Dropdown.Item>}
-                              <Dropdown.Item as={Link} to="/mypage">마이페이지</Dropdown.Item>
+                              <Dropdown.Item as={Link} to="/mypage">
+                                <FontAwesomeIcon icon={faUser} /> 마이페이지
+                              </Dropdown.Item>
                               <Dropdown.Item onClick={handleDeleteAllChats}>
-                                {isDeleting ? '삭제 중...' : '대화기록 삭제'}
+                                {isDeleting ? <FontAwesomeIcon icon={faTrash} spin /> : <FontAwesomeIcon icon={faTrash} />} 대화기록 삭제
+                              </Dropdown.Item>
+                              <Dropdown.Item onClick={startNewChat}>
+                                <FontAwesomeIcon icon={faPlus} /> 새로운 채팅
                               </Dropdown.Item>
                               <Dropdown.Item onClick={handleLogout}>
-                                {isLoading ? '로그아웃 중...' : '로그아웃'}
+                                {isLoading ? <FontAwesomeIcon icon={faSignOutAlt} spin /> : <FontAwesomeIcon icon={faSignOutAlt} />} 로그아웃
                               </Dropdown.Item>
                             </Dropdown.Menu>
                           </Dropdown>
                         )}
                         {isMyPage && (
                           <Nav.Link onClick={handleLogout}>
-                            {isLoading ? '로그아웃 중...' : '로그아웃'}
+                            {isLoading ? <FontAwesomeIcon icon={faSignOutAlt} spin /> : <FontAwesomeIcon icon={faSignOutAlt} />} 로그아웃
                           </Nav.Link>
                         )}
                       </>

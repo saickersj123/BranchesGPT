@@ -1,4 +1,3 @@
-/* Navigation.css */
 .navbar {
   position: fixed; /* 네비게이션 바를 화면 상단에 고정합니다. */
   top: 0; /* 화면의 맨 위에 위치하도록 설정합니다. */
@@ -12,7 +11,6 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  display: none; /* 기본적으로는 숨김 */
   color: #000; /* 버튼 아이콘의 색상을 검정으로 설정합니다. */
   margin-right: 15px; /* 버튼과 오른쪽 끝 사이에 약간의 여백을 둡니다. */
 }
@@ -30,9 +28,21 @@
   display: none !important; /* 기본 드롭다운 화살표 제거 */
 }
 
+.new-chat-button {
+  background: none;
+  border: none;
+  color: #000; /* 아이콘 색상 */
+  padding: 0;
+  margin-right: 10px;
+  font-size: 1.2rem; /* 아이콘 크기 조정 */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
 @media screen and (max-width: 768px) {
   .menu-button {
-    display: block; /* 모바일 화면에서는 보이도록 설정 */
+    margin-left: 10px; /* 모바일 화면에서는 왼쪽 여백을 추가 */
   }
 
   .dropdown-menu {

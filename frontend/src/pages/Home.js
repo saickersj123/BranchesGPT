@@ -6,14 +6,14 @@ import GridLayout from 'react-grid-layout';
 import '../css/Home.css'; // 공통 CSS 파일
 
 const MAX_Y_H_SUM = 9; // y와 h 값의 합의 최댓값을 전역 변수로 설정
-const test_X_Y_coordinates = false; //true일 경우 chatlist, chatbox의 좌표가 보임
+const test_X_Y_coordinates = false; // true일 경우 chatlist, chatbox의 좌표가 보임
 
 const INITIAL_LAYOUT = [
   { i: 'chatList', x: 2, y: 0, w: 8, h: 7, minH: 3, maxW: 16, maxH: 7.5 },
   { i: 'chatBox', x: 2, y: 6, w: 8, h: 1.5, minH: 1.5, minW: 3, maxW: 16, maxH: 1.5 }
 ];
 
-const Home = ({ isLoggedIn, isEditMode, isChatPage, currentLayout, setCurrentLayout, loadMessages, messages, setMessages }) => {
+const Home = ({ isLoggedIn, isEditMode, isChatPage, currentLayout, setCurrentLayout, loadMessages, messages, setMessages, onNewChat }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
@@ -103,6 +103,13 @@ const Home = ({ isLoggedIn, isEditMode, isChatPage, currentLayout, setCurrentLay
   const handleResetLayout = () => {
     setCurrentLayout(INITIAL_LAYOUT);
   };
+
+  // 새로운 채팅 버튼 클릭 시 호출되는 함수
+  useEffect(() => {
+    if (onNewChat) {
+      console.log('The button in the new chat has been clicked.');
+    }
+  }, [onNewChat]);
 
   return (
     <main className="main-section">

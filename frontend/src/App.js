@@ -17,7 +17,6 @@ const App = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentLayout, setCurrentLayout] = useState(INITIAL_LAYOUT);
   const [messages, setMessages] = useState([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const originalLayoutRef = useRef(currentLayout);
 
   useEffect(() => {
@@ -75,12 +74,8 @@ const App = () => {
     }
   }, [isLoggedIn, loadMessages]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  const closeSidebar = () => {
-    setIsSidebarOpen(false);
+  const startNewChat = () => {
+    console.log('The button in the new chat has been clicked.');
   };
 
   return (
@@ -93,9 +88,8 @@ const App = () => {
         handleSaveClick={handleSaveClick}
         handleCancelClick={handleCancelClick}
         handleResetLayout={resetLayout}
-        loadMessages={loadMessages} // loadMessages 함수 전달
-        toggleSidebar={toggleSidebar} // toggleSidebar 함수 전달
-        closeSidebar={closeSidebar} // closeSidebar 함수 전달
+        loadMessages={loadMessages}
+        startNewChat={startNewChat}
       />
       <Routes>
         <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login setIsLoggedIn={setIsLoggedIn} />} />
@@ -110,11 +104,10 @@ const App = () => {
                     isChatPage={true}
                     currentLayout={currentLayout}
                     setCurrentLayout={setCurrentLayout}
-                    loadMessages={loadMessages} // loadMessages 함수 전달
-                    messages={messages} // 메시지 상태 전달
-                    setMessages={setMessages} // 메시지 상태 업데이트 함수 전달
-                    toggleSidebar={toggleSidebar} // toggleSidebar 함수 전달
-                    closeSidebar={closeSidebar} // closeSidebar 함수 전달
+                    loadMessages={loadMessages}
+                    messages={messages}
+                    setMessages={setMessages}
+                    onNewChat={startNewChat}
                   />
                 } />
                 <Route path="/mypage" element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} />
@@ -125,11 +118,10 @@ const App = () => {
                     isChatPage={true}
                     currentLayout={currentLayout}
                     setCurrentLayout={setCurrentLayout}
-                    loadMessages={loadMessages} // loadMessages 함수 전달
-                    messages={messages} // 메시지 상태 전달
-                    setMessages={setMessages} // 메시지 상태 업데이트 함수 전달
-                    toggleSidebar={toggleSidebar} // toggleSidebar 함수 전달
-                    closeSidebar={closeSidebar} // closeSidebar 함수 전달
+                    loadMessages={loadMessages}
+                    messages={messages}
+                    setMessages={setMessages}
+                    onNewChat={startNewChat}
                   />
                 ) : (
                   <Navigate to="/login" />
