@@ -3,18 +3,6 @@ import User from "../models/User.js";
 import { configureOpenAI } from "../config/openai.js";
 import OpenAI from "openai";
 
-const addMessageToConversation = (user, message, role) => {
-	let conversation;
-	if (user.conversations.length === 0) {
-		conversation = { chats: [] };
-		user.conversations.push(conversation);
-	} else {
-		conversation = user.conversations[user.conversations.length - 1];
-	}
-	conversation.chats.push({ content: message, role });
-	return conversation;
-};
-
 export const generateChatCompletion = async (
 	req: Request,
 	res: Response,
@@ -29,7 +17,7 @@ export const generateChatCompletion = async (
 		}
 
 		// Add the user's message to the conversation
-		const conversation = addMessageToConversation(user, message, "user");
+		const conversation = user.conversations[user.conversations.length - 1];
 
 		// Prepare messages for OpenAI API
 		const chats = conversation.chats.map(({ role, content }) => ({
@@ -38,6 +26,7 @@ export const generateChatCompletion = async (
 		})) ;
 		chats.push({ content: message, role: "user" });
 
+		conversation.chats.push({ content: message, role: "user" });
 		// send all chats with new ones to OpenAI API
 		const config = configureOpenAI();
 		const openai = new OpenAI(config);
