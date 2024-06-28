@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
 import chatSchema from "./Chat.js";
+import { randomUUID } from "crypto";
 
 const conversationSchema = new mongoose.Schema({
     id: {
         type: String,
-        default: () => new mongoose.Types.ObjectId(),
+        default: randomUUID(),
     },
     chats: [chatSchema],
     createdAt: {
