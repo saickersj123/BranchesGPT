@@ -63,7 +63,7 @@ export const sendMessage = async (chat_Message, role = 'user') => {
   };
 
   try {
-    const response = await axiosInstance.post(`/chat/new`, { message: message.content });
+    const response = await axiosInstance.post(`/chat/c/new`, { message: message.content });
     return response.data.chats;
   } catch (error) {
     console.error('메시지 보내기 실패:', error.response ? error.response.data : error.message);
@@ -78,7 +78,7 @@ export const deleteAllChats = async () => {
     return { message: 'OK', chats: [] }; // 항상 성공으로 처리
   } else {
     try {
-      const response = await axiosInstance.delete('/chat/delete-all-chats');
+      const response = await axiosInstance.delete('/chat/delete-all-c');
       return response.data;
     } catch (error) {
       console.error('모든 채팅 기록 삭제 실패:', error);
@@ -192,7 +192,7 @@ export const fetchMessages = async () => {
 
   try {
     console.log('Fetching messages...');
-    const response = await axiosInstance.get('/chat/all-chats');
+    const response = await axiosInstance.get('/chat/all-c');
     console.log('Response:', response);
     return Array.isArray(response.data.chats) ? response.data.chats : [];
   } catch (error) {
@@ -212,7 +212,7 @@ export const fetchChatHistory = async () => {
     ]; // 테스트 데이터 반환
   } else {
     try {
-      const response = await axiosInstance.get('/chat/history');
+      const response = await axiosInstance.get('/chat/c/:conversationId');
       return response.data || []; // 서버 응답 데이터 반환, 없을 경우 빈 배열 반환
     } catch (error) {
       console.error('채팅 기록 가져오기 실패:', error);
