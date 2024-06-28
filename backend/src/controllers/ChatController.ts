@@ -38,9 +38,6 @@ export const generateChatCompletion = async (
 		})) ;
 		chats.push({ content: message, role: "user" });
 
-		const convdb = user.conversations;
-		convdb[convdb.length - 1].chats.push({ content: message, role: "user" });
-
 		// send all chats with new ones to OpenAI API
 		const config = configureOpenAI();
 		const openai = new OpenAI(config);
