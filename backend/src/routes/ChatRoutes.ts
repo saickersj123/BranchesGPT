@@ -20,7 +20,7 @@ chatRoutes.get("/", (req, res, next) => {
 
 //new conversation
 chatRoutes.post(
-	"/new",
+	"/c/new",
 	validate(chatCompletionValidator),
 	verifyToken,
 	startNewConversation,
@@ -29,7 +29,7 @@ chatRoutes.post(
 
 //resume conversation
 chatRoutes.post(
-	"/conversation/:conversationId",
+	"/c/:conversationId",
 	validate(chatCompletionValidator),
 	verifyToken,
 	generateChatCompletion
@@ -37,28 +37,28 @@ chatRoutes.post(
 
 //get all conversations
 chatRoutes.get(
-	"/all-conversations",
+	"/all-c",
 	verifyToken,
 	getAllConversations
 );
 
 //get a conversation
 chatRoutes.get(
-	"/conversation/:conversationId",
+	"/c/:conversationId",
 	verifyToken,
 	getConversation
 );
 
 //delete a conversation
 chatRoutes.delete(
-    "/delete-conversation/:conversationId",
+    "/delete-c/:conversationId",
     verifyToken,
     deleteConversation
 )
 
 //delete all conversations
 chatRoutes.delete(
-    "/delete-all-conversations",
+    "/delete-all-c",
     verifyToken,
     deleteAllConversatoins
 )
