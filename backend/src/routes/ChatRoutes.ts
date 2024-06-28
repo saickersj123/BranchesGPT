@@ -17,7 +17,6 @@ chatRoutes.get("/", (req, res, next) => {
 });
 
 // protected API
-
 //new conversation
 chatRoutes.post(
 	"/c/new",
