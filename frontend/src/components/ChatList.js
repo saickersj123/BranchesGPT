@@ -1,16 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/ChatList.css';
-import { sendMessage } from '../api/axiosInstance';
 
-const ChatMessage = ({ content, role, time }) => {
+const ChatMessage = ({ content, role, time, username }) => {
   const timeString = new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-  const storedName = sessionStorage.getItem('name');
-  const username = role === 'assistant' ? 'AI' : (storedName ? storedName : 'You');
+  const displayUsername = role === 'assistant' ? 'AI' : (username || 'You');
 
   return (
     <div className={`message-container ${role === 'user' ? 'sent-by-user' : 'received'}`}>
-      <div className="username">{username}</div>
+      <div className="username">{displayUsername}</div>
       <div className="bubble-container">
         <div className="bubble">
           {content}
@@ -21,44 +19,14 @@ const ChatMessage = ({ content, role, time }) => {
   );
 };
 
-const ChatList = ({ messages, setMessages }) => {
+const ChatList = ({ messages, username = 'You' }) => {
   const chatEndRef = useRef(null);
 
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: 'auto' });
     }
-
-    const lastMessage = messages[messages.length - 1];
-    if (lastMessage && lastMessage.role === 'user') {
-      const fetchAIResponse = async () => {
-        try {
-          const aiResponse = await sendMessage('...'); // AI 응답을 가져옴 (실제 메시지를 변경해야 함)
-          const aiMessage = {
-            content: '',
-            role: 'assistant',
-            createdAt: new Date().toISOString()
-          };
-          setMessages((prevMessages) => [...prevMessages, aiMessage]);
-
-          // AI의 응답을 한 글자씩 출력
-          const content = aiResponse[aiResponse.length - 1].content;
-          for (let i = 0; i < content.length; i++) {
-            await new Promise((resolve) => setTimeout(resolve, 50));
-            setMessages((prevMessages) => {
-              const updatedMessages = [...prevMessages];
-              updatedMessages[updatedMessages.length - 1].content += content[i];
-              return updatedMessages;
-            });
-          }
-        } catch (error) {
-          console.error('Error getting AI response:', error);
-        }
-      };
-
-      fetchAIResponse();
-    }
-  }, [messages, setMessages]);
+  }, [messages]);
 
   return (
     <div className="chat-list-container container mt-3">
@@ -74,6 +42,7 @@ const ChatList = ({ messages, setMessages }) => {
               content={message.content}
               role={message.role}
               time={message.createdAt}
+              username={username}
             />
           ))}
           <div ref={chatEndRef} />

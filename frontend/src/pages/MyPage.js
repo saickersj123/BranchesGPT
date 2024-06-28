@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faPen } from '@fortawesome/free-solid-svg-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/MyPage.css';
-import { updatename, updatePassword, mypage } from '../api/axiosInstance'; // loginUser 함수 추가
+import { updatename, updatePassword, mypage } from '../api/axiosInstance';
 
 const MyPage = () => {
   const [password, setPassword] = useState('');
@@ -14,35 +14,26 @@ const MyPage = () => {
   const [newPassword, setNewPassword] = useState('');
   const [isEditingname, setIsEditingname] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
-  const [email, setEmail] = useState(''); // 이메일 상태 추가
-
-  useEffect(() => {
-    // 세션 스토리지에서 닉네임과 이메일을 가져옴
-    const storedname = sessionStorage.getItem('name');
-    const storedEmail = sessionStorage.getItem('email');
-    if (storedname) {
-      setname(storedname);
-    }
-    if (storedEmail) {
-      setEmail(storedEmail);
-    }
-  }, []);
+  const [email, setEmail] = useState('');
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
 
   const handleVerifyPassword = async (event) => {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
     try {
-      // loginUser 함수를 사용하여 비밀번호 검증
-      const response = await mypage(password);
-      setPassword(''); // Clear the password input
+      const response = await mypage(password); // 서버에서 비밀번호 검증
+      setPassword('');
       if (response.message === 'OK') {
         setIsPasswordVerified(true);
+        setname(response.name);
+        setEmail(response.email);
+      } else if (response.cause === 'Incorrect Password') {
+        alert('비밀번호가 일치하지 않습니다.');
       }
     } catch (error) {
-      alert('비밀번호가 일치하지 않습니다.');
+      alert('비밀번호 검증 중 오류가 발생했습니다.');
     }
   };
 
@@ -67,7 +58,6 @@ const MyPage = () => {
       try {
         await updatename(newname);
         setname(newname);
-        sessionStorage.setItem('name', newname); // 세션 스토리지에 새로운 닉네임 저장
         setIsEditingname(false);
         setNewname('');
       } catch (error) {

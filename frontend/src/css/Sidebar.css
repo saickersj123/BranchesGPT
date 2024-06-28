@@ -36,7 +36,7 @@
 
 /* 데스크탑 사이드바 메뉴 마진 설정 */
 .sidebar-menu {
-  margin-top: 5dvh;
+  margin-top: 5vh;
   display: flex;
   flex-direction: column;
 }
@@ -44,7 +44,7 @@
 /* 모바일 사이드바 메뉴 마진 설정 */
 @media (max-width: 768px) {
   .sidebar-menu {
-    margin-top: 10dvh;
+    margin-top: 10vh;
   }
 }
 

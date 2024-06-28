@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance, { fetchChatHistory } from '../../api/axiosInstance';
+import { fetchChatHistory } from '../../api/axiosInstance';
 import { useMediaQuery } from 'react-responsive';
 import '../../css/Sidebar.css';
 
