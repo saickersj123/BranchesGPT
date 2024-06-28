@@ -51,7 +51,7 @@ chatRoutes.get(
 
 //delete a conversation
 chatRoutes.delete(
-    "/delete-conversations/:conversationId",
+    "/delete-conversation/:conversationId",
     verifyToken,
     deleteConversation
 )
