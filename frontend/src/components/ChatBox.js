@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import '../css/ChatBox.css';
-import { sendMessage } from '../api/axiosInstance';
+import { sendMessage } from '../api/ChatAxios';
 
 const ChatBox = ({ onNewMessage, onUpdateMessage, isEditMode }) => {
   const [message, setMessage] = useState('');

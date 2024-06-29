@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Form, Button, Alert, InputGroup } from 'react-bootstrap';
 import styled from 'styled-components';
-import { signupUser } from '../api/axiosInstance';
+import { signupUser } from '../api/UserAxios';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 const StyledForm = styled(Form)`

@@ -4,7 +4,8 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { logout, deleteAllChats } from '../../api/axiosInstance'; // deleteAllChats 추가
+import { deleteAllChats } from '../../api/ChatAxios'; 
+import { logout } from '../../api/UserAxios'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faSave, faTimes, faRedo, faPlus, faUser, faTrash, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'; // 적절한 아이콘 추가
 import { FiMoreVertical } from 'react-icons/fi';

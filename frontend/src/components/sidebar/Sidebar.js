@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { fetchChatHistory } from '../../api/axiosInstance';
+import { fetchChatHistory } from '../../api/ChatAxios';
 import { useMediaQuery } from 'react-responsive';
 import '../../css/Sidebar.css';
 
@@ -14,9 +14,16 @@ const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar }) => {
     const getChatRooms = async () => {
       try {
         const rooms = await fetchChatHistory();
-        setChatRooms(rooms);
+        // rooms가 배열이 아닌 경우 배열로 변환
+        if (!Array.isArray(rooms)) {
+          console.warn('Unexpected response format, converting to an array:', rooms);
+          setChatRooms([rooms]); // rooms를 배열로 감싸기
+        } else {
+          setChatRooms(rooms);
+        }
       } catch (error) {
         console.error('채팅방 목록을 가져오는 데 실패했습니다:', error);
+        setChatRooms([]); // 에러 발생 시 빈 배열로 설정
       }
     };
 

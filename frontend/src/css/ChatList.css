@@ -90,7 +90,7 @@
   text-align: center;
   padding: 20px;
   border-radius: 10px;
-  margin-top: 0px; /* 문구를 아래로 이동시키기 위해 상단 마진 추가 */
+  margin-top: 50px;   
 }
 
 /* 로딩 스피너 스타일 */

@@ -5,7 +5,8 @@ import Navigation from './components/navbar/Navigation';
 import Login from './pages/Login';
 import MyPage from './pages/MyPage';
 import Home from './pages/Home';
-import { checkAuthStatus, fetchMessages } from './api/axiosInstance';
+import { checkAuthStatus } from './api/axiosInstance';
+import { fetchMessages } from './api/ChatAxios';
 
 const INITIAL_LAYOUT = [
   { i: 'chatContainer', x: 2, y: 0, w: 8, h: 7 , minH: 3, minW: 2, maxW: 16, maxH: 9 }
