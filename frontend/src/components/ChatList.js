@@ -1,9 +1,15 @@
 import React, { useEffect, useRef } from 'react';
+import { Container } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/ChatList.css';
 
 const ChatMessage = ({ content, role, time, username }) => {
-  const timeString = new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+  let timeString = '';
+  if (time && !isNaN(new Date(time).getTime())) {
+    timeString = new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+  } else {
+    timeString = 'Invalid Date'; // 혹은 다른 기본값 설정
+  }
   const displayUsername = role === 'assistant' ? 'AI' : (username || 'You');
 
   return (
@@ -13,7 +19,7 @@ const ChatMessage = ({ content, role, time, username }) => {
         <div className="bubble">
           {content}
         </div>
-        <div className="time">{timeString}</div>
+        <div className={`time ${role === 'user' ? 'time-user' : 'time-assistant'}`}>{timeString}</div>
       </div>
     </div>
   );
@@ -29,26 +35,24 @@ const ChatList = ({ messages, username = 'You' }) => {
   }, [messages]);
 
   return (
-    <div className="chat-list-container container mt-3">
+    <Container className="chat-list-container mt-3">
       {messages.length === 0 ? (
         <div className="alert alert-info text-center">
           새로운 채팅을 시작해 보세요!
         </div>
       ) : (
-        <>
-          {messages.map((message, index) => (
-            <ChatMessage
-              key={index}
-              content={message.content}
-              role={message.role}
-              time={message.createdAt}
-              username={username}
-            />
-          ))}
-          <div ref={chatEndRef} />
-        </>
+        messages.map((message, index) => (
+          <ChatMessage
+            key={index}
+            content={message.content}
+            role={message.role}
+            time={message.createdAt}
+            username={username}
+          />
+        ))
       )}
-    </div>
+      <div ref={chatEndRef} />
+    </Container>
   );
 };
 

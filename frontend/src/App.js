@@ -8,8 +8,7 @@ import Home from './pages/Home';
 import { checkAuthStatus, fetchMessages } from './api/axiosInstance';
 
 const INITIAL_LAYOUT = [
-  { i: 'chatList', x: 2, y: 0, w: 8, h: 7, minH: 3, minW: 2, maxW: 16, maxH: 7.5 },
-  { i: 'chatBox', x: 2, y: 6, w: 8, h: 1.5, minH: 1.5, minW: 2, maxW: 16, maxH: 1.5 }
+  { i: 'chatContainer', x: 2, y: 0, w: 8, h: 7 , minH: 3, minW: 2, maxW: 16, maxH: 9 }
 ];
 
 const App = () => {

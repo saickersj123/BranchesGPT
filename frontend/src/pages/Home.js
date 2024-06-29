@@ -10,16 +10,16 @@ const MAX_Y_H_SUM = 9; // y와 h 값의 합의 최댓값을 전역 변수로 설
 const test_X_Y_coordinates = false; // true일 경우 chatlist, chatbox의 좌표가 보임
 
 const INITIAL_LAYOUT = [
-  { i: 'chatList', x: 2, y: 0, w: 8, h: 7, minH: 3, maxW: 16, maxH: 7.5 },
-  { i: 'chatBox', x: 2, y: 6, w: 8, h: 1.5, minH: 1.5, minW: 3, maxW: 16, maxH: 1.5 }
+  { i: 'chatContainer', x: 2, y: 0, w: 8, h: 9, minH: 3, minW: 2, maxW: 16, maxH: 9 }
 ];
 
-const Home = ({ isLoggedIn, user, isEditMode, isChatPage, currentLayout, setCurrentLayout, loadMessages, messages, setMessages, onNewChat }) => {
+const Home = ({ isLoggedIn, user, isEditMode, isChatPage, loadMessages, messages, setMessages, onNewChat }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
   const [maxYHSum, setMaxYHSum] = useState(MAX_Y_H_SUM); // state로 관리하여 상단에서 조절 가능
   const [username, setUsername] = useState(''); // 추가
+  const [currentLayout, setCurrentLayout] = useState(INITIAL_LAYOUT); // 현재 레이아웃 상태 추가
 
   useEffect(() => {
     const handleResize = () => {
@@ -154,22 +154,20 @@ const Home = ({ isLoggedIn, user, isEditMode, isChatPage, currentLayout, setCurr
               verticalCompact={false} // 자동 압축 비활성화
             >
               <div 
-                key="chatList" 
-                className={`grid-item chat-list-container ${isEditMode ? 'edit-mode' : ''}`} 
-                data-grid={{...currentLayout.find(item => item.i === 'chatList'), resizeHandles: isEditMode ? ['s', 'e', 'w', 'n'] : [] }}
+                key="chatContainer" 
+                className={`grid-item chat-container ${isEditMode ? 'edit-mode' : ''} ${!isEditMode ? 'no-border' : ''}`} 
+                data-grid={{...currentLayout.find(item => item.i === 'chatContainer'), resizeHandles: isEditMode ? ['s', 'e', 'w', 'n'] : [] }}
               >
-                <ChatList messages={messages} username={username || 'You'} />
-              </div>
-              <div 
-                key="chatBox" 
-                className={`grid-item chat-box-container ${isEditMode ? 'edit-mode' : ''}`} 
-                data-grid={{...currentLayout.find(item => item.i === 'chatBox'), resizeHandles: isEditMode ? ['e', 'w'] : [] }}
-              >
-                <ChatBox 
-                  onNewMessage={handleNewMessage} 
-                  onUpdateMessage={handleUpdateMessage} 
-                  isEditMode={isEditMode} 
-                />
+                <div className="chat-list-container" style={{ flexGrow: 1 }}>
+                  <ChatList messages={messages} username={username || 'You'} />
+                </div>
+                <div className="chat-box-container">
+                  <ChatBox 
+                    onNewMessage={handleNewMessage} 
+                    onUpdateMessage={handleUpdateMessage} 
+                    isEditMode={isEditMode} 
+                  />
+                </div>
               </div>
             </GridLayout>
           </div>

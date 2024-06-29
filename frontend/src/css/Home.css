@@ -44,6 +44,10 @@ body, html {
   margin: 0;
 }
 
+.grid-item.no-border {
+  border: none; /* 테두리를 제거 */
+}
+
 .grid-drag-handle {
   cursor: move;
   padding: 5px;
@@ -63,8 +67,9 @@ body, html {
 .chat-box-container {
   overflow-y: hidden; /* 스크롤 제거 */
   flex: 0 0 60px; /* 고정된 높이 설정 */
-  margin: 0;
+  margin: 10px 0; /* 상하단 여백을 설정 */
   padding: 10px; /* 간격을 동일하게 맞추기 위해 padding 추가 */
+  box-sizing: border-box; /* padding을 포함한 박스 크기 계산 */
 }
 
 .edit-buttons {
@@ -142,20 +147,12 @@ body, html {
   display: none;
 }
 
-.grid-item.edit-mode.chat-list-container .react-resizable-handle {
+.grid-item.edit-mode.chat-container .react-resizable-handle {
   display: block;
 }
 
-.grid-item.edit-mode.chat-box-container .react-resizable-handle {
-  display: block;
-  display: none;
-  cursor: e-resize;
+/* 추가: edit-mode에서도 테두리가 굵어지지 않도록 설정 */
+.grid-item.edit-mode {
+  border: none; /* 테두리를 없음으로 설정 */
 }
 
-.grid-item.edit-mode.chat-box-container .react-resizable-handle-e {
-  display: block;
-}
-
-.grid-item.edit-mode.chat-box-container .react-resizable-handle-w {
-  display: block;
-}

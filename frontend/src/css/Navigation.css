@@ -14,6 +14,14 @@
   color: #000; /* 버튼 아이콘의 색상을 검정으로 설정합니다. */
   margin-right: 15px; /* 버튼과 오른쪽 끝 사이에 약간의 여백을 둡니다. */
 }
+ 
+.dropdown-menu {
+  font-size: 0.875rem; /* 글자 크기를 조정합니다. */
+}
+ 
+.dropdown-item {
+  font-size: 0.875rem; /* 글자 크기를 조정합니다. */
+}
 
 .custom-dropdown-toggle {
   color: #000 !important; /* 버튼 아이콘의 색상을 검정으로 설정합니다. */
