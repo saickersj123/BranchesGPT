@@ -91,13 +91,13 @@ export const deleteAllChats = async () => {
 export const checkAuthStatus = async () => {
   console.log('checkAuthStatus 호출');
   if (non_server_test) {
-    return { valid: true };
+    return { valid: true, name: "사용자닉네임", email: "user@example.com" };
   } else {
     try {
       const response = await axiosInstance.get('/user/auth-status');
       console.log('서버 응답:', response.data);
       if (response.data && response.data.message === "OK") {
-        return { valid: true };
+        return { valid: true, name: response.data.name, email: response.data.email };
       } else {
         return { valid: false };
       }
@@ -107,6 +107,7 @@ export const checkAuthStatus = async () => {
     }
   }
 };
+
 
 // 마이페이지에서 비밀번호 검증
 export const mypage = async (password) => {
@@ -264,6 +265,7 @@ export const updatename = async (name) => {
       const response = await axiosInstance.put('/user/update-name', { name });
       return response.data; // 서버 응답을 반환
     } catch (error) {
+      console.error('닉네임 변경 오류:', error.response || error.message);
       throw new Error('닉네임 변경에 실패했습니다.');
     }
   }

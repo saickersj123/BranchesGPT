@@ -3,6 +3,7 @@ import ChatBox from '../components/ChatBox';
 import ChatList from '../components/ChatList';
 import Sidebar from '../components/sidebar/Sidebar';
 import GridLayout from 'react-grid-layout';
+import { checkAuthStatus } from '../api/axiosInstance'; // 추가
 import '../css/Home.css'; // 공통 CSS 파일
 
 const MAX_Y_H_SUM = 9; // y와 h 값의 합의 최댓값을 전역 변수로 설정
@@ -13,11 +14,12 @@ const INITIAL_LAYOUT = [
   { i: 'chatBox', x: 2, y: 6, w: 8, h: 1.5, minH: 1.5, minW: 3, maxW: 16, maxH: 1.5 }
 ];
 
-const Home = ({ isLoggedIn, isEditMode, isChatPage, currentLayout, setCurrentLayout, loadMessages, messages, setMessages, onNewChat }) => {
+const Home = ({ isLoggedIn, user, isEditMode, isChatPage, currentLayout, setCurrentLayout, loadMessages, messages, setMessages, onNewChat }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
   const [maxYHSum, setMaxYHSum] = useState(MAX_Y_H_SUM); // state로 관리하여 상단에서 조절 가능
+  const [username, setUsername] = useState(''); // 추가
 
   useEffect(() => {
     const handleResize = () => {
@@ -28,6 +30,17 @@ const Home = ({ isLoggedIn, isEditMode, isChatPage, currentLayout, setCurrentLay
     return () => {
       window.removeEventListener('resize', handleResize);
     };
+  }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const { valid, name } = await checkAuthStatus();
+      if (valid) {
+        setUsername(name);
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   const toggleSidebar = () => {
@@ -145,7 +158,7 @@ const Home = ({ isLoggedIn, isEditMode, isChatPage, currentLayout, setCurrentLay
                 className={`grid-item chat-list-container ${isEditMode ? 'edit-mode' : ''}`} 
                 data-grid={{...currentLayout.find(item => item.i === 'chatList'), resizeHandles: isEditMode ? ['s', 'e', 'w', 'n'] : [] }}
               >
-                <ChatList messages={messages} />
+                <ChatList messages={messages} username={username || 'You'} />
               </div>
               <div 
                 key="chatBox" 
@@ -161,14 +174,14 @@ const Home = ({ isLoggedIn, isEditMode, isChatPage, currentLayout, setCurrentLay
             </GridLayout>
           </div>
           {test_X_Y_coordinates && (
-                <div className="layout-info">
-                  {currentLayout.map(item => (
-                    <div key={item.i}>
-                      {item.i}: (x: {item.x}, y: {item.y}, w: {item.w}, h: {item.h})
-                    </div>
-                  ))}
+            <div className="layout-info">
+              {currentLayout.map(item => (
+                <div key={item.i}>
+                  {item.i}: (x: {item.x}, y: {item.y}, w: {item.w}, h: {item.h})
                 </div>
-              )}
+              ))}
+            </div>
+          )}
         </div>
       </>
     </main>

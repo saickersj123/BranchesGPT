@@ -57,7 +57,7 @@ const PasswordGroup = styled.div`
     `}
 `;
 
-const Login = ({ setIsLoggedIn }) => {
+const Login = ({ setIsLoggedIn, setUser }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -98,6 +98,7 @@ const Login = ({ setIsLoggedIn }) => {
       if (response.message === 'OK') {
         setTimeout(() => {
           setIsLoggedIn(true);
+          setUser(response.data); // 유저 정보 저장
           navigate('/');
         }, 1000); // 로그인 성공 후 1초 후 홈 페이지로 이동
       } else {

@@ -14,6 +14,7 @@ const INITIAL_LAYOUT = [
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null); // 유저 정보 상태 추가
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentLayout, setCurrentLayout] = useState(INITIAL_LAYOUT);
   const [messages, setMessages] = useState([]);
@@ -24,6 +25,7 @@ const App = () => {
       try {
         const response = await checkAuthStatus();
         setIsLoggedIn(response.valid);
+        setUser(response.user); // 유저 정보 저장
       } catch (error) {
         setIsLoggedIn(false);
       }
@@ -92,7 +94,7 @@ const App = () => {
         startNewChat={startNewChat}
       />
       <Routes>
-        <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login setIsLoggedIn={setIsLoggedIn} />} />
+        <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
         <Route path="*" element={
           <div className="app-container">
             <div className="main-content">
@@ -100,6 +102,7 @@ const App = () => {
                 <Route path="/" element={
                   <Home 
                     isLoggedIn={isLoggedIn} 
+                    user={user} // 유저 정보 전달
                     isEditMode={isEditMode} 
                     isChatPage={true}
                     currentLayout={currentLayout}
@@ -114,6 +117,7 @@ const App = () => {
                 <Route path="/chat/:roomId" element={isLoggedIn ? (
                   <Home 
                     isLoggedIn={isLoggedIn} 
+                    user={user} // 유저 정보 전달
                     isEditMode={isEditMode} 
                     isChatPage={true}
                     currentLayout={currentLayout}
