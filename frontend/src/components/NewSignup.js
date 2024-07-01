@@ -121,9 +121,9 @@ const Signup = ({ show, onHide }) => { // Signup 컴포넌트를 정의합니다
                     setEmailAvailable(null);
                     setEmailCheckSuccess(false);
                   }}
-                  disabled={emailCheckSuccess}
+                  
                 />
-                <Button variant="outline-secondary" onClick={handleCheckEmail} disabled={emailCheckSuccess}>
+                <Button variant="outline-secondary" onClick={handleCheckEmail}>
                   중복확인
                 </Button>
                 {validate && email && (
@@ -167,11 +167,11 @@ const Signup = ({ show, onHide }) => { // Signup 컴포넌트를 정의합니다
                 placeholder="닉네임을 입력하세요"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                disabled={emailAvailable !== true}
+                
               />
             </Form.Group>
 
-            <StyledButton variant="primary" type="submit" disabled={emailAvailable !== true}>
+            <StyledButton variant="primary" type="submit" >
               회원가입
             </StyledButton>
           </StyledForm>
