@@ -8,7 +8,7 @@ axios.defaults.withCredentials = true;
 
 // axios 인스턴스 생성. 모든 요청에 사용됩니다.
 const axiosInstance = axios.create({
-  baseURL: 'https://branches-gpt-server.onrender.com/api/', // API 요청의 기본 URL 설정
+  baseURL: 'https://branches-gpt-server.onrender.com/api', // API 요청의 기본 URL 설정
   headers: {
     'Content-Type': 'application/json', // 요청 헤더에 Content-Type을 application/json으로 설정
   },
@@ -26,8 +26,8 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(error);
       }
       // 인증 오류 발생 시 처리
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
+      if (window.location.pathname !== '/user/login') {
+        window.location.href = '/user/login';
       }
     }
     return Promise.reject(error);
