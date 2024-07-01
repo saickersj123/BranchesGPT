@@ -23,6 +23,7 @@ app.use(morgan("dev")); // for development
 // routes
 app.use("/api/user/", userRoutes);
 app.use("/api/chat/", chatRoutes);
+app.use("/api/", chatRoutes);
 
 // Connections and Listeners
 mongoose
