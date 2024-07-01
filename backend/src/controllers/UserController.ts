@@ -43,10 +43,12 @@ export const userSignUp = async (
 
 		res.clearCookie(COOKIE_NAME),
 			{
-				path: "/", //cookie directory in browser
-				domain: process.env.DOMAIN, // our website domain
-				httpOnly: true,
-				signed: true,
+			path: "/", //cookie directory in browser
+			domain: process.env.DOMAIN, // our website domain
+			httpOnly: true,
+			signed: true,
+			sameSite: 'none',
+			secure: true,
 			};
 
 		// create token
@@ -61,7 +63,7 @@ export const userSignUp = async (
 			expires, // same as token expiration time
 			httpOnly: true,
 			signed: true,
-			sameSite: true,
+			sameSite: 'none',
 			secure: true,
 		});
 
@@ -103,6 +105,8 @@ export const userLogin = async (
 				domain: process.env.DOMAIN, // our website domain
 				httpOnly: true,
 				signed: true,
+				sameSite: 'none',
+				secure: true,
 			};
 
 		// create token
@@ -117,7 +121,7 @@ export const userLogin = async (
 			expires, // same as token expiration time
 			httpOnly: true,
 			signed: true,
-			sameSite: true,
+			sameSite: 'none',
 			secure: true,
 		});
 
@@ -182,13 +186,15 @@ export const logoutUser = async (
 		}
 
         res.clearCookie(COOKIE_NAME),
-        {
-            path: "/", //cookie directory in browser
-            domain: process.env.DOMAIN, // our website domain
-            httpOnly: true,
-            signed: true,
-        };
-
+		{
+			path: "/", //cookie directory in browser
+			domain: process.env.DOMAIN, // our website domain
+			httpOnly: true,
+			signed: true,
+			sameSite: 'none',
+			secure: true,
+		};
+		res.redirect('/');
 		return res
 			.status(200)
 			.json({ message: "OK", name: user.name, email: user.email });
