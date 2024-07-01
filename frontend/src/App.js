@@ -29,10 +29,6 @@ const App = () => {
     checkAuth();
   }, []);
 
-  useEffect(() => {
-    sessionStorage.setItem('isLoggedIn', isLoggedIn);
-  }, [isLoggedIn]);
-
   const toggleEditMode = () => {
     setIsEditMode(prevEditMode => !prevEditMode);
   };
