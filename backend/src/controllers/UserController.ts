@@ -41,7 +41,7 @@ export const userSignUp = async (
 
 		// create token and store cookie
 
-		res.cookie(COOKIE_NAME,
+		res.cookie(COOKIE_NAME,'clear_token' ,
 			{
 				path: "/", //cookie directory in browser
 				domain: process.env.DOMAIN, // our website domain
@@ -100,7 +100,7 @@ export const userLogin = async (
 				.json({ message: "ERROR", cause: "Incorrect Password" });
 
 		// if user will login again we have to -> set new cookies -> erase previous cookies
-		res.cookie(COOKIE_NAME,
+		res.cookie(COOKIE_NAME,'clear_token' ,
 			{
 				path: "/", //cookie directory in browser
 				domain: process.env.DOMAIN, // our website domain
@@ -187,7 +187,7 @@ export const logoutUser = async (
 				.json({ message: "ERROR", cause: "Permissions didn't match" });
 		}
 
-		res.cookie(COOKIE_NAME,
+        res.cookie(COOKIE_NAME,'clear_token' ,
 			{
 				path: "/", //cookie directory in browser
 				domain: process.env.DOMAIN, // our website domain
