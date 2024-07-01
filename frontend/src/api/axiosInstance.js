@@ -15,25 +15,6 @@ const axiosInstance = axios.create({
   withCredentials: true, // 인스턴스 레벨에서 withCredentials 설정
 });
 
-// 응답 인터셉터 
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const originalRequest = error.config;
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      // 특정 요청에 대해 인터셉터 무시
-      if (originalRequest.url.includes('/user/mypage')) {
-        return Promise.reject(error);
-      }
-      // 인증 오류 발생 시 처리
-      if (window.location.pathname !== '/user/login') {
-        window.location.href = '/user/login';
-      }
-    }
-    return Promise.reject(error);
-  }
-);
-
 // 인증 상태 확인
 export const checkAuthStatus = async () => {
   console.log('checkAuthStatus 호출');
