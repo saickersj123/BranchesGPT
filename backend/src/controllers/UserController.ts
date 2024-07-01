@@ -61,7 +61,6 @@ export const userSignUp = async (
 			expires, // same as token expiration time
 			httpOnly: true,
 			signed: true,
-			sameSite: 'none',
 			secure: true,
 		});
 
@@ -117,7 +116,6 @@ export const userLogin = async (
 			expires, // same as token expiration time
 			httpOnly: true,
 			signed: true,
-			sameSite: 'none',
 			secure: true,
 		});
 
