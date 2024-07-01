@@ -43,10 +43,12 @@ export const userSignUp = async (
 
 		res.clearCookie(COOKIE_NAME),
 			{
-				path: "/", //cookie directory in browser
-				domain: process.env.DOMAIN, // our website domain
-				httpOnly: true,
-				signed: true,
+			path: "/", //cookie directory in browser
+			domain: process.env.DOMAIN, // our website domain
+			httpOnly: true,
+			signed: true,
+			sameSite: 'none',
+			secure: true,
 			};
 
 		// create token
@@ -104,6 +106,7 @@ export const userLogin = async (
 				httpOnly: true,
 				signed: true,
 				sameSite: 'none',
+				secure: true,
 			};
 
 		// create token
@@ -183,13 +186,14 @@ export const logoutUser = async (
 		}
 
         res.clearCookie(COOKIE_NAME),
-        {
-            path: "/", //cookie directory in browser
-            domain: process.env.DOMAIN, // our website domain
-            httpOnly: true,
-            signed: true,
+		{
+			path: "/", //cookie directory in browser
+			domain: process.env.DOMAIN, // our website domain
+			httpOnly: true,
+			signed: true,
 			sameSite: 'none',
-        };
+			secure: true,
+		};
 
 		return res
 			.status(200)
