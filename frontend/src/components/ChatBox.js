@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import { Form, Button } from 'react-bootstrap';
 import '../css/ChatBox.css';
-import { sendMessage } from '../api/axiosInstance';
+import { sendMessage } from '../api/ChatAxios';
 
-const ChatBox = ({ onNewMessage, onUpdateMessage }) => {
+const ChatBox = ({ onNewMessage, onUpdateMessage, isEditMode }) => {
   const [message, setMessage] = useState('');
 
   const handleMessageChange = (event) => {
@@ -47,23 +48,31 @@ const ChatBox = ({ onNewMessage, onUpdateMessage }) => {
   };
 
   return (
-    <div className="chat-input-container">
-      <div className="textarea-wrapper">
-        <textarea
+    <Form className="chat-input-container" onSubmit={(e) => e.preventDefault()}>
+      <Form.Group controlId="messageInput" className="textarea-wrapper">
+        <Form.Control
+          as="textarea"
+          rows={1}
           value={message}
           onChange={handleMessageChange}
           onKeyPress={handleKeyPress}
           placeholder="메시지를 입력하세요..."
           className="chat-container"
+          disabled={isEditMode} // Disable input in edit mode
         />
-        <button onClick={sendMessageToServer} className="chat-box-button">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-right" viewBox="0 0 16 16">
+        <Button
+          type="submit"
+          onClick={sendMessageToServer}
+          className="chat-box-button"
+          disabled={isEditMode}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-right" viewBox="0 0 16 16">
             <path fillRule="evenodd" d="M9.354 3.354a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 1 1-.708-.708L12.293 8 9.354 5.146a.5.5 0 0 1 0-.708z"/>
             <path fillRule="evenodd" d="M.5 8a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 0 1H1a.5.5 0 0 1-.5-.5z"/>
           </svg>
-        </button>
-      </div>
-    </div>
+        </Button>
+      </Form.Group>
+    </Form>
   );
 };
 
