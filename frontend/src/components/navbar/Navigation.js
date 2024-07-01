@@ -46,7 +46,13 @@ const Navigation = ({
     setIsLoading(true);
     try {
       await logout();
-      removeCookie('auth_token', { path: '/', sameSite:'none'}); // 쿠키 삭제
+      removeCookie('auth_token',{
+				path: "/", //cookie directory in browser
+				httpOnly: true,
+				signed: true,
+				sameSite: 'none',
+				secure: true,
+			}); // 쿠키 삭제
       setIsLoggedIn(false);
       navigate('/'); // 로그아웃 후 메인 페이지로 리다이렉트
     } catch (error) {
