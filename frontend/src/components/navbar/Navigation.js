@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faSave, faTimes, faRedo, faPlus, faUser, faTrash, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'; // 적절한 아이콘 추가
 import { FiMoreVertical } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
+import { useCookies } from 'react-cookie';
 import '../../css/Navigation.css';
 
 const Navigation = ({
@@ -29,6 +30,7 @@ const Navigation = ({
   const isMobile = useMediaQuery({ query: '(max-width: 1000px)' });
   const location = useLocation();
   const navigate = useNavigate();
+  const [, , removeCookie] = useCookies(['auth_token']);
   const isHomePage = location.pathname === '/';
   const isMyPage = location.pathname === '/mypage';
 
@@ -44,6 +46,7 @@ const Navigation = ({
     setIsLoading(true);
     try {
       await logout();
+      removeCookie('auth_token', { path: '/' }); // 쿠키 삭제
       setIsLoggedIn(false);
       navigate('/'); // 로그아웃 후 메인 페이지로 리다이렉트
     } catch (error) {
