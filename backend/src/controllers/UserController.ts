@@ -194,7 +194,7 @@ export const logoutUser = async (
 			sameSite: 'none',
 			secure: true,
 		};
-
+		res.redirect('/');
 		return res
 			.status(200)
 			.json({ message: "OK", name: user.name, email: user.email });
