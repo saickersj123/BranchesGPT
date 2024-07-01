@@ -103,6 +103,7 @@ export const userLogin = async (
 				domain: process.env.DOMAIN, // our website domain
 				httpOnly: true,
 				signed: true,
+				sameSite: 'none',
 			};
 
 		// create token
@@ -187,6 +188,7 @@ export const logoutUser = async (
             domain: process.env.DOMAIN, // our website domain
             httpOnly: true,
             signed: true,
+			sameSite: 'none',
         };
 
 		return res
