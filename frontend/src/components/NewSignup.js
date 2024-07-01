@@ -76,29 +76,6 @@ const Signup = ({ show, onHide }) => { // Signup 컴포넌트를 정의합니다
     }
   };
 
-  const handleCheckEmail = async () => { // 이메일 중복 확인을 처리하는 비동기 함수입니다.
-    if (!email) {
-      setError('이메일을 입력하세요.');
-      return;
-    }
-
-    try {
-      const response = await checkEmail(email); // 이메일 중복 확인 요청을 보냅니다.
-      setEmailAvailable(response.available);
-      if (response.available) {
-        setError('');
-        setEmailCheckSuccess(true);
-        setShowEmailModal(true); // 이메일 사용 가능 모달을 표시합니다.
-      } else {
-        setError('이메일이 이미 사용 중입니다.');
-        setEmailCheckSuccess(false);
-      }
-    } catch (error) {
-      setError('이메일 확인 중 오류가 발생했습니다. 다시 시도하세요.');
-      setEmailCheckSuccess(false);
-    }
-  };
-
   return (
     <>
       <Modal show={show} onHide={onHide}> {/* 회원가입 모달을 렌더링합니다. */}
@@ -119,22 +96,11 @@ const Signup = ({ show, onHide }) => { // Signup 컴포넌트를 정의합니다
                   onChange={(e) => {
                     setEmail(e.target.value);
                     setEmailAvailable(null);
-                    setEmailCheckSuccess(false);
+                    
                   }}
                   
                 />
-                <Button variant="outline-secondary" onClick={handleCheckEmail}>
-                  중복확인
-                </Button>
-                {validate && email && (
-                  <InputGroup.Text>
-                    {emailAvailable === true ? (
-                      <FaCheckCircle color="green" />
-                    ) : emailAvailable === false ? (
-                      <FaTimesCircle color="red" />
-                    ) : null}
-                  </InputGroup.Text>
-                )}
+                
               </InputGroup>
             </Form.Group>
 
@@ -146,7 +112,7 @@ const Signup = ({ show, onHide }) => { // Signup 컴포넌트를 정의합니다
                   placeholder="8~15자리의 비밀번호를 입력하세요"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  disabled={emailAvailable !== true}
+                  
                 />
                 {password && emailAvailable === true && (
                   <InputGroup.Text>
@@ -178,17 +144,7 @@ const Signup = ({ show, onHide }) => { // Signup 컴포넌트를 정의합니다
         </Modal.Body>
       </Modal>
 
-      <Modal show={showEmailModal} onHide={() => setShowEmailModal(false)}> {/* 이메일 확인 모달을 렌더링합니다. */}
-        <Modal.Header closeButton>
-          <Modal.Title>이메일 확인</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>사용 가능한 이메일입니다.</Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={() => setShowEmailModal(false)}>
-            확인
-          </Button>
-        </Modal.Footer>
-      </Modal>
+     
     </>
   );
 };
