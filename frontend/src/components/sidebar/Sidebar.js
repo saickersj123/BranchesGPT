@@ -1,36 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { FaBars, FaTimes } from 'react-icons/fa';
+import React, { useEffect, useRef } from 'react';
+import { FaBars, FaTimes, FaTrashAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { fetchChatHistory } from '../../api/ChatAxios';
 import { useMediaQuery } from 'react-responsive';
+import { deleteConversation } from '../../api/axiosInstance'; // 삭제 API 함수 임포트
 import '../../css/Sidebar.css';
 
-const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar }) => {
-  const [chatRooms, setChatRooms] = useState([]);
+const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar, conversations, onConversationSelect, onNewChat, onConversationDelete }) => {
   const navigate = useNavigate();
   const isMobile = useMediaQuery({ query: '(max-width: 1000px)' });
-
-  useEffect(() => {
-    const getChatRooms = async () => {
-      try {
-        const rooms = await fetchChatHistory();
-        // rooms가 배열이 아닌 경우 배열로 변환
-        if (!Array.isArray(rooms)) {
-          console.warn('Unexpected response format, converting to an array:', rooms);
-          setChatRooms([rooms]); // rooms를 배열로 감싸기
-        } else {
-          setChatRooms(rooms);
-        }
-      } catch (error) {
-        console.error('채팅방 목록을 가져오는 데 실패했습니다:', error);
-        setChatRooms([]); // 에러 발생 시 빈 배열로 설정
-      }
-    };
-
-    if (isLoggedIn) {
-      getChatRooms();
-    }
-  }, [isLoggedIn]);
+  const sidebarRef = useRef(null);
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -40,7 +18,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar }) => {
 
   const groupByDate = (rooms) => {
     return rooms.reduce((groups, room) => {
-      const date = room.time.split('T')[0];
+      const date = room.createdAt.split('T')[0];
       if (!groups[date]) {
         groups[date] = [];
       }
@@ -50,29 +28,65 @@ const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar }) => {
   };
 
   const sortedChatRooms = () => {
-    const grouped = groupByDate(chatRooms);
+    const grouped = groupByDate(conversations);
     return Object.keys(grouped)
-      .sort((a, b) => new Date(b) - new Date(a))
+      .sort((a, b) => new Date(a) - new Date(b))
       .map(date => ({
         date,
-        rooms: grouped[date]
+        rooms: grouped[date].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       }));
   };
 
   const handleRoomClick = (roomId) => {
+    onConversationSelect(roomId);
     navigate(`/chat/${roomId}`);
     if (isMobile) {
       closeSidebar();
     }
   };
 
+  const handleDeleteClick = async (roomId) => {
+    try {
+      await deleteConversation(roomId);
+      onConversationDelete(); // 삭제 후 상태 업데이트 호출
+      closeSidebar();
+      alert('대화가 성공적으로 삭제되었습니다.');
+    } catch (error) {
+      alert('대화 삭제에 실패했습니다. 다시 시도해주세요.');
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target) && isOpen) {
+        closeSidebar();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, closeSidebar]);
+
+  // 사이드바 순서를 콘솔에 출력
+  useEffect(() => {
+    console.log('사이드바 순서:');
+    sortedChatRooms().forEach(group => {
+      console.log(`날짜: ${group.date}`);
+      group.rooms.forEach(room => {
+        console.log(`대화 ID: ${room._id}, 마지막 메시지: ${room.chats[room.chats.length - 1]?.content}`);
+      });
+    });
+  }, [conversations]);
+
   return (
-    <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
+    <div className={`sidebar ${isOpen ? 'open' : 'closed'}`} ref={sidebarRef}>
       <button className="toggle-button" onClick={toggleSidebar}>
         {isOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
       </button>
       <div className="sidebar-menu">
-        {chatRooms.length === 0 ? (
+        {conversations.length === 0 ? (
           <div className="no-chat-rooms">
             <p>대화 기록이 없습니다.<br /> 새로운 채팅을 시작해 보세요!</p>
           </div>
@@ -81,8 +95,13 @@ const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar }) => {
             <div key={index} className="chat-date-group">
               <h3 className="chat-date">{formatDate(group.date)}</h3>
               {group.rooms.map((room, idx) => (
-                <div key={idx} className="chat-room" onClick={() => handleRoomClick(room.roomId)}>
-                  <p className="last-message">{room.lastMessage}</p>
+                <div key={idx} className="chat-room">
+                  <p className="last-message" onClick={() => handleRoomClick(room._id)}>
+                    {room.chats[room.chats.length - 1]?.content}
+                  </p>
+                  <button className="delete-button" onClick={() => handleDeleteClick(room._id)}>
+                    <FaTrashAlt size={16} />
+                  </button>
                 </div>
               ))}
             </div>

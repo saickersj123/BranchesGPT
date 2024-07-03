@@ -8,7 +8,7 @@ import Alert from 'react-bootstrap/Alert';
 import Spinner from 'react-bootstrap/Spinner';
 import backgroundImage from '../img/login_background_image.png';
 import Signup from '../components/NewSignup';
-import { loginUser } from '../api/UserAxios';
+import { loginUser } from '../api/axiosInstance';
 import '../css/Login.css'; // 로그인 페이지의 CSS 파일
 
 const BackgroundContainer = styled.div`
@@ -96,11 +96,10 @@ const Login = ({ setIsLoggedIn, setUser }) => {
     try {
       const response = await loginUser(email, password);
       if (response.message === 'OK') {
-        setTimeout(() => {
-          setIsLoggedIn(true);
-          setUser(response.data); // 유저 정보 저장
-          navigate('/');
-        }, 1000); // 로그인 성공 후 1초 후 홈 페이지로 이동
+        setIsLoggedIn(true);
+        setUser(response.data); // 유저 정보 저장
+
+        navigate('/');
       } else {
         setError(response.message || '로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.');
         setLoading(false);

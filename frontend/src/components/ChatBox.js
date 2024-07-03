@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import '../css/ChatBox.css';
-import { sendMessage } from '../api/ChatAxios';
+import { sendMessage } from '../api/axiosInstance';
 
-const ChatBox = ({ onNewMessage, onUpdateMessage, isEditMode }) => {
+const ChatBox = ({ conversationId, onNewMessage, onUpdateMessage, isEditMode, isNewChat, startNewConversationWithMessage }) => {
   const [message, setMessage] = useState('');
 
   const handleMessageChange = (event) => {
@@ -11,7 +11,7 @@ const ChatBox = ({ onNewMessage, onUpdateMessage, isEditMode }) => {
   };
 
   const sendMessageToServer = async () => {
-    if (message.trim() === '') return;
+    if (message.trim() === '') return; // 빈 메시지일 경우 리턴
 
     const newMessage = {
       content: message,
@@ -22,17 +22,21 @@ const ChatBox = ({ onNewMessage, onUpdateMessage, isEditMode }) => {
     onNewMessage(newMessage); // 사용자 메시지를 추가하여 상태 업데이트
 
     try {
-      const response = await sendMessage(message);
-      console.log('Message sent:', response);
+      if (isNewChat) {
+        console.log('Starting new conversation from ChatBox with message:', message); // 디버그 로그 추가
+        await startNewConversationWithMessage(message); // 사용자가 입력한 메시지로 새로운 대화 시작
+      } else {
+        const response = await sendMessage(conversationId, message);
+        console.log('Message sent:', response);
 
-      if (response && response.length > 0) {
-        // response에서 AI 응답을 올바르게 가져옵니다.
-        const aiMessage = {
-          content: response[response.length - 1].content, // Assuming the response has a content field for AI
-          role: 'assistant',
-          createdAt: new Date().toISOString()
-        };
-        onUpdateMessage(aiMessage); // AI 응답 메시지를 추가하여 상태 업데이트
+        if (response && response.length > 0) {
+          const aiMessage = {
+            content: response[response.length - 1].content,
+            role: 'assistant',
+            createdAt: new Date().toISOString()
+          };
+          onUpdateMessage(aiMessage); // AI 응답 메시지를 추가하여 상태 업데이트
+        }
       }
       setMessage(''); // 입력 필드 초기화
     } catch (error) {
@@ -58,7 +62,7 @@ const ChatBox = ({ onNewMessage, onUpdateMessage, isEditMode }) => {
           onKeyPress={handleKeyPress}
           placeholder="메시지를 입력하세요..."
           className="chat-container"
-          disabled={isEditMode} // Disable input in edit mode
+          disabled={isEditMode}
         />
         <Button
           type="submit"
