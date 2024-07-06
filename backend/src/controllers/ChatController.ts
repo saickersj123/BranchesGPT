@@ -16,17 +16,17 @@ export const generateChatCompletion = async (
 			return res.status(401).json("User not registered / token malfunctioned");
 		}
 
-		// grab chats of users
+		// Add the user's message to the conversation
+		const conversation = user.conversations[user.conversations.length - 1];
 
-		const chats = user.chats.map(({ role, content }) => ({
+		// Prepare messages for OpenAI API
+		const chats = conversation.chats.map(({ role, content }) => ({
 			role,
 			content,
 		})) ;
 		chats.push({ content: message, role: "user" });
 
-		// save chats inside real user object
-		user.chats.push({ content: message, role: "user" });
-
+		conversation.chats.push({ content: message, role: "user" });
 		// send all chats with new ones to OpenAI API
 		const config = configureOpenAI();
 		const openai = new OpenAI(config);
@@ -39,17 +39,17 @@ export const generateChatCompletion = async (
 		});
 
 		// push latest response to db
-		user.chats.push(chatResponse.choices[0].message);
+		conversation.chats.push(chatResponse.choices[0].message);
 		await user.save();
 
-		return res.status(200).json({ chats: user.chats });
+		return res.status(200).json({ chats: conversation.chats });
 	} catch (error) {
 		console.log(error);
 		return res.status(500).json({ message: error.message });
 	}
 };
 
-export const getAllChats = async (
+export const getAllConversations = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -68,14 +68,14 @@ export const getAllChats = async (
 				.status(401)
 				.json({ message: "ERROR", cause: "Permissions didn't match" });
 		}
-		return res.status(200).json({ message: "OK", chats: user.chats });
+		return res.status(200).json({ message: "OK", conversations: user.conversations });
 	} catch (err) {
 		console.log(err);
 		return res.status(200).json({ message: "ERROR", cause: err.message });
 	}
 };
 
-export const deleteAllChats = async (
+export const deleteAllConversatoins = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -96,11 +96,101 @@ export const deleteAllChats = async (
 		}
 
         //@ts-ignore
-        user.chats = []
+        user.conversations = [];
         await user.save()
-		return res.status(200).json({ message: "OK", chats: user.chats });
+		return res.status(200).json({ message: "OK", conversations: user.conversations });
 	} catch (err) {
 		console.log(err);
 		return res.status(200).json({ message: "ERROR", cause: err.message });
+	}
+};
+
+export const startNewConversation = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const user = await User.findById(res.locals.jwtData.id);
+
+		if (!user)
+			return res.status(401).json({
+				message: "ERROR",
+				cause: "User doesn't exist or token malfunctioned",
+			});
+
+		user.conversations.push({ chats: [] });
+		await user.save();
+
+		return res.status(200).json({ message: "New conversation started", conversations: user.conversations });
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json({ message: "ERROR", cause: err.message });
+	}
+};
+
+export const getConversation = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const user = await User.findById(res.locals.jwtData.id);
+		const { conversationId } = req.params;
+
+		if (!user) {
+			return res.status(401).json({
+				message: "ERROR",
+				cause: "User doesn't exist or token malfunctioned",
+			});
+		}
+
+		const conversation = user.conversations.id(conversationId);
+		if (!conversation) {
+			return res.status(404).json({
+				message: "ERROR",
+				cause: "Conversation not found",
+			});
+		}
+
+		return res.status(200).json({ message: "OK", conversation });
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json({ message: "ERROR", cause: err.message });
+	}
+};
+
+export const deleteConversation = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const user = await User.findById(res.locals.jwtData.id);
+		const { conversationId } = req.params;
+
+		if (!user) {
+			return res.status(401).json({
+				message: "ERROR",
+				cause: "User doesn't exist or token malfunctioned",
+			});
+		}
+
+		const conversation = user.conversations.id(conversationId);
+		if (!conversation) {
+			return res.status(404).json({
+				message: "ERROR",
+				cause: "Conversation not found",
+			});
+		}
+
+		// Remove the conversation
+		user.conversations.pull(conversationId);
+		await user.save();
+
+		return res.status(200).json({ message: "OK", conversations: user.conversations });
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json({ message: "ERROR", cause: err.message });
 	}
 };
