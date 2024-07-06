@@ -1,14 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Container } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../css/ChatList.css';
+import '../css/ChatList.css'; 
 
 const ChatMessage = ({ content, role, time, username }) => {
   let timeString = '';
   if (time && !isNaN(new Date(time).getTime())) {
     timeString = new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
   } else {
-    timeString = 'Invalid Date'; // 혹은 다른 기본값 설정
+    timeString = 'Invalid Date';
   }
   const displayUsername = role === 'assistant' ? 'AI' : (username || 'You');
 
@@ -25,7 +25,7 @@ const ChatMessage = ({ content, role, time, username }) => {
   );
 };
 
-const ChatList = ({ messages, username = 'You' }) => {
+const ChatList = ({ messages, username }) => {
   const chatEndRef = useRef(null);
 
   useEffect(() => {

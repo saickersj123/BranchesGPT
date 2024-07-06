@@ -1,15 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import Dropdown from 'react-bootstrap/Dropdown';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { deleteAllChats } from '../../api/ChatAxios'; 
-import { logout } from '../../api/UserAxios'; 
+import React, { useState, useEffect } from 'react';
+import { Container, Navbar, Nav, Dropdown } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog, faSave, faTimes, faRedo, faPlus, faUser, faTrash, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'; // 적절한 아이콘 추가
+import { faCog, faSave, faTimes, faRedo, faPlus, faUser, faTrash, faSignOutAlt, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FiMoreVertical } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
+import { deleteAllChats, logout } from '../../api/axiosInstance';
 import '../../css/Navigation.css';
 
 const Navigation = ({
@@ -21,16 +17,17 @@ const Navigation = ({
   handleCancelClick,
   handleResetLayout,
   loadMessages,
-  startNewChat,
+  startNewConversationWithMessage, // Home 컴포넌트의 함수를 호출할 수 있도록 콜백 추가
 }) => {
   const [navbarHeight, setNavbarHeight] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false); // 삭제 상태를 추가
+  const [isDeleting, setIsDeleting] = useState(false);
   const isMobile = useMediaQuery({ query: '(max-width: 1000px)' });
-  const location = useLocation();
   const navigate = useNavigate();
-  const isHomePage = location.pathname === '/';
-  const isMyPage = location.pathname === '/mypage';
+
+  const isHomePage = window.location.pathname === '/';
+  const isChatPage = window.location.pathname.startsWith('/chat');
+  const isMyPage = window.location.pathname === '/mypage';
 
   useEffect(() => {
     const navbar = document.querySelector('.navbar');
@@ -41,16 +38,19 @@ const Navigation = ({
   }, []);
 
   const handleLogout = async () => {
-    setIsLoading(true);
+    setIsLoading(true); 
     try {
-      await logout();
-      setIsLoggedIn(false);
-      navigate('/'); // 로그아웃 후 메인 페이지로 리다이렉트
-    } catch (error) {
-      console.error('로그아웃 실패:', error);
+      const logoutSuccess = await logout();
+      if (logoutSuccess) { 
+        setIsLoggedIn(false);
+        navigate('/'); // 로그아웃 성공 시 홈으로 이동
+      } else { 
+        alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
+      }
+    } catch (error) { 
       alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); 
     }
   };
 
@@ -58,14 +58,18 @@ const Navigation = ({
     setIsDeleting(true);
     try {
       await deleteAllChats();
-      alert('대화기록이 성공적으로 삭제되었습니다.');
-      loadMessages(); // 대화기록 삭제 후 메시지 다시 불러오기
-    } catch (error) {
-      console.error('대화기록 삭제 실패:', error);
+      alert('대화기록이 성공적으로 삭제되었습니다.'); 
+      startNewConversationWithMessage(); // 새로운 채팅 시작
+      window.location.reload(); // 페이지 새로고침
+    } catch (error) { 
       alert('대화기록 삭제에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const handleStartNewChat = () => { 
+    startNewConversationWithMessage(''); // 빈 메시지로 새로운 대화를 시작
   };
 
   return (
@@ -78,18 +82,18 @@ const Navigation = ({
               <FiMoreVertical />
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              {isHomePage && (
+              {(isHomePage || isChatPage) && (
                 <Dropdown.Item onClick={toggleEditMode}>
-                  <FontAwesomeIcon icon={faCog} /> 위치조정
+                  <FontAwesomeIcon icon={faEdit} /> 위치조정
                 </Dropdown.Item>
               )}
               <Dropdown.Item as={Link} to="/mypage">
                 <FontAwesomeIcon icon={faUser} /> 마이페이지
               </Dropdown.Item>
               <Dropdown.Item onClick={handleDeleteAllChats}>
-                {isDeleting ? <FontAwesomeIcon icon={faTrash} spin /> : <FontAwesomeIcon icon={faTrash} />} 대화기록 삭제
+                {isDeleting ? <FontAwesomeIcon icon={faTrash} spin /> : <FontAwesomeIcon icon={faTrash} />}모든 채팅기록 삭제
               </Dropdown.Item>
-              <Dropdown.Item onClick={startNewChat}>
+              <Dropdown.Item onClick={handleStartNewChat}>
                 <FontAwesomeIcon icon={faPlus} /> 새로운 채팅
               </Dropdown.Item>
               <Dropdown.Item onClick={handleLogout}>
@@ -131,14 +135,18 @@ const Navigation = ({
                               <FontAwesomeIcon icon={faCog} />
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                              {isHomePage && <Dropdown.Item onClick={toggleEditMode}>위치조정</Dropdown.Item>}
+                              {(isHomePage || isChatPage) && (
+                                <Dropdown.Item onClick={toggleEditMode}>
+                                  <FontAwesomeIcon icon={faEdit} /> 위치조정
+                                </Dropdown.Item>
+                              )}
                               <Dropdown.Item as={Link} to="/mypage">
                                 <FontAwesomeIcon icon={faUser} /> 마이페이지
                               </Dropdown.Item>
                               <Dropdown.Item onClick={handleDeleteAllChats}>
-                                {isDeleting ? <FontAwesomeIcon icon={faTrash} spin /> : <FontAwesomeIcon icon={faTrash} />} 대화기록 삭제
+                                {isDeleting ? <FontAwesomeIcon icon={faTrash} spin /> : <FontAwesomeIcon icon={faTrash} />} 모든 채팅기록 삭제
                               </Dropdown.Item>
-                              <Dropdown.Item onClick={startNewChat}>
+                              <Dropdown.Item onClick={handleStartNewChat}>
                                 <FontAwesomeIcon icon={faPlus} /> 새로운 채팅
                               </Dropdown.Item>
                               <Dropdown.Item onClick={handleLogout}>

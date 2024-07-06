@@ -34,20 +34,6 @@
   }
 }
 
-/* 데스크탑 사이드바 메뉴 마진 설정 */
-.sidebar-menu {
-  margin-top: 5vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* 모바일 사이드바 메뉴 마진 설정 */
-@media (max-width: 768px) {
-  .sidebar-menu {
-    margin-top: 10vh;
-  }
-}
-
 .sidebar.closed {
   transform: translateX(-100%);
 }
@@ -72,18 +58,25 @@
   transition: right 0.3s ease;
 }
 
-.sidebar.closed .toggle-button {
-  right: -50px;
+.sidebar-menu {
+  margin-top: 5vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.sidebar.open .toggle-button {
-  right: -50px;
+@media (max-width: 768px) {
+  .sidebar-menu {
+    margin-top: 10vh;
+  }
 }
 
 .sidebar-menu p {
-  margin-bottom: 15px;
+  margin-bottom: 0px;
   color: #333;
   cursor: pointer; /* 커서를 포인터로 변경하여 클릭 가능한 상태로 만듭니다. */
+  white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 설정 */
+  overflow: hidden; /* 텍스트가 사이드바를 넘어서지 않도록 설정 */
+  text-overflow: ellipsis; /* 넘친 텍스트를 생략 부호(...)로 표시 */
 }
 
 .sidebar-menu a {
@@ -92,16 +85,7 @@
   text-decoration: none;
 }
 
-.sidebar-menu a:hover {
-  color: #007bff;
-}
-
-.sidebar-menu p {
-  white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 설정 */
-  overflow: hidden; /* 텍스트가 사이드바를 넘어서지 않도록 설정 */
-  text-overflow: ellipsis; /* 넘친 텍스트를 생략 부호(...)로 표시 */
-}
-
+.sidebar-menu a:hover,
 .sidebar-menu p:hover {
   color: #007bff;
 }
@@ -118,10 +102,14 @@
 }
 
 .chat-room {
+  display: flex;
+  align-items: center;  
+  justify-content: space-between;
   margin-bottom: 15px;
 }
 
 .last-message {
+  flex-grow: 1; 
   color: #333;
   cursor: pointer;
   white-space: nowrap;
@@ -129,7 +117,6 @@
   text-overflow: ellipsis;
 }
 
-/* 새로운 스타일 추가 */
 .no-chat-rooms {
   text-align: center;
   padding: 20px;
@@ -141,4 +128,14 @@
   font-weight: bold;
   color: #555;
   white-space: normal; /* 텍스트가 줄 바꿈되도록 설정 */
+}
+
+.delete-button {  
+  background: none; /* 배경을 없앱니다 */
+  border: none; /* 테두리를 없앱니다 */
+  cursor: pointer; /* 커서를 포인터로 변경합니다 */
+  color: #ff0000; /* 삭제 버튼의 색상을 빨간색으로 설정합니다 */
+  margin-left: 10px; /* 메시지와 삭제 버튼 사이의 간격 설정 */
+  display: flex;
+  align-items: center; /* 버튼의 내용이 중앙에 오도록 설정 */
 }
