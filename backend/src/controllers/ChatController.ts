@@ -1,8 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import User from "../models/User.js";
-import { configureOpenAI } from "../config/openai.js";
+import { configureOpenAI, Model } from "../config/openai.js";
 import OpenAI from "openai";
+import { saveModel, loadModel } from "../utils/modelStorage.js";
+import { fineTuneModel} from "../utils/fineTuneModel.js"
 
+ 
 export const generateChatCompletion = async (
 	req: Request,
 	res: Response,
@@ -34,7 +37,7 @@ export const generateChatCompletion = async (
 		// make request to openAi
 		// get latest response
 		const chatResponse = await openai.chat.completions.create({
-			model: "gpt-3.5-turbo",
+			model: Model,
 			messages: chats as OpenAI.Chat.ChatCompletionMessageParam[],
 		});
 
@@ -194,3 +197,35 @@ export const deleteConversation = async (
 		return res.status(500).json({ message: "ERROR", cause: err.message });
 	}
 };
+
+export const createCustomGPT = async (req: Request, res: Response) => {
+	try {
+		const { trainingData, modelName } = req.body;
+	  	const fineTunedModel = await fineTuneModel(trainingData);
+  
+	  	saveModel(fineTunedModel, modelName);
+  
+	  	res.status(201).json({ message: "Model fine-tuned and saved", model: fineTunedModel });
+	} catch (err) {
+	  	res.status(500).json({ error: err.message });
+	}
+  };
+  
+  export const getCustomGPTResponse = async (req: Request, res: Response) => {
+	try {
+	  	const { modelName, prompt } = req.body;
+	  	const model = loadModel(modelName);
+
+		const config = configureOpenAI();
+		const openai = new OpenAI(config);
+	  	const response = await openai.completions.create({
+			model: model.id,
+			prompt,
+			max_tokens: 150,
+	  	});
+  
+	  	res.status(200).json({ response: response.choices[0].text });
+	} catch (err) {
+	  	res.status(500).json({ error: err.message });
+	}
+  };
