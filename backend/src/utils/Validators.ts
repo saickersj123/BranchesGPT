@@ -37,3 +37,8 @@ export const signUpValidator = [
 export const chatCompletionValidator = [
 	body("message").notEmpty().withMessage("Message is required"),
 ];
+
+export const fineTuneValidator = [
+	body("modelName").trim().notEmpty().withMessage("Model name is required"),
+	body("trainingData").trim().notEmpty().withMessage("Training data is required"),
+];

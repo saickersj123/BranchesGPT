@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import User from "../models/User.js";
 import { configureOpenAI, Model } from "../config/openai.js";
 import OpenAI from "openai";
-import { saveModel, loadModel } from "../utils/modelStorage.js";
-import { fineTuneModel} from "../utils/fineTuneModel.js"
+import { saveModel, loadModel, deleteModel } from "../utils/modelStorage.js";
+import { fineTuneModel } from "../utils/fineTuneModel.js"
 
  
 export const generateChatCompletion = async (
@@ -78,7 +78,7 @@ export const getAllConversations = async (
 	}
 };
 
-export const deleteAllConversatoins = async (
+export const deleteAllConversations = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -198,12 +198,16 @@ export const deleteConversation = async (
 	}
 };
 
-export const createCustomGPT = async (req: Request, res: Response) => {
+export const createCustomModel = async (
+	req: Request,
+	res: Response,
+	next: NextFunction) => {
 	try {
+		const userId = res.locals.jwtData.id;
 		const { trainingData, modelName } = req.body;
 	  	const fineTunedModel = await fineTuneModel(trainingData);
   
-	  	saveModel(fineTunedModel, modelName);
+	  	saveModel(userId, fineTunedModel, modelName);
   
 	  	res.status(201).json({ message: "Model fine-tuned and saved", model: fineTunedModel });
 	} catch (err) {
@@ -211,15 +215,19 @@ export const createCustomGPT = async (req: Request, res: Response) => {
 	}
   };
   
-  export const getCustomGPTResponse = async (req: Request, res: Response) => {
+  export const getCustomModelResponse = async (
+	req: Request,
+	res: Response,
+	next: NextFunction) => {
 	try {
+		const userId = res.locals.jwtData.id;
 	  	const { modelName, prompt } = req.body;
-	  	const model = loadModel(modelName);
+	  	const model = loadModel(userId, modelName);
 
 		const config = configureOpenAI();
 		const openai = new OpenAI(config);
 	  	const response = await openai.completions.create({
-			model: model.id,
+			model: (await model).modelData.id,
 			prompt,
 			max_tokens: 150,
 	  	});
@@ -227,5 +235,19 @@ export const createCustomGPT = async (req: Request, res: Response) => {
 	  	res.status(200).json({ response: response.choices[0].text });
 	} catch (err) {
 	  	res.status(500).json({ error: err.message });
+	}
+  };
+
+  export const deleteCustomModel = async (
+	req: Request,
+	res: Response,
+	next: NextFunction) => {
+	try {
+	  const { modelName } = req.body;
+	  const userId = res.locals.jwtData.id;
+	  deleteModel(userId, modelName);
+	  res.status(200).json({ message: "Model deleted successfully" });
+	} catch (err) {
+	  res.status(500).json({ error: `Failed to delete GPT model: ${err.message}` });
 	}
   };

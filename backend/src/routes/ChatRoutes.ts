@@ -1,12 +1,16 @@
 import express from "express";
 import { verifyToken } from "../utils/Token.js";
-import { chatCompletionValidator, validate } from "../utils/Validators.js";
+import { fineTuneValidator, chatCompletionValidator, validate } from "../utils/Validators.js";
 import { deleteConversation, 
 		 getConversation, 
-		 deleteAllConversatoins, 
+		 deleteAllConversations, 
 		 generateChatCompletion, 
 		 getAllConversations, 
-		 startNewConversation } from "../controllers/ChatController.js";
+		 startNewConversation,
+		 createCustomModel,
+		 deleteCustomModel,
+		 getCustomModelResponse,
+		 } from "../controllers/ChatController.js";
  
 const chatRoutes = express.Router();
 
@@ -59,7 +63,29 @@ chatRoutes.delete(
 chatRoutes.delete(
     "/delete-all-c",
     verifyToken,
-    deleteAllConversatoins
+    deleteAllConversations
 )
+
+//create custom model
+chatRoutes.post(
+    "/c-model/new",
+	validate(fineTuneValidator),
+    verifyToken,
+    createCustomModel
+);
+
+//delete custom model
+chatRoutes.delete(
+    "/c-model/delete",
+    verifyToken,
+    deleteCustomModel
+);
+
+//get response from customModel
+chatRoutes.post(
+    "/c-model/response",
+    verifyToken,
+    getCustomModelResponse
+);
 
 export default chatRoutes;
