@@ -11,10 +11,21 @@ import '../css/Home.css';
 const MAX_Y_H_SUM = 9;
 
 const INITIAL_LAYOUT = [
-  { i: 'chatContainer', x: 2, y: 0.5, w: 8, h: 7, minH: 4, minW: 3, maxW: 12, maxH: 9 }
+  { i: 'chatContainer', x: 2, y: 0.5, w: 8, h: 8, minH: 4, minW: 3, maxW: 12, maxH: 9 }
 ];
 
-const Home = ({ isLoggedIn, setIsLoggedIn, user, isEditMode, loadMessages, messages, setMessages, toggleEditMode }) => {
+const Home = ({
+  isLoggedIn,
+  setIsLoggedIn,
+  user,
+  isEditMode,
+  loadMessages,
+  messages,
+  setMessages,
+  toggleEditMode,
+  darkMode,
+  toggleDarkMode
+}) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
@@ -245,8 +256,13 @@ const Home = ({ isLoggedIn, setIsLoggedIn, user, isEditMode, loadMessages, messa
     }
   };
 
+  const handleToggleDarkMode = () => {
+    toggleDarkMode();
+    document.body.classList.toggle('dark', !darkMode);
+  };
+
   return (
-    <main className="main-section">
+    <main className={`main-section ${darkMode ? 'dark' : ''}`}>
       <Navigation
         isLoggedIn={isLoggedIn}
         setIsLoggedIn={setIsLoggedIn}
@@ -262,6 +278,8 @@ const Home = ({ isLoggedIn, setIsLoggedIn, user, isEditMode, loadMessages, messa
         }}
         showTime={showTime} // showTime prop 전달
         setShowTime={setShowTime} // setShowTime prop 전달
+        darkMode={darkMode} // 다크 모드 상태 전달
+        toggleDarkMode={handleToggleDarkMode} // 다크 모드 토글 함수 전달
       />
       {isLoggedIn && (
         <>
@@ -316,6 +334,7 @@ const Home = ({ isLoggedIn, setIsLoggedIn, user, isEditMode, loadMessages, messa
                     username={username || 'You'} 
                     conversationId={selectedConversationId}
                     showTime={showTime} // showTime prop 전달
+                    darkMode={darkMode} // 다크 모드 상태 전달
                   />
                 )}
               </div>
@@ -327,6 +346,7 @@ const Home = ({ isLoggedIn, setIsLoggedIn, user, isEditMode, loadMessages, messa
                   conversationId={selectedConversationId}
                   isNewChat={isNewChat}
                   startNewConversationWithMessage={startNewConversationWithMessage}
+                  darkMode={darkMode} // 다크 모드 상태 전달
                 />
               </div>
             </div>

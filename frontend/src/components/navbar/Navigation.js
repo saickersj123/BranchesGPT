@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Navbar, Nav, Dropdown, Button } from 'react-bootstrap';
+import { Container, Navbar, Nav, Dropdown } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog, faSave, faTimes, faRedo, faPlus, faUser, faTrash, faSignOutAlt, faEdit, faClock, faPalette, faBook } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faSave, faTimes, faRedo, faPlus, faUser, faTrash, faSignOutAlt, faEdit, faPalette, faBook } from '@fortawesome/free-solid-svg-icons';
 import { FiMoreVertical } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
 import { deleteAllChats, logout } from '../../api/axiosInstance';
 import { AdjustmentsHorizontalIcon } from '@heroicons/react/24/solid';
+import { FaSun, FaMoon } from 'react-icons/fa';
 import '../../css/Navigation.css';
 import ColorPickerPanel from '../ColorPickerPanel';
 
@@ -22,11 +23,13 @@ const Navigation = ({
   startNewConversationWithMessage,
   showTime,
   setShowTime,
+  darkMode,
+  toggleDarkMode
 }) => {
   const [navbarHeight, setNavbarHeight] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [navbarTextColor, setNavbarTextColor] = useState('#000000');
+  const [navbarTextColor, setNavbarTextColor] = useState('#000000'); // 추가된 상태
   const [navbarBold, setNavbarBold] = useState(false);
   const [myChatBubbleColor, setMyChatBubbleColor] = useState('#DCF8C6');
   const [myChatTextColor, setMyChatTextColor] = useState('#000000');
@@ -66,6 +69,18 @@ const Navigation = ({
     document.documentElement.style.setProperty('--time-bold', timeBold ? 'bold' : 'normal');
   }, [navbarTextColor, navbarBold, myChatBubbleColor, myChatTextColor, otherChatBubbleColor, otherChatTextColor, chatBubbleBold, chatBubbleShadow, chatContainerBgColor, timeBold]);
 
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      setNavbarTextColor('#ffffff'); // 다크 모드 텍스트 색상 설정
+    } else {
+      document.documentElement.classList.remove('dark');
+      setNavbarTextColor('#000000'); // 라이트 모드 텍스트 색상 설정
+    }
+    document.documentElement.style.setProperty('--navbar-bg-color', darkMode ? 'var(--dark-navbar-bg-color)' : '#FFFFFF');
+    document.documentElement.style.setProperty('--navbar-text-color', darkMode ? 'var(--dark-navbar-text-color)' : '#000000');
+  }, [darkMode]);
+
   const handleLogout = async () => {
     setIsLoading(true);
     try {
@@ -101,10 +116,6 @@ const Navigation = ({
     startNewConversationWithMessage('');
   };
 
-  const handleCustomButtonClick = () => {
-    // 여기서 아무 작업도 하지 않음
-  };
-
   const handleCloseColorPickerPanel = () => {
     setIsColorPickerPanelOpen(false);
   };
@@ -129,14 +140,14 @@ const Navigation = ({
   };
 
   return (
-    <div className={`main-container ${isColorPickerPanelOpen ? 'shrink' : ''}`}>
-      <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary fixed-top justify-content-between">
+    <div className={`main-container ${isColorPickerPanelOpen ? 'shrink' : ''} ${darkMode ? 'dark' : ''}`}>
+      <Navbar collapseOnSelect expand="lg" className={`fixed-top justify-content-between ${darkMode ? 'navbar-dark' : 'navbar-light'}`}>
         <Container className="d-flex justify-content-between align-items-center">
           <Navbar.Brand href="/" className="mx-auto" style={{ color: navbarTextColor, fontWeight: navbarBold ? 'bold' : 'normal' }}>Branch-GPT</Navbar.Brand>
           {isLoggedIn && !isMyPage && isMobile && (
             <Dropdown align="end">
-              <Dropdown.Toggle variant="success" id="dropdown-basic" className="custom-dropdown-toggle">
-                <FiMoreVertical />
+              <Dropdown.Toggle variant="success" id="dropdown-basic" className="custom-dropdown-toggle" >
+                <FiMoreVertical  style={{ color: navbarTextColor }} />
               </Dropdown.Toggle>
               <Dropdown.Menu className="dropdown-menu">
                 {(isHomePage || isChatPage) && (
@@ -154,7 +165,7 @@ const Navigation = ({
                   <span className="icon-text">모든 채팅기록 삭제</span>
                 </Dropdown.Item>
                 <Dropdown.Item onClick={handleStartNewChat} className="dropdown-item">
-                  <FontAwesomeIcon icon={faPlus} className="icon" />
+                  <FontAwesomeIcon icon={faPlus} className="icon" style={{ color: navbarTextColor }} />
                   <span className="icon-text">새로운 채팅</span>
                 </Dropdown.Item>
                 <Dropdown.Item onClick={handleLogout} className="dropdown-item">
@@ -175,21 +186,25 @@ const Navigation = ({
               <Navbar.Collapse id="responsive-navbar-nav">
                 <Nav className="me-auto"></Nav>
                 <Nav>
-                  {isLoggedIn && !isEditMode && (
+                  {isLoggedIn && !isEditMode && !isMyPage && (
                     <>
                       <Nav.Link onClick={handleStartNewChat}>
-                        <FontAwesomeIcon icon={faPlus} className="icon" />
+                        <FontAwesomeIcon icon={faPlus} className="icon" style={{ color: navbarTextColor }} />
                         <span className="icon-text"> </span>
                       </Nav.Link>
                       <Dropdown align="end">
                         <Dropdown.Toggle variant="success" id="dropdown-custom" className="custom-dropdown-toggle">
-                          <AdjustmentsHorizontalIcon className="icon flex-shrink-0" />
+                          <AdjustmentsHorizontalIcon className="icon flex-shrink-0" style={{ color: navbarTextColor }} />
                           <span className="icon-text"></span>
                         </Dropdown.Toggle>
                         <Dropdown.Menu className="dropdown-menu">
                           <Dropdown.Item onClick={() => handleSelectOption('edit')} className="dropdown-item">
                             <FontAwesomeIcon icon={faEdit} className="icon" />
                             <span className="icon-text">위치조정 모드</span>
+                          </Dropdown.Item>
+                          <Dropdown.Item onClick={toggleDarkMode} className="dropdown-item">
+                            {darkMode ? <FaSun className="icon" /> : <FaMoon className="icon" />}
+                            <span className="icon-text">{darkMode ? '라이트 모드' : '다크 모드'}</span>  
                           </Dropdown.Item>
                           <Dropdown.Item onClick={() => handleSelectOption('color')} className="dropdown-item">
                             <FontAwesomeIcon icon={faPalette} className="icon" />
@@ -222,7 +237,7 @@ const Navigation = ({
                           {!isMyPage && (
                             <Dropdown align="end">
                               <Dropdown.Toggle variant="success" id="dropdown-settings" className="custom-dropdown-toggle">
-                                <FontAwesomeIcon icon={faCog} className="icon" />
+                                <FontAwesomeIcon icon={faCog} className="icon" style={{ color: navbarTextColor }} />
                               </Dropdown.Toggle>
                               <Dropdown.Menu className="dropdown-menu">
                                 {(isHomePage || isChatPage)}
@@ -273,7 +288,7 @@ const Navigation = ({
           setMyChatTextColor={setMyChatTextColor}
           otherChatBubbleColor={otherChatBubbleColor}
           setOtherChatBubbleColor={setOtherChatBubbleColor}
-          otherChatTextColor={otherChatTextColor}
+          otherChatTextColor={setOtherChatTextColor}
           setOtherChatTextColor={setOtherChatTextColor}
           chatBubbleBold={chatBubbleBold}
           setChatBubbleBold={setChatBubbleBold}
@@ -286,6 +301,8 @@ const Navigation = ({
           timeBold={timeBold}
           setTimeBold={setTimeBold}
           closePanel={handleCloseColorPickerPanel}
+          darkMode={darkMode} // 다크 모드 상태 전달
+          toggleDarkMode={toggleDarkMode} // 다크 모드 토글 함수 전달
         />
       )}
     </div>

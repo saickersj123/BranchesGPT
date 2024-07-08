@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/MyPage.css';
 import { updatename, updatePassword, mypage } from '../api/axiosInstance';
 
-const MyPage = () => {
+const MyPage = ({ darkMode, toggleDarkMode }) => { 
   const [password, setPassword] = useState('');
   const [isPasswordVerified, setIsPasswordVerified] = useState(false);
   const [name, setname] = useState('');
@@ -98,7 +98,7 @@ const MyPage = () => {
   };
 
   return (
-    <Container className="mypage-container" style={{ marginTop: '100px' }}>
+    <Container className={`mypage-container ${darkMode ? 'dark' : ''}`} style={{ marginTop: '100px' }}>
       <Row className="justify-content-center">
         <Col xs={12} md={6}>
           <Card className="center-box">

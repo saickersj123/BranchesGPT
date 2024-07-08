@@ -1,6 +1,5 @@
-// ColorPickerPanel.jsx
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // 추가된 부분
+import React, { useState, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ChromePicker } from 'react-color';
 import '../css/ColorPickerPanel.css';
@@ -28,13 +27,24 @@ const ColorPickerPanel = ({
   setShowTime,
   timeBold,
   setTimeBold,
-  closePanel
+  closePanel,
+  darkMode
 }) => {
   const textColors = ['#000000', '#FFFFFF', '#87CEEB'];
-  const bubbleColors = ['#FFFFE0', '#87CEFA', '#98FB98', '#FFC0CB'];
-  const bgColors = ['#D3D3D3', '#FFFFFF', '#B0E0E6', 'RBFBFF'];
+  const bubbleColors = ['#FFFFE0', '#87CEFA', '#98FB98', '#FFC0CB', '#333333'];
+  const bgColors = ['#D3D3D3', '#FFFFFF', '#B0E0E6', '#2F4F4F', '#121212', '#212121'];
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
   const [colorType, setColorType] = useState('navbarText');
+
+  useEffect(() => {
+    const colorPicker = document.querySelector('.color-picker-popover');
+    if (colorPicker) {
+      const rect = colorPicker.getBoundingClientRect();
+      if (rect.bottom > window.innerHeight) {
+        colorPicker.style.top = `${window.innerHeight - rect.height - 20}px`;
+      }
+    }
+  }, [displayColorPicker]);
 
   const handleColorClick = (type) => {
     setColorType(type);
@@ -71,9 +81,9 @@ const ColorPickerPanel = ({
   };
 
   return (
-    <div className="panel-container">
+    <div className={`panel-container ${darkMode ? 'dark' : ''}`}>
       <div className="panel-header">
-        <FontAwesomeIcon icon={faTimes} onClick={closePanel} /> 
+        <FontAwesomeIcon icon={faTimes} onClick={closePanel} />
       </div>
       <div className="panel-content">
         <div className="panel-section">

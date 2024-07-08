@@ -13,6 +13,7 @@ const App = () => {
   const [user, setUser] = useState(null); // 유저 정보 상태 추가
   const [isEditMode, setIsEditMode] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [darkMode, setDarkMode] = useState(false); // 다크 모드 상태 추가
   const conversations = useConversations();
 
   useEffect(() => {
@@ -31,6 +32,10 @@ const App = () => {
 
   const toggleEditMode = () => {
     setIsEditMode(prevEditMode => !prevEditMode);
+  };
+
+  const toggleDarkMode = () => {
+    setDarkMode(prevDarkMode => !prevDarkMode);
   };
 
   const loadMessages = useCallback(async (conversationId) => {
@@ -62,11 +67,13 @@ const App = () => {
         isEditMode={isEditMode} 
         loadMessages={loadMessages}
         startNewConversationWithMessage={startNewChat}
+        darkMode={darkMode} // 다크 모드 상태 전달
+        toggleDarkMode={toggleDarkMode} // 다크 모드 토글 함수 전달
       />
       <Routes>
         <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
         <Route path="*" element={
-          <div className="app-container">
+          <div className={`app-container ${darkMode ? 'dark' : ''}`}>
             <div className="main-content">
               <Routes>
                 <Route path="/" element={
@@ -80,6 +87,8 @@ const App = () => {
                     setMessages={setMessages}
                     toggleEditMode={toggleEditMode}
                     startNewChat={startNewChat}
+                    darkMode={darkMode} // 다크 모드 상태 전달
+                    toggleDarkMode={toggleDarkMode} // 다크 모드 토글 함수 전달
                   />
                 } />
                 <Route path="/chat/:conversationId" element={
@@ -93,9 +102,11 @@ const App = () => {
                     setMessages={setMessages}
                     toggleEditMode={toggleEditMode}
                     startNewChat={startNewChat}
+                    darkMode={darkMode} // 다크 모드 상태 전달
+                    toggleDarkMode={toggleDarkMode} // 다크 모드 토글 함수 전달
                   />
                 } />
-                <Route path="/mypage" element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} />
+                <Route path="/mypage" element={isLoggedIn ? <MyPage darkMode={darkMode} toggleDarkMode={toggleDarkMode} /> : <Navigate to="/" />} />
               </Routes>
             </div>
           </div>

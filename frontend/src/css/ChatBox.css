@@ -16,7 +16,7 @@
 
 @media screen and (max-width: 1200px) {
   .textarea-wrapper {
-    max-width: 60%; /* 최대 너비를 45%로 설정 */
+    max-width: 60%; /* 최대 너비를 60%로 설정 */
   }
 }
 
@@ -48,7 +48,15 @@
 .chat-container:focus {
   outline: none; /* 포커스 시 아웃라인 제거 */
   box-shadow: none; /* 포커스 시 그림자 제거 */
-  background-color: #f0f0f0; /* 포커스 시 배경 색상을 그대로 유지 */
+  background-color: #e0e0e0; /* 포커스 시 배경 색상을 연한 회색으로 변경 */
+}
+
+body.dark .chat-container {
+  background-color: #575656; /* 다크 모드 ChatBox 배경 색상 */
+}
+
+body.dark .chat-container:focus {
+  background-color: #858282; /* 다크 모드에서 포커스 시 배경 색상 */
 }
 
 /* 채팅 상자 버튼 */

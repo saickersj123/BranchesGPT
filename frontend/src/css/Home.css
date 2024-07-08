@@ -4,11 +4,32 @@
 @tailwind utilities;
 
 :root {
-  --chat-container-bg-color: #EBFBFF !important; /* 기본 배경 색상 */
+  --button-color: #000000;
+  --my-chat-bubble-color: #DCF8C6;
+  --my-chat-text-color: #000000;
+  --other-chat-bubble-color: #F0F0F0;
+  --other-chat-text-color: #000000;
+  --chat-container-bg-color: #FFFFFF;
+  --navbar-bg-color: #FFFFFF;
+  --navbar-bold: normal;
+  --chat-bubble-bold: normal;
+  --chat-bubble-shadow: none;
+  --time-bold: normal;
+  --chatbox-bg-color: #f0f0f0; /* 기본 ChatBox 배경 색상 */
 }
 
 body, html {
   @apply m-0 p-0 h-full overflow-hidden;
+}
+
+body.dark {
+  background: #2b2a2a;
+  --my-chat-bubble-color: #333333;
+  --my-chat-text-color: #ffffff;
+  --other-chat-bubble-color: #444444;
+  --other-chat-text-color: #ffffff;
+  --chat-container-bg-color: #2b2a2a;
+  --chatbox-bg-color: #575656; /* 다크 모드 ChatBox 배경 색상 */
 }
 
 .main-section {
@@ -16,8 +37,7 @@ body, html {
 }
 
 .main-content {
-  @apply flex flex-1 mt-10 transition-all ease-in-out overflow-hidden w-full;
-  
+  @apply flex flex-1 mt-14 transition-all ease-in-out overflow-hidden w-full;
 }
 
 .main-content.shifted {
@@ -30,9 +50,13 @@ body, html {
 
 .grid-item {
   @apply box-border bg-none flex flex-col overflow-hidden p-0 m-0;
-  background-color: var(--chat-container-bg-color) !important; /* 배경 색상 */ 
-  padding-left: 20px !important;  
-  padding-right: 20px !important; 
+  background-color: var(--chat-container-bg-color) !important; /* 배경 색상 */
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+}
+
+.grid-item.dark {
+  background-color: var(--chat-container-bg-color);
 }
 
 .grid-item.no-border {
@@ -49,6 +73,10 @@ body, html {
 
 .chat-box-container {
   @apply overflow-y-hidden flex-none h-16 m-2.5 p-2.5 box-border;
+}
+
+.chat-box-container .chat-container {
+  background-color: var(--chatbox-bg-color); /* ChatBox 배경 색상 */
 }
 
 .edit-buttons {

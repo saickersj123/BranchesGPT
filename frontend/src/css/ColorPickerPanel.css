@@ -1,4 +1,5 @@
 /* ColorPickerPanel.css */
+
 .panel-container {
   position: fixed;
   right: 0;
@@ -12,20 +13,26 @@
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+  transition: background-color 0.3s ease;
+}
+
+.panel-container.dark {
+  background-color: #1a1a1a; /* 다크 모드에서 더 어두운 배경 색상 */
+  color: #fff;
 }
 
 .panel-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.close-button {
-  background-color: #ff6347;
+.dark-mode-button {
+  background: none;
   border: none;
-  color: white;
-  padding: 5px 10px;
+  color: inherit;
   cursor: pointer;
-  border-radius: 3px;
+  font-size: 20px;
 }
 
 .panel-content {
@@ -42,6 +49,10 @@
   border-bottom: 1px solid #ccc;
   padding-bottom: 5px;
   color: #333;
+}
+
+.panel-section.dark h3 {
+  color: #fff;
 }
 
 .form-group {
@@ -101,4 +112,9 @@
   right: 0;
   bottom: 0;
   left: 0;
+}
+
+body.dark-mode {
+  background-color: #212121;
+  color: #fff;
 }
