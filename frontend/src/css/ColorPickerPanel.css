@@ -1,0 +1,104 @@
+/* ColorPickerPanel.css */
+.panel-container {
+  position: fixed;
+  right: 0;
+  top: 70px;
+  width: 25%;
+  height: calc(100% - 70px);
+  background-color: #f4f4f4;
+  border-left: 1px solid #ccc;
+  padding: 20px;
+  z-index: 1000;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.close-button {
+  background-color: #ff6347;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.panel-content {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.panel-section {
+  margin-bottom: 20px;
+}
+
+.panel-section h3 {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 5px;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.color-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.color-button {
+  width: 30px;
+  height: 30px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  outline: none;
+}
+
+.color-button:focus {
+  outline: none;
+}
+
+.color-picker-button {
+  width: 30px;
+  height: 30px;
+  margin-left: 10px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  outline: none;
+  background-color: #ffffff;
+  background-image: url('../img/RGB_Pick.png');
+  background-size: cover;
+}
+
+.color-picker-button:focus {
+  outline: none;
+}
+
+.color-picker-popover {
+  position: absolute;
+  z-index: 2;
+}
+
+.color-picker-cover {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}

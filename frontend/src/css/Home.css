@@ -1,159 +1,106 @@
 /* Home.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --chat-container-bg-color: #EBFBFF !important; /* 기본 배경 색상 */
+}
+
 body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden;
+  @apply m-0 p-0 h-full overflow-hidden;
 }
 
 .main-section {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+  @apply relative flex flex-col h-screen;
 }
 
 .main-content {
-  display: flex;
-  flex: 1;
-  margin-top: 56px; /* 네비게이션바 높이 */
-  transition: margin-left 0.3s ease;
-  overflow: hidden; /* 스크롤 바를 숨깁니다 */
-  width: 100%;
+  @apply flex flex-1 mt-10 transition-all ease-in-out overflow-hidden w-full;
+  
 }
 
 .main-content.shifted {
-  margin-left: 250px;
+  @apply ml-64;
 }
 
 .grid-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  height: calc(100% - 56px); /* 네비게이션바를 고려한 높이 설정 */
-  width: 100%;
+  @apply flex justify-center items-start h-full w-full;
 }
 
 .grid-item {
-  box-sizing: border-box;
-  background: none;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  padding: 0;
-  margin: 0;
-  border-radius: 0;
+  @apply box-border bg-none flex flex-col overflow-hidden p-0 m-0;
+  background-color: var(--chat-container-bg-color) !important; /* 배경 색상 */ 
+  padding-left: 20px !important;  
+  padding-right: 20px !important; 
 }
 
 .grid-item.no-border {
-  border: none; /* 테두리를 제거 */
+  @apply border-none;
 }
 
 .grid-drag-handle {
-  cursor: move;
-  padding: 5px;
-  background: #ddd;
-  border-bottom: 1px solid #ccc;
-  text-align: center;
+  @apply cursor-move p-2.5 bg-gray-300 border-b border-gray-200 text-center;
 }
-q
+
 .chat-list-container {
-  overflow-y: auto; /* 스크롤 허용 */
-  overflow-x: hidden;
-  flex: 1;
-  margin: 0;
-  padding: 10px; /* 말풍선과의 여백 추가 */
+  @apply overflow-y-auto overflow-x-hidden flex-1 m-0 p-2.5;
 }
 
 .chat-box-container {
-  overflow-y: hidden; /* 스크롤 제거 */
-  flex: 0 0 60px; /* 고정된 높이 설정 */
-  margin: 10px 0; /* 상하단 여백을 설정 */
-  padding: 10px; /* 간격을 동일하게 맞추기 위해 padding 추가 */
-  box-sizing: border-box; /* padding을 포함한 박스 크기 계산 */
+  @apply overflow-y-hidden flex-none h-16 m-2.5 p-2.5 box-border;
 }
 
 .edit-buttons {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  display: flex;
-  gap: 10px;
+  @apply fixed bottom-5 right-5 flex gap-2.5;
 }
 
 .layout-info {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  background: rgba(255, 255, 255, 0.8);
-  padding: 10px;
-  font-size: 14px;
-  z-index: 1000;
+  @apply fixed bottom-0 left-0 bg-white bg-opacity-80 p-2 text-sm z-50;
 }
 
 @media (max-width: 1000px) {
   .main-content.shifted {
-    margin-left: 0;
+    @apply ml-0;
   }
 
   .ChatBoxFixed {
-    width: 100%;
+    @apply w-full;
   }
 }
 
-/* 추가된 부분: 마우스 휠 사용 시와 마우스 오버 시 스크롤 바를 잠시 보이도록 설정 */
 .show-scrollbar {
-  overflow: auto !important; /* 스크롤 바를 보이도록 설정 */
+  @apply overflow-auto !important;
 }
 
-/* 크기 조절 핸들을 시각적으로 표시 */
 .react-resizable-handle {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: gray;
-  z-index: 1;
+  @apply absolute w-2.5 h-2.5 bg-gray-400 z-10;
 }
 
 .react-resizable-handle-s {
-  bottom: 0;
-  left: 50%;
-  margin-left: -5px;
-  cursor: s-resize;
+  @apply bottom-0 left-1/2 -ml-[0.3125rem] cursor-s-resize;
 }
 
 .react-resizable-handle-e {
-  right: 0;
-  top: 50%;
-  margin-top: -5px;
-  cursor: e-resize;
+  @apply right-0 top-1/2 -mt-1.25 cursor-e-resize;
 }
 
 .react-resizable-handle-w {
-  left: 0;
-  top: 50%;
-  margin-top: -5px;
-  cursor: w-resize;
+  @apply left-0 top-1/2 -mt-1.25 cursor-w-resize;
 }
 
 .react-resizable-handle-n {
-  top: 0;
-  left: 50%;
-  margin-left: -5px;
-  cursor: n-resize;
+  @apply top-0 left-1/2 -ml-[0.3125rem] cursor-n-resize;
 }
 
-/* 설정 모드가 아닐 때 크기 조절 핸들을 숨기기 */
 .grid-item:not(.edit-mode) .react-resizable-handle {
-  display: none;
+  @apply hidden;
 }
 
 .grid-item.edit-mode.chat-container .react-resizable-handle {
-  display: block;
+  @apply block;
 }
 
-/* 추가: edit-mode에서도 테두리가 굵어지지 않도록 설정 */
 .grid-item.edit-mode {
-  border: none; /* 테두리를 없음으로 설정 */
+  @apply border-none;
 }
-

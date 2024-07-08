@@ -11,7 +11,7 @@ import '../css/Home.css';
 const MAX_Y_H_SUM = 9;
 
 const INITIAL_LAYOUT = [
-  { i: 'chatContainer', x: 0, y: 0, w: 12, h: 9, minH: 3, minW: 2, maxW: 16, maxH: 9 }
+  { i: 'chatContainer', x: 2, y: 0.5, w: 8, h: 7, minH: 4, minW: 3, maxW: 12, maxH: 9 }
 ];
 
 const Home = ({ isLoggedIn, setIsLoggedIn, user, isEditMode, loadMessages, messages, setMessages, toggleEditMode }) => {
@@ -24,6 +24,7 @@ const Home = ({ isLoggedIn, setIsLoggedIn, user, isEditMode, loadMessages, messa
   const [selectedConversationId, setSelectedConversationId] = useState(null);
   const [isNewChat, setIsNewChat] = useState(false);
   const [conversations, setConversations] = useState([]);
+  const [showTime, setShowTime] = useState(true); // showTime 상태 추가
   const originalLayoutRef = useRef(INITIAL_LAYOUT);
 
   const navigate = useNavigate();
@@ -259,6 +260,8 @@ const Home = ({ isLoggedIn, setIsLoggedIn, user, isEditMode, loadMessages, messa
           setMessages([]); // 채팅 리스트를 초기화
           setIsNewChat(true); // 새로운 채팅 상태로 설정
         }}
+        showTime={showTime} // showTime prop 전달
+        setShowTime={setShowTime} // setShowTime prop 전달
       />
       {isLoggedIn && (
         <>
@@ -308,7 +311,12 @@ const Home = ({ isLoggedIn, setIsLoggedIn, user, isEditMode, loadMessages, messa
                     새로운 채팅을 시작해 보세요!
                   </div>
                 ) : (
-                  <ChatList messages={messages} username={username || 'You'} conversationId={selectedConversationId} />
+                  <ChatList 
+                    messages={messages} 
+                    username={username || 'You'} 
+                    conversationId={selectedConversationId}
+                    showTime={showTime} // showTime prop 전달
+                  />
                 )}
               </div>
               <div className="chat-box-container">

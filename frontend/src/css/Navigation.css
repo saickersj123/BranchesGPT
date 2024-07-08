@@ -1,35 +1,44 @@
+/* Navigation.css */
+
+:root {
+  --navbar-bg-color: white; /* 기본 네비게이션 바 배경 색상 */
+  --navbar-text-color: black; /* 기본 네비게이션 바 텍스트 색상 */
+  --button-color: #1e3a8a; /* 버튼 색상 */
+  --button-hover-color: #3b82f6; /* 버튼 호버 색상 */
+}
+
 .navbar {
-  position: fixed; /* 네비게이션 바를 화면 상단에 고정합니다. */
-  top: 0; /* 화면의 맨 위에 위치하도록 설정합니다. */
-  width: 100%; /* 화면 전체 너비를 차지하도록 설정합니다. */
-  z-index: 1000; /* 다른 요소 위에 표시되도록 설정합니다. */
-  background-color: #fff; /* 배경 색상을 흰색으로 설정합니다. */
+  @apply fixed top-0 w-full z-[1000];
+  background-color: var(--navbar-bg-color);
+  color: var(--navbar-text-color);
+  display: flex;
+  justify-content: center; /* 중앙 정렬 */
+  align-items: center; /* 수직 중앙 정렬 */
 }
 
 .menu-button {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #000; /* 버튼 아이콘의 색상을 검정으로 설정합니다. */
-  margin-right: 15px; /* 버튼과 오른쪽 끝 사이에 약간의 여백을 둡니다. */
+  @apply bg-none border-none text-xl cursor-pointer mr-4;
+  color: var(--navbar-text-color);
 }
- 
+
 .dropdown-menu {
-  font-size: 0.875rem; /* 글자 크기를 조정합니다. */
+  @apply text-sm py-0; /* 상하 여백 제거 */
+  text-align: center; /* 드롭다운 메뉴 아이템 중앙 정렬 */
 }
- 
+
 .dropdown-item {
-  font-size: 0.875rem; /* 글자 크기를 조정합니다. */
+  @apply text-sm flex items-center justify-center px-3 py-2; /* 좌우 여백 및 상하 여백 추가, 중앙 정렬 */
+  color: var(--navbar-text-color); /* 드롭다운 아이콘 색상 */
 }
 
 .custom-dropdown-toggle {
-  color: #000 !important; /* 버튼 아이콘의 색상을 검정으로 설정합니다. */
-  background: none !important; /* 배경색 제거 */
-  border: none !important; /* 테두리 제거 */
-  padding: 0 !important; /* 기본 padding 제거 */
-  display: flex;
-  align-items: center;
+  @apply bg-none border-none p-0 flex items-center justify-center; /* 중앙 정렬 */
+  background: none !important; /* 배경 투명 */
+  color: var(--navbar-text-color) !important; /* 드롭다운 아이콘 색상 */
+  border: none !important;
+  display: flex !important;
+  align-items: center !important; /* 수직 중앙 정렬 강제 적용 */
+  height: 100%; /* 높이를 부모 요소와 동일하게 설정 */
 }
 
 .custom-dropdown-toggle::after {
@@ -37,36 +46,58 @@
 }
 
 .new-chat-button {
-  background: none;
-  border: none;
-  color: #000; /* 아이콘 색상 */
-  padding: 0;
-  margin-right: 10px;
-  font-size: 1.2rem; /* 아이콘 크기 조정 */
-  cursor: pointer;
-  display: flex;
-  align-items: center;
+  @apply bg-none border-none p-0 mr-2 text-lg cursor-pointer flex items-center;
+  color: var(--navbar-text-color);
+}
+
+.custom-button {
+  @apply border-none font-bold py-2 px-4 rounded flex items-center justify-center; /* 중앙 정렬 */
+  background: none !important; /* 배경 투명 */
+  color: var(--button-color); /* 버튼 색상 */
+}
+
+.custom-button:hover {
+  color: var(--button-hover-color); /* 버튼 호버 색상 */
 }
 
 @media screen and (max-width: 768px) {
   .menu-button {
-    margin-left: 10px; /* 모바일 화면에서는 왼쪽 여백을 추가 */
+    @apply ml-2;
   }
 
   .dropdown-menu {
-    width: 100%; /* 드롭다운 메뉴가 전체 너비를 차지하도록 설정 */
-    left: 0; /* 드롭다운 메뉴가 화면의 왼쪽 끝에서 시작하도록 설정 */
-    right: 0; /* 드롭다운 메뉴가 화면의 오른쪽 끝에서 끝나도록 설정 */
-    text-align: center; /* 메뉴 아이템을 가운데 정렬 */
+    @apply w-full left-0 right-0 text-center;
   }
 
   .navbar-brand {
-    margin-left: auto;
-    margin-right: auto;
+    @apply mx-auto;
   }
 
   .navbar-collapse {
-    display: flex !important;
-    justify-content: space-between; /* 모바일 화면에서 네비게이션 아이템 간 간격 조정 */
+    @apply flex justify-between;
   }
+}
+
+.icon-text {
+  @apply ml-2; /* 아이콘과 텍스트 사이의 간격 */
+}
+
+.icon {
+  @apply text-sm w-4 h-4 mr-2 !important; /* 아이콘 크기 조정 및 오른쪽 여백 추가 */
+  background: none !important; /* 배경 제거를 강제 적용 */
+  color: var(--button-color) !important; /* 기본 색상 설정 */
+  display: inline-flex !important;
+  align-items: center !important; /* 수직 중앙 정렬 강제 적용 */
+}
+
+.custom-modal .modal-content {
+  @apply p-4;
+}
+
+.custom-modal .modal-title {
+  @apply text-lg font-semibold;
+}
+
+.custom-modal .modal-body {
+  @apply space-y-4;
 }
