@@ -11,7 +11,7 @@
 /* 텍스트 영역 래퍼 */
 .textarea-wrapper {
   position: relative; /* 자식 요소의 위치를 상대적으로 설정 */
-  width: 100%; /* 너비를 100%로 설정 */ 
+  width: 60%; /* 너비를 100%로 설정 */ 
 }
 
 @media screen and (max-width: 1200px) {

@@ -1,3 +1,4 @@
+// Navigation.js
 import React, { useState, useEffect } from 'react';
 import { Container, Navbar, Nav, Dropdown } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
@@ -18,13 +19,14 @@ const Navigation = ({
   isEditMode,
   handleSaveClick,
   handleCancelClick,
-  handleResetLayout,
-  loadMessages,
+  handleResetLayout, 
   startNewConversationWithMessage,
   showTime,
   setShowTime,
   darkMode,
-  toggleDarkMode
+  toggleDarkMode, 
+  handleOpenPanel,
+  handleClosePanel
 }) => {
   const [navbarHeight, setNavbarHeight] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -129,6 +131,7 @@ const Navigation = ({
     if (option === 'edit') {
       handleToggleEditMode();
     } else if (option === 'color') {
+      handleOpenPanel();
       setIsColorPickerPanelOpen(true);
     } else if (option === 'pretrain') {
       alert('사전학습 기능은 나중에 추가될 예정입니다.');
@@ -137,6 +140,11 @@ const Navigation = ({
 
   const handleToggleShowTime = () => {
     setShowTime(prevShowTime => !prevShowTime);
+  };
+
+  const closeColorPickerPanel = () => {
+    handleClosePanel();
+    setIsColorPickerPanelOpen(false);
   };
 
   return (
@@ -149,28 +157,28 @@ const Navigation = ({
               <Dropdown.Toggle variant="success" id="dropdown-basic" className="custom-dropdown-toggle" >
                 <FiMoreVertical  style={{ color: navbarTextColor }} />
               </Dropdown.Toggle>
-              <Dropdown.Menu className="dropdown-menu">
+              <Dropdown.Menu className={`dropdown-menu ${darkMode ? 'dark' : ''}`}>
                 {(isHomePage || isChatPage) && (
                   <Dropdown.Item onClick={handleToggleEditMode} className="dropdown-item">
-                    <FontAwesomeIcon icon={faEdit} className="icon" />
-                    <span className="icon-text">위치조정</span>
+                    <FontAwesomeIcon icon={faEdit} className="icon" style={{ color: navbarTextColor }} />
+                    <span className="icon-text" style={{ color: navbarTextColor }}>위치조정</span>
                   </Dropdown.Item>
                 )}
                 <Dropdown.Item as={Link} to="/mypage" className="dropdown-item">
-                  <FontAwesomeIcon icon={faUser} className="icon" />
-                  <span className="icon-text">마이페이지</span>
+                  <FontAwesomeIcon icon={faUser} className="icon" style={{ color: navbarTextColor }}/>
+                  <span className="icon-text" style={{ color: navbarTextColor }}>마이페이지</span>
                 </Dropdown.Item>
                 <Dropdown.Item onClick={handleDeleteAllChats} className="dropdown-item">
-                  {isDeleting ? <FontAwesomeIcon icon={faTrash} spin className="icon" /> : <FontAwesomeIcon icon={faTrash} className="icon" />}
-                  <span className="icon-text">모든 채팅기록 삭제</span>
+                  {isDeleting ? <FontAwesomeIcon icon={faTrash} spin className="icon" /> : <FontAwesomeIcon icon={faTrash} className="icon" style={{ color: navbarTextColor }}/>}
+                  <span className="icon-text" style={{ color: navbarTextColor }}>모든 채팅기록 삭제</span>
                 </Dropdown.Item>
                 <Dropdown.Item onClick={handleStartNewChat} className="dropdown-item">
                   <FontAwesomeIcon icon={faPlus} className="icon" style={{ color: navbarTextColor }} />
-                  <span className="icon-text">새로운 채팅</span>
+                  <span className="icon-text" style={{ color: navbarTextColor }}>새로운 채팅</span>
                 </Dropdown.Item>
                 <Dropdown.Item onClick={handleLogout} className="dropdown-item">
-                  {isLoading ? <FontAwesomeIcon icon={faSignOutAlt} spin className="icon" /> : <FontAwesomeIcon icon={faSignOutAlt} className="icon" />}
-                  <span className="icon-text">로그아웃</span>
+                  {isLoading ? <FontAwesomeIcon icon={faSignOutAlt} spin className="icon" /> : <FontAwesomeIcon icon={faSignOutAlt} className="icon" style={{ color: navbarTextColor }}/>}
+                  <span className="icon-text" style={{ color: navbarTextColor }}>로그아웃</span>
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
@@ -189,7 +197,7 @@ const Navigation = ({
                   {isLoggedIn && !isEditMode && !isMyPage && (
                     <>
                       <Nav.Link onClick={handleStartNewChat}>
-                        <FontAwesomeIcon icon={faPlus} className="icon" style={{ color: navbarTextColor }} />
+                        <FontAwesomeIcon icon={faPlus} className="icon" style={{ color: navbarTextColor } } />
                         <span className="icon-text"> </span>
                       </Nav.Link>
                       <Dropdown align="end">
@@ -197,22 +205,22 @@ const Navigation = ({
                           <AdjustmentsHorizontalIcon className="icon flex-shrink-0" style={{ color: navbarTextColor }} />
                           <span className="icon-text"></span>
                         </Dropdown.Toggle>
-                        <Dropdown.Menu className="dropdown-menu">
+                        <Dropdown.Menu className={`dropdown-menu ${darkMode ? 'dark' : ''}`}>
                           <Dropdown.Item onClick={() => handleSelectOption('edit')} className="dropdown-item">
-                            <FontAwesomeIcon icon={faEdit} className="icon" />
-                            <span className="icon-text">위치조정 모드</span>
+                            <FontAwesomeIcon icon={faEdit} className="icon" style={{ color: navbarTextColor }}/>
+                            <span className="icon-text" style={{ color: navbarTextColor }}>위치조정 모드</span>
                           </Dropdown.Item>
                           <Dropdown.Item onClick={toggleDarkMode} className="dropdown-item">
-                            {darkMode ? <FaSun className="icon" /> : <FaMoon className="icon" />}
-                            <span className="icon-text">{darkMode ? '라이트 모드' : '다크 모드'}</span>  
+                            {darkMode ? <FaSun className="icon" style={{ color: navbarTextColor }}/> : <FaMoon className="icon" />}
+                            <span className="icon-text" style={{ color: navbarTextColor }}>{darkMode ? '라이트 모드' : '다크 모드'}</span>  
                           </Dropdown.Item>
                           <Dropdown.Item onClick={() => handleSelectOption('color')} className="dropdown-item">
-                            <FontAwesomeIcon icon={faPalette} className="icon" />
-                            <span className="icon-text">색상 변경</span>
+                            <FontAwesomeIcon icon={faPalette} className="icon" style={{ color: navbarTextColor }} />
+                            <span className="icon-text" style={{ color: navbarTextColor }}>색상 변경</span>
                           </Dropdown.Item>
                           <Dropdown.Item onClick={() => handleSelectOption('pretrain')} className="dropdown-item">
-                            <FontAwesomeIcon icon={faBook} className="icon" />
-                            <span className="icon-text">사전학습 (추후 추가)</span>
+                            <FontAwesomeIcon icon={faBook} className="icon" style={{ color: navbarTextColor }}/>
+                            <span className="icon-text" style={{ color: navbarTextColor }}>사전학습 (추후 추가)</span>
                           </Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>
@@ -239,19 +247,19 @@ const Navigation = ({
                               <Dropdown.Toggle variant="success" id="dropdown-settings" className="custom-dropdown-toggle">
                                 <FontAwesomeIcon icon={faCog} className="icon" style={{ color: navbarTextColor }} />
                               </Dropdown.Toggle>
-                              <Dropdown.Menu className="dropdown-menu">
+                              <Dropdown.Menu className={`dropdown-menu ${darkMode ? 'dark' : ''}`}>
                                 {(isHomePage || isChatPage)}
                                 <Dropdown.Item as={Link} to="/mypage" className="dropdown-item">
-                                  <FontAwesomeIcon icon={faUser} className="icon" />
-                                  <span className="icon-text">마이페이지</span>
+                                  <FontAwesomeIcon icon={faUser} className="icon" style={{ color: navbarTextColor }}/>
+                                  <span className="icon-text" style={{ color: navbarTextColor }}>마이페이지</span>
                                 </Dropdown.Item>
                                 <Dropdown.Item onClick={handleDeleteAllChats} className="dropdown-item">
-                                  {isDeleting ? <FontAwesomeIcon icon={faTrash} spin className="icon" /> : <FontAwesomeIcon icon={faTrash} className="icon" />}
-                                  <span className="icon-text">모든 채팅기록 삭제</span>
+                                  {isDeleting ? <FontAwesomeIcon icon={faTrash} spin className="icon" /> : <FontAwesomeIcon icon={faTrash} className="icon" style={{ color: navbarTextColor }}/>}
+                                  <span className="icon-text" style={{ color: navbarTextColor }}>모든 채팅기록 삭제</span>
                                 </Dropdown.Item>
                                 <Dropdown.Item onClick={handleLogout} className="dropdown-item">
-                                  {isLoading ? <FontAwesomeIcon icon={faSignOutAlt} spin className="icon" /> : <FontAwesomeIcon icon={faSignOutAlt} className="icon" />}
-                                  <span className="icon-text">로그아웃</span>
+                                  {isLoading ? <FontAwesomeIcon icon={faSignOutAlt} spin className="icon" /> : <FontAwesomeIcon icon={faSignOutAlt} className="icon" style={{ color: navbarTextColor }}/>}
+                                  <span className="icon-text" style={{ color: navbarTextColor }}>로그아웃</span>
                                 </Dropdown.Item>
                               </Dropdown.Menu>
                             </Dropdown>
@@ -300,7 +308,7 @@ const Navigation = ({
           setShowTime={setShowTime}
           timeBold={timeBold}
           setTimeBold={setTimeBold}
-          closePanel={handleCloseColorPickerPanel}
+          closePanel={closeColorPickerPanel}
           darkMode={darkMode} // 다크 모드 상태 전달
           toggleDarkMode={toggleDarkMode} // 다크 모드 토글 함수 전달
         />

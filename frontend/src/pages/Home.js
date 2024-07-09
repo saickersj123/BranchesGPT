@@ -1,3 +1,4 @@
+// Home.js
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ChatBox from '../components/ChatBox';
@@ -35,7 +36,8 @@ const Home = ({
   const [selectedConversationId, setSelectedConversationId] = useState(null);
   const [isNewChat, setIsNewChat] = useState(false);
   const [conversations, setConversations] = useState([]);
-  const [showTime, setShowTime] = useState(true); // showTime 상태 추가
+  const [showTime, setShowTime] = useState(true);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
   const originalLayoutRef = useRef(INITIAL_LAYOUT);
 
   const navigate = useNavigate();
@@ -261,6 +263,14 @@ const Home = ({
     document.body.classList.toggle('dark', !darkMode);
   };
 
+  const handleOpenPanel = () => {
+    setIsPanelOpen(true);
+  };
+
+  const handleClosePanel = () => {
+    setIsPanelOpen(false);
+  };
+
   return (
     <main className={`main-section ${darkMode ? 'dark' : ''}`}>
       <Navigation
@@ -280,6 +290,9 @@ const Home = ({
         setShowTime={setShowTime} // setShowTime prop 전달
         darkMode={darkMode} // 다크 모드 상태 전달
         toggleDarkMode={handleToggleDarkMode} // 다크 모드 토글 함수 전달
+        isPanelOpen={isPanelOpen} // 패널 열림 상태 전달
+        handleOpenPanel={handleOpenPanel} // 패널 열기 함수 전달
+        handleClosePanel={handleClosePanel} // 패널 닫기 함수 전달
       />
       {isLoggedIn && (
         <>
@@ -299,7 +312,7 @@ const Home = ({
           />
         </>
       )}
-      <div className={`main-content ${isSidebarOpen ? 'shifted' : ''}`}>
+      <div className={`main-content ${isSidebarOpen ? 'shifted-right' : ''} ${isPanelOpen ? 'shifted-left' : ''}`}>
         <div className="grid-container">
           <GridLayout
             className="layout"

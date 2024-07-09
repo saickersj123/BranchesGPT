@@ -1,4 +1,3 @@
-
 :root {
   --navbar-bg-color: #f4f4f4; /* 기본 네비게이션 바 배경 색상 */
   --navbar-text-color: #000000; /* 기본 네비게이션 바 텍스트 색상 */
@@ -6,6 +5,11 @@
   --button-hover-color: #3b82f6; /* 버튼 호버 색상 */
   --dark-navbar-bg-color: #212121; /* 다크 모드 네비게이션 바 배경 색상 */
   --dark-navbar-text-color: #ffffff; /* 다크 모드 네비게이션 바 텍스트 색상 */
+  --dropdown-bg-color: #ffffff; /* 기본 드롭다운 배경 색상 */
+  --dropdown-text-color: #000000; /* 기본 드롭다운 텍스트 색상 */
+  --dark-dropdown-bg-color: #2c2c2c; /* 다크 모드 드롭다운 배경 색상 */
+  --dark-dropdown-text-color: #ffffff; /* 다크 모드 드롭다운 텍스트 색상 */
+  --dark-button-hover-color: #6d7373; /* 다크 모드 버튼 호버 색상 */
 }
 
 body {
@@ -17,7 +21,7 @@ body.dark {
 }
 
 .navbar {
-  background-color: var(--navbar-bg-color) !important;
+  background-color: var(--navbar-bg-color) ;
   color: var(--navbar-text-color); /* 기본 네비게이션 바 텍스트 색상 */
   display: flex;
   justify-content: center; /* 중앙 정렬 */
@@ -29,7 +33,7 @@ body.dark {
 }
 
 .navbar.dark {
-  background-color: var(--dark-navbar-bg-color) !important;
+  background-color: var(--dark-navbar-bg-color);
   color: var(--dark-navbar-text-color); /* 다크 모드 네비게이션 바 텍스트 색상 */
 }
 
@@ -44,6 +48,13 @@ body.dark {
 
 .dropdown-menu {
   text-align: center; /* 드롭다운 메뉴 아이템 중앙 정렬 */
+  background-color: var(--dropdown-bg-color); /* 기본 드롭다운 배경 색상 */
+  color: var(--dropdown-text-color); /* 기본 드롭다운 텍스트 색상 */
+}
+
+.dropdown-menu.dark {
+  background-color: var(--dark-dropdown-bg-color); /* 다크 모드 드롭다운 배경 색상 */
+  color: var(--dark-dropdown-text-color); /* 다크 모드 드롭다운 텍스트 색상 */
 }
 
 .dropdown-item {
@@ -54,11 +65,21 @@ body.dark {
   color: inherit; /* 부모 요소의 색상 상속 */
 }
 
+.dropdown-item:hover {
+  background-color: var(--button-hover-color); /* 기본 드롭다운 아이템 호버 배경 색상 */
+  color: var(--dropdown-text-color); /* 기본 드롭다운 아이템 호버 텍스트 색상 */
+}
+
+body.dark .dropdown-item:hover {
+  background-color: var(--dark-button-hover-color); /* 다크 모드 드롭다운 아이템 호버 배경 색상 */
+  color: var(--dark-dropdown-text-color); /* 다크 모드 드롭다운 아이템 호버 텍스트 색상 */
+}
+
 .custom-dropdown-toggle {
   background: none !important;
   border: none !important;
   display: flex !important;
-  align-items: center !important; /* 수직 중앙 정렬 강제 적용 */
+  align-items: center  ; /* 수직 중앙 정렬 강제 적용 */
   height: 100%; /* 높이를 부모 요소와 동일하게 설정 */
   color: inherit; /* 부모 요소의 색상 상속 */
 }
@@ -93,6 +114,10 @@ body.dark {
 
 .custom-button:hover {
   color: var(--button-hover-color); /* 버튼 호버 색상 */
+}
+
+body.dark .custom-button:hover {
+  color: var(--dark-button-hover-color); /* 다크 모드 버튼 호버 색상 */
 }
 
 @media screen and (max-width: 768px) {

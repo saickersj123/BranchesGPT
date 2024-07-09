@@ -40,8 +40,12 @@ body.dark {
   @apply flex flex-1 mt-14 transition-all ease-in-out overflow-hidden w-full;
 }
 
-.main-content.shifted {
+.main-content.shifted-right {
   @apply ml-64;
+}
+
+.main-content.shifted-left {
+  @apply -ml-64; /* 패널이 열릴 때 왼쪽으로 이동 */
 }
 
 .grid-container {
@@ -88,7 +92,11 @@ body.dark {
 }
 
 @media (max-width: 1000px) {
-  .main-content.shifted {
+  .main-content.shifted-right {
+    @apply ml-0;
+  }
+
+  .main-content.shifted-left {
     @apply ml-0;
   }
 
@@ -131,4 +139,147 @@ body.dark {
 
 .grid-item.edit-mode {
   @apply border-none;
+}
+
+/* Sidebar CSS */
+.sidebar {
+  position: fixed;
+  top: 70px; /* 네비게이션 바 높이만큼 내려줍니다. */
+  left: 0;
+  width: 20%;
+  height: calc(100% - 70px); /* 네비게이션 바 높이를 제외한 나머지 높이로 설정 */
+  background-color: #f4f4f4;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  transform: translateX(-100%); /* 초기 상태에서 사이드바를 화면 밖으로 이동 */
+}
+
+/* 화면 너비가 769px 이상 1000px 이하일 때 */
+@media (max-width: 1000px) and (min-width: 769px) {
+  .sidebar {
+    width: 40%;
+  }
+}
+
+/* 화면 너비가 768px 이하일 때 */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 60%;
+    padding: 15px; /* 패딩을 줄여서 내용이 더 많이 보이도록 함 */
+  }
+  .sidebar .toggle-button {
+    right: -40px; /* 버튼의 위치도 약간 조정 */
+  }
+  .sidebar-menu a {
+    font-size: 12px; /* 폰트 크기를 줄여서 내용이 잘리지 않도록 함 */
+    margin-bottom: 10px; /* 아이템 간의 여백을 줄임 */
+  }
+}
+
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar .toggle-button {
+  position: absolute;
+  top: 40%; /* 화면의 세로 중앙에 위치 */
+  right: -50px;
+  width: 50px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black; /* 글자 색을 검정색으로 설정 */
+  background-color: transparent; /* 배경을 투명하게 설정 */
+  border: none;
+  cursor: pointer;
+  transition: right 0.3s ease;
+}
+
+.sidebar-menu {
+  margin-top: 5vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .sidebar-menu {
+    margin-top: 10vh;
+  }
+}
+
+.sidebar-menu p {
+  margin-bottom: 0px;
+  color: #333;
+  cursor: pointer; /* 커서를 포인터로 변경하여 클릭 가능한 상태로 만듭니다. */
+  white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 설정 */
+  overflow: hidden; /* 텍스트가 사이드바를 넘어서지 않도록 설정 */
+  text-overflow: ellipsis; /* 넘친 텍스트를 생략 부호(...)로 표시 */
+}
+
+.sidebar-menu a {
+  margin-bottom: 15px;
+  color: #333;
+  text-decoration: none;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu p:hover {
+  color: #007bff;
+}
+
+.chat-date-group {
+  margin-bottom: 20px;
+}
+
+.chat-date {
+  font-size: 16px;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.chat-room {
+  display: flex;
+  align-items: center;  
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.last-message {
+  flex-grow: 1; 
+  color: #333;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-chat-rooms {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+}
+
+.no-chat-rooms p {
+  font-size: 16px;
+  font-weight: bold;
+  color: #555;
+  white-space: normal; /* 텍스트가 줄 바꿈되도록 설정 */
+}
+
+.delete-button {  
+  background: none; /* 배경을 없앱니다 */
+  border: none; /* 테두리를 없앱니다 */
+  cursor: pointer; /* 커서를 포인터로 변경합니다 */
+  color: #ff0000; /* 삭제 버튼의 색상을 빨간색으로 설정합니다 */
+  margin-left: 10px; /* 메시지와 삭제 버튼 사이의 간격 설정 */
+  display: flex;
+  align-items: center; /* 버튼의 내용이 중앙에 오도록 설정 */
 }
