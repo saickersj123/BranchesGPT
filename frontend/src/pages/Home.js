@@ -1,4 +1,3 @@
-// Home.js
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ChatBox from '../components/ChatBox';
@@ -6,7 +5,7 @@ import ChatList from '../components/ChatList';
 import Sidebar from '../components/sidebar/Sidebar';
 import Navigation from '../components/navbar/Navigation';
 import GridLayout from 'react-grid-layout';
-import { checkAuthStatus, fetchMessages, startNewConversation, fetchConversations, sendMessage } from '../api/axiosInstance';
+import { fetchMessages, startNewConversation, fetchConversations, sendMessage } from '../api/axiosInstance';
 import '../css/Home.css';
 
 const MAX_Y_H_SUM = 9;
@@ -30,7 +29,7 @@ const Home = ({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
-  const [maxYHSum, setMaxYHSum] = useState(MAX_Y_H_SUM);
+  const [maxYHSum] = useState(MAX_Y_H_SUM);
   const [username, setUsername] = useState('');
   const [currentLayout, setCurrentLayout] = useState(INITIAL_LAYOUT);
   const [selectedConversationId, setSelectedConversationId] = useState(null);
@@ -44,6 +43,12 @@ const Home = ({
   const { conversationId: urlConversationId } = useParams();
 
   useEffect(() => {
+    if (user) {
+      setUsername(user.name); // 유저 이름 설정
+    }
+  }, [user]);
+
+  useEffect(() => {
     const handleResize = () => {
       setViewportHeight(window.innerHeight);
       setViewportWidth(window.innerWidth);
@@ -52,17 +57,6 @@ const Home = ({
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const { valid, name } = await checkAuthStatus();
-      if (valid) {
-        setUsername(name);
-      }
-    };
-
-    fetchUserData();
   }, []);
 
   useEffect(() => {
@@ -344,7 +338,7 @@ const Home = ({
                 ) : (
                   <ChatList 
                     messages={messages} 
-                    username={username || 'You'} 
+                    username={username} 
                     conversationId={selectedConversationId}
                     showTime={showTime} // showTime prop 전달
                     darkMode={darkMode} // 다크 모드 상태 전달

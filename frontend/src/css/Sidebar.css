@@ -139,3 +139,22 @@
   display: flex;
   align-items: center; /* 버튼의 내용이 중앙에 오도록 설정 */
 }
+
+.delete-all-button {
+  margin-bottom: 20px; /* 전체 삭제 버튼을 사이드바 상단에 배치 */
+  padding: 10px 15px;
+  background-color: #FF00FF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* 살짝 입체감 부여 */
+}
+
+.delete-all-button:hover {
+  background-color: #00FFFF;
+}

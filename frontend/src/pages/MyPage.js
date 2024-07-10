@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/MyPage.css';
 import { updatename, updatePassword, mypage } from '../api/axiosInstance';
 
-const MyPage = ({ darkMode, toggleDarkMode }) => { 
+const MyPage = ({ darkMode }) => { 
   const [password, setPassword] = useState('');
   const [isPasswordVerified, setIsPasswordVerified] = useState(false);
   const [name, setname] = useState('');

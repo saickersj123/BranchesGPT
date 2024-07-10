@@ -1,5 +1,5 @@
 :root {
-  --navbar-bg-color: #f4f4f4; /* 기본 네비게이션 바 배경 색상 */
+  --navbar-bg-color: #f1f3f5 ; /* 기본 네비게이션 바 배경 색상 */
   --navbar-text-color: #000000; /* 기본 네비게이션 바 텍스트 색상 */
   --button-color: #1e3a8a; /* 버튼 색상 */
   --button-hover-color: #3b82f6; /* 버튼 호버 색상 */
@@ -21,7 +21,7 @@ body.dark {
 }
 
 .navbar {
-  background-color: var(--navbar-bg-color) ;
+  background-color: var(--navbar-bg-color);
   color: var(--navbar-text-color); /* 기본 네비게이션 바 텍스트 색상 */
   display: flex;
   justify-content: center; /* 중앙 정렬 */
