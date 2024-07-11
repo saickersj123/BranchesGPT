@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Container } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../css/ChatList.css'; 
+import '../css/ChatList.css';
 
-const ChatMessage = ({ content, role, time, username }) => {
+const ChatMessage = ({ content, role, time, username, showTime }) => {
   let timeString = '';
   if (time && !isNaN(new Date(time).getTime())) {
     timeString = new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
@@ -11,21 +11,29 @@ const ChatMessage = ({ content, role, time, username }) => {
     timeString = 'Invalid Date';
   }
   const displayUsername = role === 'assistant' ? 'AI' : (username || 'You');
+  const bubbleStyle = {
+    backgroundColor: role === 'user' ? 'var(--my-chat-bubble-color)' : 'var(--other-chat-bubble-color)',
+    color: role === 'user' ? 'var(--my-chat-text-color)' : 'var(--other-chat-text-color)',
+    fontWeight: 'var(--chat-bubble-bold)',
+    boxShadow: 'var(--chat-bubble-shadow)',
+  };
+
+  console.log(`ChatMessage - role: ${role}, username: ${username}, displayUsername: ${displayUsername}`); // 로그 추가
 
   return (
     <div className={`message-container ${role === 'user' ? 'sent-by-user' : 'received'}`}>
       <div className="username">{displayUsername}</div>
       <div className="bubble-container">
-        <div className="bubble">
+        <div className="bubble" style={bubbleStyle}>
           {content}
         </div>
-        <div className={`time ${role === 'user' ? 'time-user' : 'time-assistant'}`}>{timeString}</div>
+        {showTime && <div className="time">{timeString}</div>}
       </div>
     </div>
   );
 };
 
-const ChatList = ({ messages, username }) => {
+const ChatList = ({ messages, username, showTime }) => {
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -48,6 +56,7 @@ const ChatList = ({ messages, username }) => {
             role={message.role}
             time={message.createdAt}
             username={username}
+            showTime={showTime}
           />
         ))
       )}

@@ -1,159 +1,285 @@
 /* Home.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --button-color: #000000;
+  --my-chat-bubble-color: #DCF8C6;
+  --my-chat-text-color: #000000;
+  --other-chat-bubble-color: #F0F0F0;
+  --other-chat-text-color: #000000;
+  --chat-container-bg-color: #FFFFFF;
+  --navbar-bg-color: #FFFFFF;
+  --navbar-bold: normal;
+  --chat-bubble-bold: normal;
+  --chat-bubble-shadow: none;
+  --time-bold: normal;
+  --chatbox-bg-color: #f0f0f0; /* 기본 ChatBox 배경 색상 */
+}
+
 body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden;
+  @apply m-0 p-0 h-full overflow-hidden;
+}
+
+body.dark {
+  background: #2b2a2a;
+  --my-chat-bubble-color: #333333;
+  --my-chat-text-color: #ffffff;
+  --other-chat-bubble-color: #444444;
+  --other-chat-text-color: #ffffff;
+  --chat-container-bg-color: #2b2a2a;
+  --chatbox-bg-color: #575656; /* 다크 모드 ChatBox 배경 색상 */
 }
 
 .main-section {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+  @apply relative flex flex-col h-screen;
 }
 
 .main-content {
-  display: flex;
-  flex: 1;
-  margin-top: 56px; /* 네비게이션바 높이 */
-  transition: margin-left 0.3s ease;
-  overflow: hidden; /* 스크롤 바를 숨깁니다 */
-  width: 100%;
+  @apply flex flex-1 mt-14 transition-all ease-in-out overflow-hidden w-full;
 }
 
-.main-content.shifted {
-  margin-left: 250px;
+.main-content.shifted-right {
+  @apply ml-64;
+}
+
+.main-content.shifted-left {
+  @apply -ml-64; /* 패널이 열릴 때 왼쪽으로 이동 */
 }
 
 .grid-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  height: calc(100% - 56px); /* 네비게이션바를 고려한 높이 설정 */
-  width: 100%;
+  @apply flex justify-center items-start h-full w-full;
 }
 
 .grid-item {
-  box-sizing: border-box;
-  background: none;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  padding: 0;
-  margin: 0;
-  border-radius: 0;
+  @apply box-border bg-none flex flex-col overflow-hidden p-0 m-0;
+  background-color: var(--chat-container-bg-color) !important; /* 배경 색상 */
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+}
+
+.grid-item.dark {
+  background-color: var(--chat-container-bg-color);
 }
 
 .grid-item.no-border {
-  border: none; /* 테두리를 제거 */
+  @apply border-none;
 }
 
 .grid-drag-handle {
-  cursor: move;
-  padding: 5px;
-  background: #ddd;
-  border-bottom: 1px solid #ccc;
-  text-align: center;
+  @apply cursor-move p-2.5 bg-gray-300 border-b border-gray-200 text-center;
 }
-q
+
 .chat-list-container {
-  overflow-y: auto; /* 스크롤 허용 */
-  overflow-x: hidden;
-  flex: 1;
-  margin: 0;
-  padding: 10px; /* 말풍선과의 여백 추가 */
+  @apply overflow-y-auto overflow-x-hidden flex-1 m-0 p-2.5;
 }
 
 .chat-box-container {
-  overflow-y: hidden; /* 스크롤 제거 */
-  flex: 0 0 60px; /* 고정된 높이 설정 */
-  margin: 10px 0; /* 상하단 여백을 설정 */
-  padding: 10px; /* 간격을 동일하게 맞추기 위해 padding 추가 */
-  box-sizing: border-box; /* padding을 포함한 박스 크기 계산 */
+  @apply overflow-y-hidden flex-none h-16 m-2.5 p-2.5 box-border;
+}
+
+.chat-box-container .chat-container {
+  background-color: var(--chatbox-bg-color); /* ChatBox 배경 색상 */
 }
 
 .edit-buttons {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  display: flex;
-  gap: 10px;
+  @apply fixed bottom-5 right-5 flex gap-2.5;
 }
 
 .layout-info {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  background: rgba(255, 255, 255, 0.8);
-  padding: 10px;
-  font-size: 14px;
-  z-index: 1000;
+  @apply fixed bottom-0 left-0 bg-white bg-opacity-80 p-2 text-sm z-50;
 }
 
 @media (max-width: 1000px) {
-  .main-content.shifted {
-    margin-left: 0;
+  .main-content.shifted-right {
+    @apply ml-0;
+  }
+
+  .main-content.shifted-left {
+    @apply ml-0;
   }
 
   .ChatBoxFixed {
-    width: 100%;
+    @apply w-full;
   }
 }
 
-/* 추가된 부분: 마우스 휠 사용 시와 마우스 오버 시 스크롤 바를 잠시 보이도록 설정 */
 .show-scrollbar {
-  overflow: auto !important; /* 스크롤 바를 보이도록 설정 */
+  @apply overflow-auto !important;
 }
 
-/* 크기 조절 핸들을 시각적으로 표시 */
 .react-resizable-handle {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: gray;
-  z-index: 1;
+  @apply absolute w-2.5 h-2.5 bg-gray-400 z-10;
 }
 
 .react-resizable-handle-s {
-  bottom: 0;
-  left: 50%;
-  margin-left: -5px;
-  cursor: s-resize;
+  @apply bottom-0 left-1/2 -ml-[0.3125rem] cursor-s-resize;
 }
 
 .react-resizable-handle-e {
-  right: 0;
-  top: 50%;
-  margin-top: -5px;
-  cursor: e-resize;
+  @apply right-0 top-1/2 -mt-1.25 cursor-e-resize;
 }
 
 .react-resizable-handle-w {
-  left: 0;
-  top: 50%;
-  margin-top: -5px;
-  cursor: w-resize;
+  @apply left-0 top-1/2 -mt-1.25 cursor-w-resize;
 }
 
 .react-resizable-handle-n {
-  top: 0;
-  left: 50%;
-  margin-left: -5px;
-  cursor: n-resize;
+  @apply top-0 left-1/2 -ml-[0.3125rem] cursor-n-resize;
 }
 
-/* 설정 모드가 아닐 때 크기 조절 핸들을 숨기기 */
 .grid-item:not(.edit-mode) .react-resizable-handle {
-  display: none;
+  @apply hidden;
 }
 
 .grid-item.edit-mode.chat-container .react-resizable-handle {
-  display: block;
+  @apply block;
 }
 
-/* 추가: edit-mode에서도 테두리가 굵어지지 않도록 설정 */
 .grid-item.edit-mode {
-  border: none; /* 테두리를 없음으로 설정 */
+  @apply border-none;
 }
 
+/* Sidebar CSS */
+.sidebar {
+  position: fixed;
+  top: 70px; /* 네비게이션 바 높이만큼 내려줍니다. */
+  left: 0;
+  width: 20%;
+  height: calc(100% - 70px); /* 네비게이션 바 높이를 제외한 나머지 높이로 설정 */
+  background-color: #f4f4f4;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  transform: translateX(-100%); /* 초기 상태에서 사이드바를 화면 밖으로 이동 */
+}
+
+/* 화면 너비가 769px 이상 1000px 이하일 때 */
+@media (max-width: 1000px) and (min-width: 769px) {
+  .sidebar {
+    width: 40%;
+  }
+}
+
+/* 화면 너비가 768px 이하일 때 */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 60%;
+    padding: 15px; /* 패딩을 줄여서 내용이 더 많이 보이도록 함 */
+  }
+  .sidebar .toggle-button {
+    right: -40px; /* 버튼의 위치도 약간 조정 */
+  }
+  .sidebar-menu a {
+    font-size: 12px; /* 폰트 크기를 줄여서 내용이 잘리지 않도록 함 */
+    margin-bottom: 10px; /* 아이템 간의 여백을 줄임 */
+  }
+}
+
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar .toggle-button {
+  position: absolute;
+  top: 40%; /* 화면의 세로 중앙에 위치 */
+  right: -50px;
+  width: 50px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black; /* 글자 색을 검정색으로 설정 */
+  background-color: transparent; /* 배경을 투명하게 설정 */
+  border: none;
+  cursor: pointer;
+  transition: right 0.3s ease;
+}
+
+.sidebar-menu {
+  margin-top: 5vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .sidebar-menu {
+    margin-top: 10vh;
+  }
+}
+
+.sidebar-menu p {
+  margin-bottom: 0px;
+  color: #333;
+  cursor: pointer; /* 커서를 포인터로 변경하여 클릭 가능한 상태로 만듭니다. */
+  white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 설정 */
+  overflow: hidden; /* 텍스트가 사이드바를 넘어서지 않도록 설정 */
+  text-overflow: ellipsis; /* 넘친 텍스트를 생략 부호(...)로 표시 */
+}
+
+.sidebar-menu a {
+  margin-bottom: 15px;
+  color: #333;
+  text-decoration: none;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu p:hover {
+  color: #007bff;
+}
+
+.chat-date-group {
+  margin-bottom: 20px;
+}
+
+.chat-date {
+  font-size: 16px;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.chat-room {
+  display: flex;
+  align-items: center;  
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.last-message {
+  flex-grow: 1; 
+  color: #333;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-chat-rooms {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+}
+
+.no-chat-rooms p {
+  font-size: 16px;
+  font-weight: bold;
+  color: #555;
+  white-space: normal; /* 텍스트가 줄 바꿈되도록 설정 */
+}
+
+.delete-button {  
+  background: none; /* 배경을 없앱니다 */
+  border: none; /* 테두리를 없앱니다 */
+  cursor: pointer; /* 커서를 포인터로 변경합니다 */
+  color: #ff0000; /* 삭제 버튼의 색상을 빨간색으로 설정합니다 */
+  margin-left: 10px; /* 메시지와 삭제 버튼 사이의 간격 설정 */
+  display: flex;
+  align-items: center; /* 버튼의 내용이 중앙에 오도록 설정 */
+}

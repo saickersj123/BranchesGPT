@@ -5,29 +5,48 @@ import ChatList from '../components/ChatList';
 import Sidebar from '../components/sidebar/Sidebar';
 import Navigation from '../components/navbar/Navigation';
 import GridLayout from 'react-grid-layout';
-import { checkAuthStatus, fetchMessages, startNewConversation, fetchConversations, sendMessage } from '../api/axiosInstance';
+import { fetchMessages, startNewConversation, fetchConversations, sendMessage } from '../api/axiosInstance';
 import '../css/Home.css';
 
 const MAX_Y_H_SUM = 9;
 
 const INITIAL_LAYOUT = [
-  { i: 'chatContainer', x: 0, y: 0, w: 12, h: 9, minH: 3, minW: 2, maxW: 16, maxH: 9 }
+  { i: 'chatContainer', x: 2, y: 0.5, w: 8, h: 8, minH: 4, minW: 3, maxW: 12, maxH: 9 }
 ];
 
-const Home = ({ isLoggedIn, setIsLoggedIn, user, isEditMode, loadMessages, messages, setMessages, toggleEditMode }) => {
+const Home = ({
+  isLoggedIn,
+  setIsLoggedIn,
+  user,
+  isEditMode,
+  loadMessages,
+  messages,
+  setMessages,
+  toggleEditMode,
+  darkMode,
+  toggleDarkMode
+}) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
-  const [maxYHSum, setMaxYHSum] = useState(MAX_Y_H_SUM);
+  const [maxYHSum] = useState(MAX_Y_H_SUM);
   const [username, setUsername] = useState('');
   const [currentLayout, setCurrentLayout] = useState(INITIAL_LAYOUT);
   const [selectedConversationId, setSelectedConversationId] = useState(null);
   const [isNewChat, setIsNewChat] = useState(false);
   const [conversations, setConversations] = useState([]);
+  const [showTime, setShowTime] = useState(true);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
   const originalLayoutRef = useRef(INITIAL_LAYOUT);
 
   const navigate = useNavigate();
   const { conversationId: urlConversationId } = useParams();
+
+  useEffect(() => {
+    if (user) {
+      setUsername(user.name); // 유저 이름 설정
+    }
+  }, [user]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -38,17 +57,6 @@ const Home = ({ isLoggedIn, setIsLoggedIn, user, isEditMode, loadMessages, messa
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const { valid, name } = await checkAuthStatus();
-      if (valid) {
-        setUsername(name);
-      }
-    };
-
-    fetchUserData();
   }, []);
 
   useEffect(() => {
@@ -244,8 +252,21 @@ const Home = ({ isLoggedIn, setIsLoggedIn, user, isEditMode, loadMessages, messa
     }
   };
 
+  const handleToggleDarkMode = () => {
+    toggleDarkMode();
+    document.body.classList.toggle('dark', !darkMode);
+  };
+
+  const handleOpenPanel = () => {
+    setIsPanelOpen(true);
+  };
+
+  const handleClosePanel = () => {
+    setIsPanelOpen(false);
+  };
+
   return (
-    <main className="main-section">
+    <main className={`main-section ${darkMode ? 'dark' : ''}`}>
       <Navigation
         isLoggedIn={isLoggedIn}
         setIsLoggedIn={setIsLoggedIn}
@@ -259,6 +280,13 @@ const Home = ({ isLoggedIn, setIsLoggedIn, user, isEditMode, loadMessages, messa
           setMessages([]); // 채팅 리스트를 초기화
           setIsNewChat(true); // 새로운 채팅 상태로 설정
         }}
+        showTime={showTime} // showTime prop 전달
+        setShowTime={setShowTime} // setShowTime prop 전달
+        darkMode={darkMode} // 다크 모드 상태 전달
+        toggleDarkMode={handleToggleDarkMode} // 다크 모드 토글 함수 전달
+        isPanelOpen={isPanelOpen} // 패널 열림 상태 전달
+        handleOpenPanel={handleOpenPanel} // 패널 열기 함수 전달
+        handleClosePanel={handleClosePanel} // 패널 닫기 함수 전달
       />
       {isLoggedIn && (
         <>
@@ -278,7 +306,7 @@ const Home = ({ isLoggedIn, setIsLoggedIn, user, isEditMode, loadMessages, messa
           />
         </>
       )}
-      <div className={`main-content ${isSidebarOpen ? 'shifted' : ''}`}>
+      <div className={`main-content ${isSidebarOpen ? 'shifted-right' : ''} ${isPanelOpen ? 'shifted-left' : ''}`}>
         <div className="grid-container">
           <GridLayout
             className="layout"
@@ -308,7 +336,13 @@ const Home = ({ isLoggedIn, setIsLoggedIn, user, isEditMode, loadMessages, messa
                     새로운 채팅을 시작해 보세요!
                   </div>
                 ) : (
-                  <ChatList messages={messages} username={username || 'You'} conversationId={selectedConversationId} />
+                  <ChatList 
+                    messages={messages} 
+                    username={username} 
+                    conversationId={selectedConversationId}
+                    showTime={showTime} // showTime prop 전달
+                    darkMode={darkMode} // 다크 모드 상태 전달
+                  />
                 )}
               </div>
               <div className="chat-box-container">
@@ -319,6 +353,7 @@ const Home = ({ isLoggedIn, setIsLoggedIn, user, isEditMode, loadMessages, messa
                   conversationId={selectedConversationId}
                   isNewChat={isNewChat}
                   startNewConversationWithMessage={startNewConversationWithMessage}
+                  darkMode={darkMode} // 다크 모드 상태 전달
                 />
               </div>
             </div>

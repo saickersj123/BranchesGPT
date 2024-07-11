@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { FaBars, FaTimes, FaTrashAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
-import { deleteConversation } from '../../api/axiosInstance'; // 삭제 API 함수 임포트
+import { deleteConversation, deleteAllChats } from '../../api/axiosInstance'; // 삭제 API 함수 임포트
 import '../../css/Sidebar.css';
 
 const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar, conversations, onConversationSelect, onNewChat, onConversationDelete }) => {
@@ -56,6 +56,17 @@ const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar, conversation
     }
   };
 
+  const handleDeleteAllChats = async () => {
+    try {
+      await deleteAllChats();
+      alert('대화기록이 성공적으로 삭제되었습니다.');
+      onConversationDelete(); // 삭제 후 상태 업데이트 호출
+      closeSidebar();
+    } catch (error) {
+      alert('대화기록 삭제에 실패했습니다. 다시 시도해주세요.');
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target) && isOpen) {
@@ -86,6 +97,11 @@ const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar, conversation
         {isOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
       </button>
       <div className="sidebar-menu">
+        {conversations.length > 0 && (
+          <button className="delete-all-button" onClick={handleDeleteAllChats}>
+            <FaTrashAlt size={16} /> 모든 채팅 기록 삭제
+          </button>
+        )}
         {conversations.length === 0 ? (
           <div className="no-chat-rooms">
             <p>대화 기록이 없습니다.<br /> 새로운 채팅을 시작해 보세요!</p>

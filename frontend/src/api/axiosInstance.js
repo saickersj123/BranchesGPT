@@ -1,5 +1,8 @@
+/*
+  /src/api/axiosInstance.js
+*/
+
 import axios from 'axios';
-  
 
 // 모든 요청에 withCredentials 옵션을 설정
 axios.defaults.withCredentials = true;
@@ -56,9 +59,9 @@ export const checkAuthStatus = async () => {
   console.log('checkAuthStatus 호출'); 
     try {
       const response = await axiosInstance.get('/user/auth-status');
-      console.log('서버 응답:', response.data);
       if (response.data && response.data.message === "OK") {
-        return { valid: true };
+        console.log('서버 응답:', response.data.name);
+        return { valid: true, user: { name: response.data.name } }; // 유저 이름 포함
       } else {
         return { valid: false };
       }
@@ -212,5 +215,43 @@ export const updatePassword = async (password) => {
       throw new Error('비밀번호 변경에 실패했습니다.');
     } 
 };
+
+// 사전학습 모델 생성
+export const createCustomModel = async (modelName, trainingData) => {
+  try {
+    const response = await axiosInstance.post('/chat/c-model/new', {
+      modelName,
+      trainingData
+    });
+    return response.data;
+  } catch (error) {
+    console.error('모델 생성 실패:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+// 사전학습 모델 삭제
+export const deleteCustomModel = async (modelName) => {
+  try {
+    const response = await axiosInstance.delete('/chat/c-model/delete', { data: { modelName } });
+    return response.data;
+  } catch (error) {
+    console.error('모델 삭제 실패:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+// 사전학습 모델로부터 응답 받기
+export const getCustomModelResponse = async (modelName, prompt) => {
+  try {
+    const response = await axiosInstance.post('/chat/c-model/response', { modelName, prompt });
+    return response.data;
+  } catch (error) {
+    console.error('모델 응답 받기 실패:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+
 
 export default axiosInstance; // 모듈에서 axios 인스턴스를 기본값으로 내보냅니다.

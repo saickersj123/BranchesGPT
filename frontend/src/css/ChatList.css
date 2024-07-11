@@ -1,5 +1,12 @@
-
-/* ChatList.css */
+:root {
+  --my-chat-bubble-color: #DCF8C6;
+  --my-chat-text-color: #000000;
+  --other-chat-bubble-color: #F0F0F0;
+  --other-chat-text-color: #000000;
+  --chat-bubble-bold: normal;
+  --chat-bubble-shadow: none;
+  --time-bold: normal; /* 시간 볼드체 추가 */
+}
 
 /* 채팅 메시지 컨테이너 스타일 */
 .message-container {
@@ -20,13 +27,14 @@
   border-radius: 10px;
   word-wrap: break-word;
   word-break: break-all;
-  background-color: #F0F0F0;
 }
 
 .time {
   font-size: 0.8em;
   color: gray;
   white-space: nowrap;
+  margin-left: 10px; /* 시간을 말풍선 옆에 띄우기 위한 여백 */
+  font-weight: var(--time-bold); /* 시간 볼드체 적용 */
 }
 
 .username {
@@ -46,7 +54,8 @@
 }
 
 .sent-by-user .bubble {
-  background-color: #DCF8C6;
+  background-color: var(--my-chat-bubble-color);
+  color: var(--my-chat-text-color);
 }
 
 .sent-by-user .time {
@@ -65,7 +74,8 @@
 }
 
 .received .bubble {
-  background-color: #F0F0F0;
+  background-color: var(--other-chat-bubble-color);
+  color: var(--other-chat-text-color);
 }
 
 .received .time {
@@ -90,7 +100,7 @@
   text-align: center;
   padding: 20px;
   border-radius: 10px;
-  margin-top: 50px;   
+  margin-top: 50px;
 }
 
 /* 로딩 스피너 스타일 */

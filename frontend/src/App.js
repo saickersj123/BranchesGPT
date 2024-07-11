@@ -5,22 +5,24 @@ import Navigation from './components/navbar/Navigation';
 import Login from './pages/Login';
 import MyPage from './pages/MyPage';
 import Home from './pages/Home';
-import { checkAuthStatus, fetchMessages } from './api/axiosInstance'; 
-import useConversations from './hooks/useConversationsList';
+import Pretrain from './pages/Pretrain'; 
+import { checkAuthStatus, fetchMessages } from './api/axiosInstance';  
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null); // 유저 정보 상태 추가
   const [isEditMode, setIsEditMode] = useState(false);
   const [messages, setMessages] = useState([]);
-  const conversations = useConversations();
+  const [darkMode, setDarkMode] = useState(false); // 다크 모드 상태 추가 
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await checkAuthStatus();
+        const response = await checkAuthStatus(); 
         setIsLoggedIn(response.valid);
-        setUser(response.user); // 유저 정보 저장
+        if (response.valid) {
+          setUser(response.user); // 유저 정보 저장
+        }
       } catch (error) {
         setIsLoggedIn(false);
       }
@@ -31,6 +33,10 @@ const App = () => {
 
   const toggleEditMode = () => {
     setIsEditMode(prevEditMode => !prevEditMode);
+  };
+
+  const toggleDarkMode = () => {
+    setDarkMode(prevDarkMode => !prevDarkMode);
   };
 
   const loadMessages = useCallback(async (conversationId) => {
@@ -62,11 +68,13 @@ const App = () => {
         isEditMode={isEditMode} 
         loadMessages={loadMessages}
         startNewConversationWithMessage={startNewChat}
+        darkMode={darkMode} // 다크 모드 상태 전달
+        toggleDarkMode={toggleDarkMode} // 다크 모드 토글 함수 전달
       />
       <Routes>
         <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
         <Route path="*" element={
-          <div className="app-container">
+          <div className={`app-container ${darkMode ? 'dark' : ''}`}>
             <div className="main-content">
               <Routes>
                 <Route path="/" element={
@@ -80,6 +88,8 @@ const App = () => {
                     setMessages={setMessages}
                     toggleEditMode={toggleEditMode}
                     startNewChat={startNewChat}
+                    darkMode={darkMode} // 다크 모드 상태 전달
+                    toggleDarkMode={toggleDarkMode} // 다크 모드 토글 함수 전달
                   />
                 } />
                 <Route path="/chat/:conversationId" element={
@@ -93,9 +103,12 @@ const App = () => {
                     setMessages={setMessages}
                     toggleEditMode={toggleEditMode}
                     startNewChat={startNewChat}
+                    darkMode={darkMode} // 다크 모드 상태 전달
+                    toggleDarkMode={toggleDarkMode} // 다크 모드 토글 함수 전달
                   />
                 } />
-                <Route path="/mypage" element={isLoggedIn ? <MyPage /> : <Navigate to="/" />} />
+                <Route path="/mypage" element={isLoggedIn ? <MyPage darkMode={darkMode} toggleDarkMode={toggleDarkMode} /> : <Navigate to="/" />} />
+                <Route path="/pretrain" element={<Pretrain />} />
               </Routes>
             </div>
           </div>
