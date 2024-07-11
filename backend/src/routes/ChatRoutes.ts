@@ -63,7 +63,7 @@ chatRoutes.delete(
 
 //delete all conversations
 chatRoutes.delete(
-    "/all-c/delete",
+    "/all-c",
     verifyToken,
     deleteAllConversations,
 )
