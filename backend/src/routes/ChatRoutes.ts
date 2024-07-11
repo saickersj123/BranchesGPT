@@ -56,7 +56,7 @@ chatRoutes.get(
 
 //delete a conversation
 chatRoutes.delete(
-    "/delete-c/:conversationId",
+    "/c/:conversationId",
     verifyToken,
     deleteConversation,
 )
@@ -78,7 +78,7 @@ chatRoutes.post(
 
 //delete custom model
 chatRoutes.delete(
-    "/g/delete/:modelName",
+    "/g/:modelName",
     verifyToken,
     deleteCustomModel,
 );
@@ -100,11 +100,12 @@ chatRoutes.post(
 	generateChatCompletion,
 );
 
-//get a model name
+//get a model name and conversation
 chatRoutes.get(
-    "/g/:modelName",
+    "/g/:modelName/:conversationId",
     verifyToken,
 	getModelName,
+	getConversation,
 );
 
 //get all custom models
