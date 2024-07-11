@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import conversationSchema from "./Conversation.js";
-import modelSchema from "./Model.js"
+import modelSchema from "./CustomModel.js"
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
         required: true,
     },
     conversations: [conversationSchema],
-    findTunedModels: [modelSchema],
+    CustomModels: [modelSchema],
 });
 
 export default mongoose.model("User", userSchema);

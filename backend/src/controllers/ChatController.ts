@@ -214,40 +214,119 @@ export const createCustomModel = async (
 	  	res.status(500).json({ error: err.message });
 	}
   };
-  
-  export const getCustomModelResponse = async (
+
+export const deleteCustomModel = async (
 	req: Request,
 	res: Response,
 	next: NextFunction) => {
 	try {
 		const userId = res.locals.jwtData.id;
-	  	const { modelName, prompt } = req.body;
-	  	const model = loadModel(userId, modelName);
+	  	const { modelId } = req.params;
+	  	deleteModel(userId, modelId);
 
-		const config = configureOpenAI();
-		const openai = new OpenAI(config);
-	  	const response = await openai.completions.create({
-			model: (await model).modelData.id,
-			prompt,
-			max_tokens: 150,
-	  	});
-  
-	  	res.status(200).json({ response: response.choices[0].text });
+	  	res.status(200).json({ message: "Model deleted" });
 	} catch (err) {
 	  	res.status(500).json({ error: err.message });
 	}
   };
 
-  export const deleteCustomModel = async (
+export const getCustomModelResponse = async (
 	req: Request,
 	res: Response,
-	next: NextFunction) => {
+	next: NextFunction
+  ) => {
 	try {
-	  const { modelName } = req.body;
-	  const userId = res.locals.jwtData.id;
-	  deleteModel(userId, modelName);
-	  res.status(200).json({ message: "Model deleted successfully" });
-	} catch (err) {
-	  res.status(500).json({ error: `Failed to delete GPT model: ${err.message}` });
+	  	const userId = res.locals.jwtData.id;
+	  	const { message } = req.body;
+		const { modelName } = req.params;
+  
+	  	//Load custom model
+	  	const model = await loadModel(userId, modelName);
+  
+	  	const user = await User.findById(userId);
+	  	if (!user) {
+			return res.status(401).json("User not registered / token malfunctioned");
+	 	}
+		// Prepare messages for OpenAI API
+		const conversation = user.conversations[user.conversations.length - 1];
+	  	const chats = conversation.chats.map(({ role, content }) => ({
+			role,
+			content,
+		}));
+	  	chats.push({ content: message, role: "user" });
+  
+	  	conversation.chats.push({ content: message, role: "user" });
+  
+	  	//configure OpenAI
+	  	const configuration = configureOpenAI();
+	  	const openai = new OpenAI(configuration);
+  
+	  	//Chat complietion from custom model
+	  	const response = await openai.chat.completions.create({
+			model: model.modelData.id,
+			messages: chats as OpenAI.Chat.ChatCompletionMessageParam[],
+			max_tokens: 150,
+	  	});
+  
+		// push latest response to db
+	  	conversation.chats.push(response.choices[0].message);
+	  	await user.save();
+  
+	  	return res.status(200).json({ chats: conversation.chats });
+	} catch (error) {
+	  	console.log(error);
+	  	return res.status(500).json({ message: error.message });
 	}
   };
+
+export const getAllCustomModels = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
+        
+		if (!user)
+			return res.status(401).json({
+				message: "ERROR",
+				cause: "User doesn't exist or token malfunctioned",
+			});
+
+		if (user._id.toString() !== res.locals.jwtData.id) {
+			return res
+				.status(401)
+				.json({ message: "ERROR", cause: "Permissions didn't match" });
+		}
+		return res.status(200).json({ message: "OK", CustomModels: user.CustomModels });
+	} catch (err) {
+		console.log(err);
+		return res.status(200).json({ message: "ERROR", cause: err.message });
+	}
+};
+
+export const getModelName = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+
+		const userId = (res.locals.jwtData.id); // get variable stored in previous middleware
+        const { modelName } = req.params;
+
+		const gotmodelName = await loadModel(userId, modelName);
+
+		if (!gotmodelName) {
+			return res.status(404).json({
+				message: "ERROR",
+				cause: "Model not found",
+			});
+		}
+
+		return res.status(200).json({ message: "OK", gotmodelName });
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json({ message: "ERROR", cause: err.message });
+	}
+};

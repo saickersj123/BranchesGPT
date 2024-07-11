@@ -10,6 +10,8 @@ import { deleteConversation,
 		 createCustomModel,
 		 deleteCustomModel,
 		 getCustomModelResponse,
+		 getAllCustomModels,
+		 getModelName,
 		 } from "../controllers/ChatController.js";
  
 const chatRoutes = express.Router();
@@ -27,7 +29,7 @@ chatRoutes.post(
 	validate(chatCompletionValidator),
 	verifyToken,
 	startNewConversation,
-	generateChatCompletion
+	generateChatCompletion,
 );
 
 //resume conversation
@@ -35,57 +37,81 @@ chatRoutes.post(
 	"/c/:conversationId",
 	validate(chatCompletionValidator),
 	verifyToken,
-	generateChatCompletion
+	generateChatCompletion,
 );
 
 //get all conversations
 chatRoutes.get(
 	"/all-c",
 	verifyToken,
-	getAllConversations
+	getAllConversations,
 );
 
 //get a conversation
 chatRoutes.get(
 	"/c/:conversationId",
 	verifyToken,
-	getConversation
+	getConversation,
 );
 
 //delete a conversation
 chatRoutes.delete(
     "/delete-c/:conversationId",
     verifyToken,
-    deleteConversation
+    deleteConversation,
 )
 
 //delete all conversations
 chatRoutes.delete(
-    "/delete-all-c",
+    "/all-c/delete",
     verifyToken,
-    deleteAllConversations
+    deleteAllConversations,
 )
 
 //create custom model
 chatRoutes.post(
-    "/c-model/new",
+    "/g/create",
 	validate(fineTuneValidator),
     verifyToken,
-    createCustomModel
+    createCustomModel,
 );
 
 //delete custom model
 chatRoutes.delete(
-    "/c-model/delete",
+    "/g/delete/:modelName",
     verifyToken,
-    deleteCustomModel
+    deleteCustomModel,
 );
 
 //get response from customModel
 chatRoutes.post(
-    "/c-model/response",
+    "/g/new/:modelName",
+	validate(chatCompletionValidator),
     verifyToken,
-    getCustomModelResponse
+	startNewConversation,
+    getCustomModelResponse,
+);
+
+//resume conversation with custom model
+chatRoutes.post(
+	"/g/:modelName/:conversationId",
+	validate(chatCompletionValidator),
+	verifyToken,
+	generateChatCompletion,
+);
+
+//get a model name
+chatRoutes.get(
+    "/g/:modelName",
+    verifyToken,
+	getModelName,
+);
+
+//get all custom models
+chatRoutes.get(
+    "/all-g",
+    verifyToken,
+	getAllCustomModels,
 );
 
 export default chatRoutes;

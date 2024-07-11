@@ -8,11 +8,11 @@ export const saveModel = async (userId: string, modelData: any, modelName: strin
       throw new Error("User not found");
     }
 
-    const existingModelIndex = user.findTunedModels.findIndex((model) => model.modelName === modelName);
+    const existingModelIndex = user.CustomModels.findIndex((model) => model.modelName === modelName);
     if (existingModelIndex !== -1) {
-      user.findTunedModels[existingModelIndex].modelData = modelData;
+      user.CustomModels[existingModelIndex].modelData = modelData;
     } else {
-      user.findTunedModels.push({
+      user.CustomModels.push({
         modelId: modelData.id,
         modelName,
         modelData,
@@ -32,7 +32,7 @@ export const loadModel = async (userId: string, modelName: string) => {
       throw new Error("User not found");
     }
 
-    const model = user.findTunedModels.find((model) => model.modelName === modelName);
+    const model = user.CustomModels.find((model) => model.modelName === modelName);
     if (!model) {
       throw new Error("Model not found");
     }
@@ -43,19 +43,19 @@ export const loadModel = async (userId: string, modelName: string) => {
   }
 };
 
-export const deleteModel = async (userId: string, modelName: string) => {
+export const deleteModel = async (userId: string, modelId: string) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found");
     }
 
-    const modelIndex = user.findTunedModels.findIndex((model) => model.modelName === modelName);
+    const modelIndex = user.CustomModels.findIndex((model) => model.modelId === modelId);
     if (modelIndex === -1) {
       throw new Error("Model not found");
     }
 
-    user.findTunedModels.splice(modelIndex, 1);
+    user.CustomModels.splice(modelIndex, 1);
     await user.save();
   } catch (error) {
     throw new Error(`Failed to delete model: ${error.message}`);
