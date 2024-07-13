@@ -20,16 +20,6 @@ const userSchema = new mongoose.Schema({
     conversations: [conversationSchema],
     CustomModels: [modelSchema],
     ChatBox: [chatboxSchema],
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-},
-{timestamps: true},
-);
+});
 
 export default mongoose.model("User", userSchema);

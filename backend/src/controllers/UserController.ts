@@ -356,8 +356,12 @@ export const saveChatbox = async (req: Request, res: Response, next: NextFunctio
 	  	if (!user) {
 			return res.status(401).json("User not registered / token malfunctioned");
 	  	}
-  
-	  	user.ChatBox.push({ cbox_x, cbox_y, cbox_w, cbox_h });
+   		// If the user already has a chatbox, update it. Otherwise, create a new one.
+   		if (!user.ChatBox) {
+			user.ChatBox.push ({ cbox_x, cbox_y, cbox_w, cbox_h });
+		} else {
+			user.ChatBox = { cbox_x, cbox_y, cbox_w, cbox_h };
+		}
 	  	await user.save();
   
 	  	return res.status(200).json({ message: "Chatbox added", chatbox: user.ChatBox });

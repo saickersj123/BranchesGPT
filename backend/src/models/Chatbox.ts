@@ -3,26 +3,21 @@ import mongoose from "mongoose";
 const chatboxSchema = new mongoose.Schema({
 	cbox_x: {
 		type: Number,
+		required: true,
 	},
 	cbox_y: {
 		type: Number,
+		required: true,
 	},
     cbox_w: {
 		type: Number,
+		required: true,
 	},
     cbox_h: {
 		type: Number,
+		required: true,
 	},
-	createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-},
-{timestamps: true},
-);
+
+});
 
 export default chatboxSchema;
