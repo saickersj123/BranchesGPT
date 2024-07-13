@@ -3,7 +3,7 @@ import User from "../models/User.js";
 import { configureOpenAI, Model } from "../config/openai.js";
 import OpenAI from "openai";
 import { saveModel, loadModel, deleteModel } from "../utils/modelStorage.js";
-import { fineTuneModel } from "../utils/fineTuneModel.js"
+import { fineTuneModel, saveTrainingDataToFile, uploadTrainingData } from "../utils/fineTuneModel.js"
 
  
 export const generateChatCompletion = async (
@@ -205,11 +205,13 @@ export const createCustomModel = async (
 	try {
 		const userId = res.locals.jwtData.id;
 		const { trainingData, modelName } = req.body;
+        const trainingFilePath = await saveTrainingDataToFile(trainingData);
+        const trainingFileId = await uploadTrainingData(trainingFilePath);
 	  	const fineTunedModel = await fineTuneModel(trainingData);
   
 	  	saveModel(userId, fineTunedModel, modelName);
   
-	  	res.status(201).json({ message: "Model fine-tuned and saved", model: fineTunedModel });
+	  	res.status(201).json({ message: "Model fine-tuned and saved", model: fineTunedModel, trainingFileId });
 	} catch (err) {
 	  	res.status(500).json({ error: err.message });
 	}
