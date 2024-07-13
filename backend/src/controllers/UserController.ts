@@ -350,25 +350,24 @@ export const deleteuser = async (
 
 export const saveChatbox = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-	  	const { cbox_x, cbox_y, cbox_w, cbox_h } = req.body;
-  
-	  	const user = await User.findById(res.locals.jwtData.id);
-	  	if (!user) {
-			return res.status(401).json("User not registered / token malfunctioned");
-	  	}
-   		// If the user already has a chatbox, update it. Otherwise, create a new one.
-   		if (!user.ChatBox) {
-			user.ChatBox.push ({ cbox_x, cbox_y, cbox_w, cbox_h });
-		} else {
-			user.ChatBox = { cbox_x, cbox_y, cbox_w, cbox_h };
-		}
-	  	await user.save();
-  
-	  	return res.status(200).json({ message: "Chatbox added", chatbox: user.ChatBox });
-	} catch (error) {
-	  	console.log(error);
-	  	return res.status(500).json({ message: error.message });
-	}
+        const { cbox_x, cbox_y, cbox_w, cbox_h } = req.body;
+        const userId = res.locals.jwtData.id;
+
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: userId },
+            { $set: { ChatBox: { cbox_x, cbox_y, cbox_w, cbox_h } } },
+            { new: true, upsert: true } // new: return the modified document, upsert: create if doesn't exist
+        );
+
+        if (!updatedUser) {
+            return res.status(401).json("User not registered / token malfunctioned");
+        }
+
+        return res.status(200).json({ message: "Chatbox saved or updated", chatbox: updatedUser.ChatBox });
+    } catch (error) {
+        console.error("Error saving or updating chatbox:", error);
+        return res.status(500).json({ message: error.message });
+    }
   };
 
 export const getChatboxes = async (req: Request, res: Response, next: NextFunction) => {
