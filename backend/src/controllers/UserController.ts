@@ -208,6 +208,7 @@ export const logoutUser = async (
 			.json({ message: "ERROR", cause: err.message});
 	}
 };
+
 export const changename = async (
 	req: Request,
 	res: Response,
@@ -242,6 +243,7 @@ export const changename = async (
 			.json({ message: "ERROR", cause: err.message});
 	}
 };
+
 export const changepassword = async (
 	req: Request,
 	res: Response,
@@ -277,6 +279,7 @@ export const changepassword = async (
 			.json({ message: "ERROR", cause: err.message});
 	}
 };
+
 export const checkpassword = async (
 	req: Request,
 	res: Response,
@@ -314,3 +317,84 @@ export const checkpassword = async (
 			.json({ message: "ERROR", cause: err.message});
 	}
 };
+
+export const deleteuser = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
+
+		if (!user)
+			return res.status(401).json({
+				message: "ERROR",
+				cause: "User doesn't exist or token malfunctioned",
+			});
+
+		if (user._id.toString() !== res.locals.jwtData.id) {
+			return res
+				.status(401)
+				.json({ message: "ERROR", cause: "Permissions didn't match" });
+		}
+
+		await User.findByIdAndDelete(res.locals.jwtData.id);
+		return res.status(200).json({ message: "OK" });
+	} catch (err) {
+		console.log(err);
+		return res
+			.status(200)
+			.json({ message: "ERROR", cause: err.message});
+	}
+};
+
+export const saveChatbox = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+	  	const { cbox_x, cbox_y, cbox_w, cbox_h } = req.body;
+  
+	  	const user = await User.findById(res.locals.jwtData.id);
+	  	if (!user) {
+			return res.status(401).json("User not registered / token malfunctioned");
+	  	}
+  
+	  	user.ChatBox.push({ cbox_x, cbox_y, cbox_w, cbox_h });
+	  	await user.save();
+  
+	  	return res.status(200).json({ message: "Chatbox added", chatbox: user.ChatBox });
+	} catch (error) {
+	  	console.log(error);
+	  	return res.status(500).json({ message: error.message });
+	}
+  };
+
+export const getChatboxes = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+	  	const user = await User.findById(res.locals.jwtData.id);
+
+	  	if (!user) {
+			return res.status(401).json("User not registered / token malfunctioned");
+	  	}
+  
+	  		return res.status(200).json({ chatboxes: user.ChatBox });
+	} catch (error) {
+	  	console.log(error);
+	  	return res.status(500).json({ message: error.message });
+	}
+  };
+
+  export const resetChatbox = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+	  	const user = await User.findById(res.locals.jwtData.id);
+	  	if (!user) {
+			return res.status(401).json("User not registered / token malfunctioned");
+	 	 }
+  
+		user.ChatBox.push({ cbox_x: 2, cbox_y: 0.5, cbox_w: 8, cbox_h: 8 });
+		await user.save();
+  
+	  	return res.status(200).json({ message: "Chatbox resetted", chatbox: user.ChatBox });
+	} catch (error) {
+	  	console.log(error);
+	  	return res.status(500).json({ message: error.message });
+	}
+  };

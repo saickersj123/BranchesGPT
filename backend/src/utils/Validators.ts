@@ -42,3 +42,10 @@ export const fineTuneValidator = [
 	body("modelName").trim().notEmpty().withMessage("Model name is required"),
 	body("trainingData").trim().notEmpty().withMessage("Training data is required"),
 ];
+
+export const chatboxValidator = [
+	body("cbox_x").isNumeric().withMessage("cbox_x must be a number"),
+	body("cbox_y").isNumeric().withMessage("cbox_y must be a number"),
+	body("cbox_w").isNumeric().withMessage("cbox_w must be a number"),
+	body("cbox_h").isNumeric().withMessage("cbox_h must be a number"),
+  ];

@@ -8,13 +8,18 @@ import {
     logoutUser,
 	checkpassword,
 	changename,
-	changepassword
+	changepassword,
+	deleteuser,
+	getChatboxes,
+	saveChatbox,
+	resetChatbox,
 } from "../controllers/UserController.js";
 
 import {
 	loginValidator,
 	signUpValidator,
 	validate,
+	chatboxValidator,
 } from "../utils/Validators.js";
 
 import { verifyToken } from "../utils/Token.js";
@@ -29,12 +34,20 @@ userRoutes.post("/login", validate(loginValidator), userLogin);
 
 userRoutes.get("/auth-status", verifyToken, verifyUserStatus); // check if user cookies are valid so he doesnt have to login again
 
-userRoutes.get("/logout", verifyToken, logoutUser)
+userRoutes.get("/logout", verifyToken, logoutUser);
 
-userRoutes.post("/mypage", verifyToken, checkpassword)
+userRoutes.post("/mypage", verifyToken, checkpassword);
 
-userRoutes.put("/update-name", verifyToken, changename)
+userRoutes.put("/update-name", verifyToken, changename);
 
-userRoutes.put("/update-password", verifyToken, changepassword)
+userRoutes.put("/update-password", verifyToken, changepassword);
+
+userRoutes.delete("/delete", verifyToken, deleteuser );
+
+userRoutes.get("/cbox", verifyToken, getChatboxes);
+
+userRoutes.post("/cbox", validate(chatboxValidator), verifyToken, saveChatbox);
+
+userRoutes.put("/cbox", verifyToken, resetChatbox);
 
 export default userRoutes;
