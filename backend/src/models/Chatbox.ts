@@ -1,11 +1,6 @@
 import mongoose from "mongoose";
-import { randomUUID } from "crypto";
 
 const chatboxSchema = new mongoose.Schema({
-	id: {
-		type: String,
-		default: randomUUID(),
-	},
 	cbox_x: {
 		type: Number,
 	},

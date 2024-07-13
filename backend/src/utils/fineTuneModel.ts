@@ -2,6 +2,9 @@ import { configureOpenAI, Model } from "../config/openai.js";
 import OpenAI from "openai";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const fineTuneModel = async (trainingData: string) => {
     const openai = new OpenAI(configureOpenAI());

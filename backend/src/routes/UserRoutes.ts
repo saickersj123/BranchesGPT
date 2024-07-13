@@ -46,6 +46,8 @@ userRoutes.delete("/delete", verifyToken, deleteuser );
 
 userRoutes.get("/cbox", verifyToken, getChatboxes);
 
+userRoutes.put("/cbox", validate(chatboxValidator), verifyToken, saveChatbox);
+
 userRoutes.post("/cbox", validate(chatboxValidator), verifyToken, saveChatbox);
 
 userRoutes.put("/cbox", verifyToken, resetChatbox);
