@@ -82,11 +82,8 @@ const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar, conversation
 
   // 사이드바 순서를 콘솔에 출력
   useEffect(() => {
-    console.log('사이드바 순서:');
     sortedChatRooms().forEach(group => {
-      console.log(`날짜: ${group.date}`);
       group.rooms.forEach(room => {
-        console.log(`대화 ID: ${room._id}, 마지막 메시지: ${room.chats[room.chats.length - 1]?.content}`);
       });
     });
   }, [conversations]);

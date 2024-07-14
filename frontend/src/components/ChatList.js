@@ -18,7 +18,6 @@ const ChatMessage = ({ content, role, time, username, showTime }) => {
     boxShadow: 'var(--chat-bubble-shadow)',
   };
 
-  console.log(`ChatMessage - role: ${role}, username: ${username}, displayUsername: ${displayUsername}`); // 로그 추가
 
   return (
     <div className={`message-container ${role === 'user' ? 'sent-by-user' : 'received'}`}>

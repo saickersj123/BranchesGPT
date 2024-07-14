@@ -3,7 +3,7 @@ import { Form, Button } from 'react-bootstrap';
 import '../css/ChatBox.css';
 import { sendMessage } from '../api/axiosInstance';
 
-const ChatBox = ({ conversationId, onNewMessage, onUpdateMessage, isEditMode, isNewChat, startNewConversationWithMessage }) => {
+const ChatBox = ({ conversationId, onNewMessage, onUpdateMessage, isEditMode, isNewChat, startNewConversationWithMessage, darkMode }) => {
   const [message, setMessage] = useState('');
 
   const handleMessageChange = (event) => {
@@ -23,11 +23,9 @@ const ChatBox = ({ conversationId, onNewMessage, onUpdateMessage, isEditMode, is
 
     try {
       if (isNewChat) {
-        console.log('Starting new conversation from ChatBox with message:', message); // 디버그 로그 추가
         await startNewConversationWithMessage(message); // 사용자가 입력한 메시지로 새로운 대화 시작
       } else {
         const response = await sendMessage(conversationId, message);
-        console.log('Message sent:', response);
 
         if (response && response.length > 0) {
           const aiMessage = {
@@ -52,7 +50,7 @@ const ChatBox = ({ conversationId, onNewMessage, onUpdateMessage, isEditMode, is
   };
 
   return (
-    <Form className="chat-input-container" onSubmit={(e) => e.preventDefault()}>
+    <Form className={`chat-input-container ${darkMode === 'dark' ? 'dark' : ''}`} onSubmit={(e) => e.preventDefault()}>
       <Form.Group controlId="messageInput" className="textarea-wrapper">
         <Form.Control
           as="textarea"
@@ -61,13 +59,13 @@ const ChatBox = ({ conversationId, onNewMessage, onUpdateMessage, isEditMode, is
           onChange={handleMessageChange}
           onKeyPress={handleKeyPress}
           placeholder="메시지를 입력하세요..."
-          className="chat-container"
+          className={`chat-container ${darkMode === 'dark' ? 'dark' : ''}`}
           disabled={isEditMode}
         />
         <Button
           type="submit"
           onClick={sendMessageToServer}
-          className="chat-box-button"
+          className={`chat-box-button ${darkMode === 'dark' ? 'dark' : ''}`}
           disabled={isEditMode}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-right" viewBox="0 0 16 16">

@@ -35,7 +35,7 @@ export const sendMessage = async (conversationId, messageContent, role = 'user')
 // ID를 사용한 개별 채팅방 삭제
 export const deleteConversation = async (conversationId) => {
   try {
-    const response = await axiosInstance.delete(`/chat/delete-c/${conversationId}`);
+    const response = await axiosInstance.delete(`/chat/c/${conversationId}`);
     return response.data;
   } catch (error) {
     console.error('대화 삭제 실패:', error);
@@ -46,7 +46,7 @@ export const deleteConversation = async (conversationId) => {
 // 모든 채팅 기록 삭제
 export const deleteAllChats = async () => { 
     try {
-      const response = await axiosInstance.delete('/chat/delete-all-c');
+      const response = await axiosInstance.delete('/chat/all-c');
       return response.data;
     } catch (error) {
       console.error('모든 채팅 기록 삭제 실패:', error);
@@ -56,11 +56,9 @@ export const deleteAllChats = async () => {
 
 // 인증 상태 확인
 export const checkAuthStatus = async () => {
-  console.log('checkAuthStatus 호출'); 
     try {
       const response = await axiosInstance.get('/user/auth-status');
       if (response.data && response.data.message === "OK") {
-        console.log('서버 응답:', response.data.name);
         return { valid: true, user: { name: response.data.name } }; // 유저 이름 포함
       } else {
         return { valid: false };
@@ -148,7 +146,6 @@ export const fetchConversations = async () => {
     const response = await axiosInstance.get('/chat/all-c');
     const conversations = response.data.conversations || [];
     conversations.forEach(conversation => {
-      console.log('Conversation ID:', conversation._id); // 콘솔 로그 추가
     });
     return conversations;
   } catch (error) {
@@ -160,9 +157,7 @@ export const fetchConversations = async () => {
 // id를 통해 채팅 기록을 불러오기
 export const fetchMessages = async (conversationId) => {
   try {
-    console.log('Fetching messages for conversation:', conversationId);
     const response = await axiosInstance.get(`/chat/c/${conversationId}`);
-    console.log('Response:', response);
     return response.data.conversation.chats || [];
   } catch (error) {
     console.error('메시지 가져오기 실패:', error);
@@ -219,7 +214,8 @@ export const updatePassword = async (password) => {
 // 사전학습 모델 생성
 export const createCustomModel = async (modelName, trainingData) => {
   try {
-    const response = await axiosInstance.post('/chat/c-model/new', {
+    
+    const response = await axiosInstance.post('/chat/g/create', {
       modelName,
       trainingData
     });
@@ -233,7 +229,7 @@ export const createCustomModel = async (modelName, trainingData) => {
 // 사전학습 모델 삭제
 export const deleteCustomModel = async (modelName) => {
   try {
-    const response = await axiosInstance.delete('/chat/c-model/delete', { data: { modelName } });
+    const response = await axiosInstance.delete('/chat/g/:modelName', { data: { modelName } });
     return response.data;
   } catch (error) {
     console.error('모델 삭제 실패:', error.response ? error.response.data : error.message);
@@ -252,6 +248,52 @@ export const getCustomModelResponse = async (modelName, prompt) => {
   }
 };
 
+// 좌표값 가져오기
+export const getChatboxes = async () => {
+  try {
+    const response = await axiosInstance.get('/user/cbox');
+    const chatboxes = response.data.chatboxes; 
+    // 가장 최근의 chatbox 찾기
+    
+    const latestChatbox = chatboxes.reduce((latest, current) => {
+      return new Date(latest.createdAt) > new Date(current.createdAt) ? latest : current;
+    }, chatboxes[0]);
 
+    return latestChatbox;
+  } catch (error) {
+    console.error('좌표값 가져오기 실패:', error);
+    throw error;
+  }
+};
 
+// 좌표값 저장하기
+export const saveChatbox = async (chatbox) => {
+  try {
+    const response = await axiosInstance.post('/user/cbox', chatbox);
+    return response.data;
+  } catch (error) {
+    console.error('좌표값 저장하기 실패:', error);
+    throw error;
+  }
+};
+
+// 좌표값 초기화하기 
+export const resetChatbox = async () => {
+  try {
+    const response = await axiosInstance.put('/user/cboxreset');
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      // 서버 응답이 있는 경우
+      console.error('응답 오류:', error.response.data);
+    } else if (error.request) {
+      // 요청이 전송되었으나 응답이 없는 경우
+      console.error('요청 오류:', error.request);
+    } else {
+      // 요청을 설정하는 도중에 발생한 오류
+      console.error('설정 오류:', error.message);
+    }
+    throw error;
+  }
+};
 export default axiosInstance; // 모듈에서 axios 인스턴스를 기본값으로 내보냅니다.

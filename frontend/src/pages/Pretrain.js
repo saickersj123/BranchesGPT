@@ -1,12 +1,12 @@
-// Pretrain.js
-
 import React, { useState } from 'react';
 import { createCustomModel } from '../api/axiosInstance';
 import '../css/Pretrain.css';
 
 const Pretrain = () => {
   const [modelName, setModelName] = useState('');
-  const [trainingData, setTrainingData] = useState('');
+  const [systemContent, setSystemContent] = useState('You are a happy assistant that puts a positive spin on everything.');
+  const [userContent, setUserContent] = useState('');
+  const [assistantContent, setAssistantContent] = useState('');
   const [isTraining, setIsTraining] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
 
@@ -14,8 +14,18 @@ const Pretrain = () => {
     e.preventDefault();
     setIsTraining(true);
     setResponseMessage('');
-    
+
     try {
+      const trainingData = JSON.stringify([
+        { role: "system", content: systemContent },
+        { role: "user", content: userContent },
+        { role: "assistant", content: assistantContent }
+      ]);
+
+      console.log("Submitting model with the following data:");
+      console.log("Model Name: ", modelName);
+      console.log("Training Data: ", trainingData);
+
       const response = await createCustomModel(modelName, trainingData);
       setResponseMessage('Model created successfully');
     } catch (error) {
@@ -40,11 +50,29 @@ const Pretrain = () => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="trainingData">학습 데이터:</label>
+          <label htmlFor="systemContent">시스템:</label>
           <textarea
-            id="trainingData"
-            value={trainingData}
-            onChange={(e) => setTrainingData(e.target.value)}
+            id="systemContent"
+            value={systemContent}
+            onChange={(e) => setSystemContent(e.target.value)}
+            required
+          ></textarea>
+        </div>
+        <div className="form-group">
+          <label htmlFor="userContent">사용자:</label>
+          <textarea
+            id="userContent"
+            value={userContent}
+            onChange={(e) => setUserContent(e.target.value)}
+            required
+          ></textarea>
+        </div>
+        <div className="form-group">
+          <label htmlFor="assistantContent">어시스턴트:</label>
+          <textarea
+            id="assistantContent"
+            value={assistantContent}
+            onChange={(e) => setAssistantContent(e.target.value)}
             required
           ></textarea>
         </div>
