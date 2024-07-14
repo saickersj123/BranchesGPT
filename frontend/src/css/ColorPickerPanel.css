@@ -1,5 +1,3 @@
-/* ColorPickerPanel.css */
-
 .panel-container {
   position: fixed;
   right: 0;
@@ -13,31 +11,35 @@
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: Arial, sans-serif;
 }
 
 .panel-container.dark {
-  background-color: #1a1a1a; /* 다크 모드에서 더 어두운 배경 색상 */
+  background-color: #1a1a1a;
   color: #fff;
 }
 
 .panel-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 20px;
 }
 
-.dark-mode-button {
-  background: none;
-  border: none;
-  color: inherit;
+.panel-header .fa-times {
   cursor: pointer;
-  font-size: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.panel-header .fa-times:hover {
+  color: #666;
 }
 
 .panel-content {
   overflow-y: auto;
   flex: 1;
+  padding-right: 10px;
 }
 
 .panel-section {
@@ -49,9 +51,10 @@
   border-bottom: 1px solid #ccc;
   padding-bottom: 5px;
   color: #333;
+  font-size: 18px;
 }
 
-.panel-section.dark h3 {
+.panel-container.dark .panel-section h3 {
   color: #fff;
 }
 
@@ -63,31 +66,33 @@
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
+  font-size: 14px;
 }
 
 .color-buttons {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .color-button {
   width: 30px;
   height: 30px;
-  margin-right: 5px;
   border: none;
   border-radius: 50%;
   cursor: pointer;
   outline: none;
+  transition: transform 0.2s;
 }
 
-.color-button:focus {
-  outline: none;
+.color-button:hover {
+  transform: scale(1.1);
 }
 
 .color-picker-button {
   width: 30px;
   height: 30px;
-  margin-left: 10px;
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -95,15 +100,19 @@
   background-color: #ffffff;
   background-image: url('../img/RGB_Pick.png');
   background-size: cover;
+  transition: transform 0.2s;
 }
 
-.color-picker-button:focus {
-  outline: none;
+.color-picker-button:hover {
+  transform: scale(1.1);
 }
 
 .color-picker-popover {
   position: absolute;
   z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .color-picker-cover {
@@ -114,7 +123,16 @@
   left: 0;
 }
 
+input[type="checkbox"] {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
 body.dark-mode {
   background-color: #212121;
   color: #fff;
+}
+
+input[type="checkbox"]:focus {
+  outline: none;
 }

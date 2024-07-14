@@ -79,9 +79,9 @@ const ColorPickerPanel = ({
         break;
     }
   };
-
+console.log(darkMode);
   return (
-    <div className={`panel-container ${darkMode ? 'dark' : ''}`}>
+    <div className={`panel-container ${darkMode === 'dark' ? 'dark' : ''}`}>
       <div className="panel-header">
         <FontAwesomeIcon icon={faTimes} onClick={closePanel} />
       </div>

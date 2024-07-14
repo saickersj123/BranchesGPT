@@ -5,7 +5,7 @@ import ChatList from '../components/ChatList';
 import Sidebar from '../components/sidebar/Sidebar';
 import Navigation from '../components/navbar/Navigation';
 import GridLayout from 'react-grid-layout';
-import { fetchMessages, startNewConversation, fetchConversations, sendMessage } from '../api/axiosInstance';
+import { fetchMessages, startNewConversation, fetchConversations, sendMessage, getChatboxes, saveChatbox, resetChatbox } from '../api/axiosInstance';
 import '../css/Home.css';
 
 const MAX_Y_H_SUM = 9;
@@ -44,7 +44,7 @@ const Home = ({
 
   useEffect(() => {
     if (user) {
-      setUsername(user.name); // 유저 이름 설정
+      setUsername(user.name);
     }
   }, [user]);
 
@@ -87,7 +87,6 @@ const Home = ({
       try {
         const fetchedConversations = await fetchConversations();
         setConversations(fetchedConversations);
-        // 대화 목록을 불러온 후, 마지막 대화로 이동
         if (fetchedConversations.length > 0) {
           setSelectedConversationId(fetchedConversations[fetchedConversations.length - 1]._id);
           navigate(`/chat/${fetchedConversations[fetchedConversations.length - 1]._id}`);
@@ -99,6 +98,41 @@ const Home = ({
 
     if (isLoggedIn) {
       loadConversations();
+    }
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    const loadChatboxLayout = async () => {
+      try {
+        const fetchedChatbox = await getChatboxes();
+
+        if (fetchedChatbox) {
+          const validatedChatbox = [{
+            i: 'chatContainer',
+            x: Number(fetchedChatbox.cbox_x),
+            y: Number(fetchedChatbox.cbox_y),
+            w: Number(fetchedChatbox.cbox_w),
+            h: Number(fetchedChatbox.cbox_h),
+            minH: 4,
+            minW: 3,
+            maxW: 12,
+            maxH: 9
+          }];
+          setCurrentLayout(validatedChatbox);
+          originalLayoutRef.current = validatedChatbox;
+        } else {
+          setCurrentLayout(INITIAL_LAYOUT);
+          originalLayoutRef.current = INITIAL_LAYOUT;
+        }
+      } catch (error) {
+        console.error('Chatbox layout 가져오기 실패:', error);
+        setCurrentLayout(INITIAL_LAYOUT);
+        originalLayoutRef.current = INITIAL_LAYOUT;
+      }
+    };
+
+    if (isLoggedIn) {
+      loadChatboxLayout();
     }
   }, [isLoggedIn]);
 
@@ -134,17 +168,17 @@ const Home = ({
         console.warn('No new conversation started.');
         return;
       }
-      const response = await sendMessage(newConversationId, messageContent); // 새 대화 ID로 메시지 전송
-  
+      const response = await sendMessage(newConversationId, messageContent);
+
       if (response && response.length > 0) {
         const aiMessage = {
           content: response[response.length - 1].content,
           role: 'assistant',
           createdAt: new Date().toISOString()
         };
-        handleUpdateMessage(aiMessage); // AI 응답 메시지를 추가하여 상태 업데이트
+        handleUpdateMessage(aiMessage);
       }
-      setSelectedConversationId(newConversationId); // 이 부분을 수정합니다.
+      setSelectedConversationId(newConversationId);
       navigate(`/chat/${newConversationId}`);
       setIsNewChat(false);
       return newConversationId;
@@ -220,13 +254,29 @@ const Home = ({
     setCurrentLayout(validatedLayout);
   };
 
-  const handleResetLayout = () => {
-    setCurrentLayout(INITIAL_LAYOUT);
+  const handleResetLayout = async () => {
+    try {
+      await resetChatbox();
+      setCurrentLayout(INITIAL_LAYOUT);
+    } catch (error) {
+      console.error('Chatbox layout 초기화 실패:', error);
+    }
   };
 
-  const handleSaveClick = () => {
-    originalLayoutRef.current = currentLayout;
-    toggleEditMode();
+  const handleSaveClick = async () => {
+    try {
+      const chatbox = {
+        cbox_x: currentLayout[0].x,
+        cbox_y: currentLayout[0].y,
+        cbox_w: currentLayout[0].w,
+        cbox_h: currentLayout[0].h
+      };
+      await saveChatbox(chatbox);
+      originalLayoutRef.current = currentLayout;
+      toggleEditMode();
+    } catch (error) {
+      console.error('Chatbox layout 저장 실패:', error);
+    }
   };
 
   const handleCancelClick = () => {
@@ -252,11 +302,6 @@ const Home = ({
     }
   };
 
-  const handleToggleDarkMode = () => {
-    toggleDarkMode();
-    document.body.classList.toggle('dark', !darkMode);
-  };
-
   const handleOpenPanel = () => {
     setIsPanelOpen(true);
   };
@@ -264,9 +309,15 @@ const Home = ({
   const handleClosePanel = () => {
     setIsPanelOpen(false);
   };
-
+  useEffect(() => {
+    if (darkMode === 'dark') {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  }, [darkMode]);
   return (
-    <main className={`main-section ${darkMode ? 'dark' : ''}`}>
+    <main className={`main-section ${darkMode === 'dark' ? 'dark' : ''}`}>
       <Navigation
         isLoggedIn={isLoggedIn}
         setIsLoggedIn={setIsLoggedIn}
@@ -277,16 +328,16 @@ const Home = ({
         handleResetLayout={handleResetLayout}
         loadMessages={loadMessages}
         startNewConversationWithMessage={() => {
-          setMessages([]); // 채팅 리스트를 초기화
-          setIsNewChat(true); // 새로운 채팅 상태로 설정
+          setMessages([]);
+          setIsNewChat(true);
         }}
-        showTime={showTime} // showTime prop 전달
-        setShowTime={setShowTime} // setShowTime prop 전달
-        darkMode={darkMode} // 다크 모드 상태 전달
-        toggleDarkMode={handleToggleDarkMode} // 다크 모드 토글 함수 전달
-        isPanelOpen={isPanelOpen} // 패널 열림 상태 전달
-        handleOpenPanel={handleOpenPanel} // 패널 열기 함수 전달
-        handleClosePanel={handleClosePanel} // 패널 닫기 함수 전달
+        showTime={showTime}
+        setShowTime={setShowTime}
+        darkMode={darkMode}
+        toggleDarkMode={toggleDarkMode}
+        isPanelOpen={isPanelOpen}
+        handleOpenPanel={handleOpenPanel}
+        handleClosePanel={handleClosePanel}
       />
       {isLoggedIn && (
         <>
@@ -299,10 +350,11 @@ const Home = ({
             conversations={conversations}
             onConversationSelect={handleConversationSelect}
             onNewChat={() => {
-              setMessages([]); // 채팅 리스트를 초기화
+              setMessages([]);
               setIsNewChat(true);
-            }} // 새로운 채팅 시작을 위해 isNewChat을 true로 설정
-            onConversationDelete={handleConversationDelete} // 삭제 후 상태 업데이트 호출
+            }}
+            onConversationDelete={handleConversationDelete}
+            darkMode={darkMode}
           />
         </>
       )}
@@ -340,8 +392,8 @@ const Home = ({
                     messages={messages} 
                     username={username} 
                     conversationId={selectedConversationId}
-                    showTime={showTime} // showTime prop 전달
-                    darkMode={darkMode} // 다크 모드 상태 전달
+                    showTime={showTime}
+                    darkMode={darkMode}
                   />
                 )}
               </div>
@@ -353,7 +405,7 @@ const Home = ({
                   conversationId={selectedConversationId}
                   isNewChat={isNewChat}
                   startNewConversationWithMessage={startNewConversationWithMessage}
-                  darkMode={darkMode} // 다크 모드 상태 전달
+                  darkMode={darkMode}
                 />
               </div>
             </div>

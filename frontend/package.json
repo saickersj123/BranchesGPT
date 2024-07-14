@@ -32,9 +32,11 @@
     "react-draggable": "^4.4.6",
     "react-grid-layout": "^1.4.4",
     "react-icons": "^5.2.1",
+    "react-multilevel-dropdown": "^4.0.0",
     "react-responsive": "^10.0.0",
     "react-router-dom": "^6.23.1",
     "react-scripts": "5.0.1",
+    "sass": "^1.77.8",
     "styled-components": "^6.1.11",
     "tailwindcss": "^3.4.4",
     "web-vitals": "^2.1.4"
@@ -42,8 +44,10 @@
   "scripts": {
     "start": "react-scripts start",
     "client": "react-scripts start",
+    "dev": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "serve": "serve -s build",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

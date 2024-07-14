@@ -1,15 +1,18 @@
+/* 기존 스타일 */
+
+/* 라이트 모드 */
 :root {
-  --navbar-bg-color: #f1f3f5 ; /* 기본 네비게이션 바 배경 색상 */
+  --navbar-bg-color: #f1f3f5; /* 기본 네비게이션 바 배경 색상 */
   --navbar-text-color: #000000; /* 기본 네비게이션 바 텍스트 색상 */
   --button-color: #1e3a8a; /* 버튼 색상 */
-  --button-hover-color: #3b82f6; /* 버튼 호버 색상 */
+  --button-hover-color: #cbdaf2; /* 버튼 호버 색상 */
   --dark-navbar-bg-color: #212121; /* 다크 모드 네비게이션 바 배경 색상 */
   --dark-navbar-text-color: #ffffff; /* 다크 모드 네비게이션 바 텍스트 색상 */
   --dropdown-bg-color: #ffffff; /* 기본 드롭다운 배경 색상 */
   --dropdown-text-color: #000000; /* 기본 드롭다운 텍스트 색상 */
   --dark-dropdown-bg-color: #2c2c2c; /* 다크 모드 드롭다운 배경 색상 */
   --dark-dropdown-text-color: #ffffff; /* 다크 모드 드롭다운 텍스트 색상 */
-  --dark-button-hover-color: #6d7373; /* 다크 모드 버튼 호버 색상 */
+  --dark-button-hover-color: #444444; /* 다크 모드 드롭다운 아이템 호버 배경 색상 */
 }
 
 body {
@@ -79,7 +82,7 @@ body.dark .dropdown-item:hover {
   background: none !important;
   border: none !important;
   display: flex !important;
-  align-items: center  ; /* 수직 중앙 정렬 강제 적용 */
+  align-items: center; /* 수직 중앙 정렬 강제 적용 */
   height: 100%; /* 높이를 부모 요소와 동일하게 설정 */
   color: inherit; /* 부모 요소의 색상 상속 */
 }
@@ -108,7 +111,7 @@ body.dark .dropdown-item:hover {
   display: flex;
   align-items: center;
   justify-content: center; /* 중앙 정렬 */
-  background: none !important;
+  background: none;
   color: var(--button-color); /* 버튼 색상 */
 }
 
