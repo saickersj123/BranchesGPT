@@ -93,7 +93,7 @@ const App = () => {
 
   return (
     <Router>
-      <div className={`app-container ${currentMode}`}>
+      <div>
         <Navigation
           isLoggedIn={isLoggedIn}
           setIsLoggedIn={setIsLoggedIn}
@@ -109,7 +109,7 @@ const App = () => {
           <Route
             path="*"
             element={
-              <div className="main-content">
+              <div  className={`app-container ${currentMode}`}>
                 <Routes>
                   <Route
                     path="/"

@@ -280,7 +280,7 @@ export const saveChatbox = async (chatbox) => {
 // 좌표값 초기화하기 
 export const resetChatbox = async () => {
   try {
-    const response = await axiosInstance.put('/user/cboxreset');
+    const response = await axiosInstance.put('/user/cbox/reset');
     return response.data;
   } catch (error) {
     if (error.response) {
