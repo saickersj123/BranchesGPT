@@ -1,8 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import User from "../models/User.js";
-import { configureOpenAI } from "../config/openai.js";
+import { configureOpenAI, Model } from "../config/openai.js";
 import OpenAI from "openai";
+import { saveModel, loadModel, deleteModel } from "../utils/modelStorage.js";
+import { fineTuneModel, saveTrainingDataToFile, uploadTrainingData } from "../utils/fineTuneModel.js"
 
+ 
 export const generateChatCompletion = async (
 	req: Request,
 	res: Response,
@@ -34,7 +37,7 @@ export const generateChatCompletion = async (
 		// make request to openAi
 		// get latest response
 		const chatResponse = await openai.chat.completions.create({
-			model: "gpt-3.5-turbo",
+			model: Model,
 			messages: chats as OpenAI.Chat.ChatCompletionMessageParam[],
 		});
 
@@ -75,7 +78,7 @@ export const getAllConversations = async (
 	}
 };
 
-export const deleteAllConversatoins = async (
+export const deleteAllConversations = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -189,6 +192,141 @@ export const deleteConversation = async (
 		await user.save();
 
 		return res.status(200).json({ message: "OK", conversations: user.conversations });
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json({ message: "ERROR", cause: err.message });
+	}
+};
+
+export const createCustomModel = async (
+	req: Request,
+	res: Response,
+	next: NextFunction) => {
+	try {
+		const userId = res.locals.jwtData.id;
+		const { trainingData, modelName } = req.body;
+        const trainingFilePath = await saveTrainingDataToFile(trainingData);
+        const trainingFileId = await uploadTrainingData(trainingFilePath);
+	  	const fineTunedModel = await fineTuneModel(trainingFileId);
+  
+	  	saveModel(userId, fineTunedModel, modelName);
+  
+	  	res.status(201).json({ message: "Model fine-tuned and saved", model: fineTunedModel, trainingFileId });
+	} catch (err) {
+	  	res.status(500).json({ error: err.message });
+	}
+  };
+
+export const deleteCustomModel = async (
+	req: Request,
+	res: Response,
+	next: NextFunction) => {
+	try {
+		const userId = res.locals.jwtData.id;
+	  	const { modelId } = req.params;
+	  	deleteModel(userId, modelId);
+
+	  	res.status(200).json({ message: "Model deleted" });
+	} catch (err) {
+	  	res.status(500).json({ error: err.message });
+	}
+  };
+
+export const getCustomModelResponse = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+  ) => {
+	try {
+	  	const userId = res.locals.jwtData.id;
+	  	const { message } = req.body;
+		const { modelName } = req.params;
+  
+	  	//Load custom model
+	  	const model = await loadModel(userId, modelName);
+  
+	  	const user = await User.findById(userId);
+	  	if (!user) {
+			return res.status(401).json("User not registered / token malfunctioned");
+	 	}
+		// Prepare messages for OpenAI API
+		const conversation = user.conversations[user.conversations.length - 1];
+	  	const chats = conversation.chats.map(({ role, content }) => ({
+			role,
+			content,
+		}));
+	  	chats.push({ content: message, role: "user" });
+  
+	  	conversation.chats.push({ content: message, role: "user" });
+  
+	  	//configure OpenAI
+	  	const configuration = configureOpenAI();
+	  	const openai = new OpenAI(configuration);
+  
+	  	//Chat complietion from custom model
+	  	const response = await openai.chat.completions.create({
+			model: model.modelData.id,
+			messages: chats as OpenAI.Chat.ChatCompletionMessageParam[],
+			max_tokens: 150,
+	  	});
+  
+		// push latest response to db
+	  	conversation.chats.push(response.choices[0].message);
+	  	await user.save();
+  
+	  	return res.status(200).json({ chats: conversation.chats });
+	} catch (error) {
+	  	console.log(error);
+	  	return res.status(500).json({ message: error.message });
+	}
+  };
+
+export const getAllCustomModels = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
+        
+		if (!user)
+			return res.status(401).json({
+				message: "ERROR",
+				cause: "User doesn't exist or token malfunctioned",
+			});
+
+		if (user._id.toString() !== res.locals.jwtData.id) {
+			return res
+				.status(401)
+				.json({ message: "ERROR", cause: "Permissions didn't match" });
+		}
+		return res.status(200).json({ message: "OK", CustomModels: user.CustomModels });
+	} catch (err) {
+		console.log(err);
+		return res.status(200).json({ message: "ERROR", cause: err.message });
+	}
+};
+
+export const getModelName = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+
+		const userId = (res.locals.jwtData.id); // get variable stored in previous middleware
+        const { modelName } = req.params;
+
+		const gotmodelName = await loadModel(userId, modelName);
+
+		if (!gotmodelName) {
+			return res.status(404).json({
+				message: "ERROR",
+				cause: "Model not found",
+			});
+		}
+
+		return res.status(200).json({ message: "OK", gotmodelName });
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({ message: "ERROR", cause: err.message });

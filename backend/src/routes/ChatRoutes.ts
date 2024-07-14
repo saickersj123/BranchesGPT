@@ -1,12 +1,18 @@
 import express from "express";
 import { verifyToken } from "../utils/Token.js";
-import { chatCompletionValidator, validate } from "../utils/Validators.js";
+import { fineTuneValidator, chatCompletionValidator, validate } from "../utils/Validators.js";
 import { deleteConversation, 
 		 getConversation, 
-		 deleteAllConversatoins, 
+		 deleteAllConversations, 
 		 generateChatCompletion, 
 		 getAllConversations, 
-		 startNewConversation } from "../controllers/ChatController.js";
+		 startNewConversation,
+		 createCustomModel,
+		 deleteCustomModel,
+		 getCustomModelResponse,
+		 getAllCustomModels,
+		 getModelName,
+		 } from "../controllers/ChatController.js";
  
 const chatRoutes = express.Router();
 
@@ -23,7 +29,7 @@ chatRoutes.post(
 	validate(chatCompletionValidator),
 	verifyToken,
 	startNewConversation,
-	generateChatCompletion
+	generateChatCompletion,
 );
 
 //resume conversation
@@ -31,35 +37,82 @@ chatRoutes.post(
 	"/c/:conversationId",
 	validate(chatCompletionValidator),
 	verifyToken,
-	generateChatCompletion
+	generateChatCompletion,
 );
 
 //get all conversations
 chatRoutes.get(
 	"/all-c",
 	verifyToken,
-	getAllConversations
+	getAllConversations,
 );
 
 //get a conversation
 chatRoutes.get(
 	"/c/:conversationId",
 	verifyToken,
-	getConversation
+	getConversation,
 );
 
 //delete a conversation
 chatRoutes.delete(
-    "/delete-c/:conversationId",
+    "/c/:conversationId",
     verifyToken,
-    deleteConversation
+    deleteConversation,
 )
 
 //delete all conversations
 chatRoutes.delete(
-    "/delete-all-c",
+    "/all-c",
     verifyToken,
-    deleteAllConversatoins
+    deleteAllConversations,
 )
+
+//create custom model
+chatRoutes.post(
+    "/g/create",
+	validate(fineTuneValidator),
+    verifyToken,
+    createCustomModel,
+);
+
+//delete custom model
+chatRoutes.delete(
+    "/g/:modelName",
+    verifyToken,
+    deleteCustomModel,
+);
+
+//get response from customModel
+chatRoutes.post(
+    "/g/new/:modelName",
+	validate(chatCompletionValidator),
+    verifyToken,
+	startNewConversation,
+    getCustomModelResponse,
+);
+
+//resume conversation with custom model
+chatRoutes.post(
+	"/g/:modelName/:conversationId",
+	validate(chatCompletionValidator),
+	verifyToken,
+	generateChatCompletion,
+);
+
+//get a model name and conversation
+chatRoutes.get(
+    "/g/:modelName/:conversationId",
+    verifyToken,
+	getModelName,
+	getConversation,
+);
+
+//get all custom models
+chatRoutes.get(
+    "/all-g",
+    verifyToken,
+	getAllCustomModels,
+);
 
 export default chatRoutes;
