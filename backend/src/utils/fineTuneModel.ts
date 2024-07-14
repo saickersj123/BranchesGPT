@@ -20,7 +20,7 @@ export const fineTuneModel = async (trainingFileId: string) => {
 };
 
 export const saveTrainingDataToFile = async (trainingData: string) => {
-    const filePath = path.join(__dirname, 'training_data.jsonl');
+    const filePath = path.join(__dirname, 'training-file.jsonl');
     const jsonlData = trainingData.split('\n').map(item => JSON.stringify(JSON.parse(item))).join('\n');
     fs.writeFileSync(filePath, jsonlData);
     return filePath;
