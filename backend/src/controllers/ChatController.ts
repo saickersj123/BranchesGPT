@@ -207,7 +207,7 @@ export const createCustomModel = async (
 		const { trainingData, modelName } = req.body;
         const trainingFilePath = await saveTrainingDataToFile(trainingData);
         const trainingFileId = await uploadTrainingData(trainingFilePath);
-	  	const fineTunedModel = await fineTuneModel(trainingData);
+	  	const fineTunedModel = await fineTuneModel(trainingFileId);
   
 	  	saveModel(userId, fineTunedModel, modelName);
   

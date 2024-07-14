@@ -6,11 +6,11 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const fineTuneModel = async (trainingData: string) => {
+export const fineTuneModel = async (trainingFileId: string) => {
     const openai = new OpenAI(configureOpenAI());
     try{
     const response = await openai.fineTuning.jobs.create({
-        training_file: trainingData,
+        training_file: trainingFileId,
         model: Model,
     });
     return response;

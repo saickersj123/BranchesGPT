@@ -50,6 +50,6 @@ userRoutes.put("/cbox", validate(chatboxValidator), verifyToken, saveChatbox);
 
 userRoutes.post("/cbox", validate(chatboxValidator), verifyToken, saveChatbox);
 
-userRoutes.put("/cbox", verifyToken, resetChatbox);
+userRoutes.put("/cbox/reset", verifyToken, resetChatbox);
 
 export default userRoutes;
