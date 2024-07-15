@@ -127,14 +127,14 @@ chatRoutes.get(
 
 //get all model conversations
 chatRoutes.get(
-    "/all-g/:modelId",
+    "/g/:modelId/all-c",
     verifyToken,
 	getModelConversations,
 );
 
 //delete all model conversations
 chatRoutes.delete(
-    "/all-g/:modelId",
+    "/g/:modelId/all-c",
     verifyToken,
     deleteModelConversations,
 )

@@ -90,7 +90,7 @@ export const mypage = async (password) => {
 // 새로운 대화 시작
 export const startNewConversation = async (messageContent) => {
   try {
-    const response = await axiosInstance.post('/chat/c/new', { message: messageContent || 'Hi' });
+    const response = await axiosInstance.post('/chat/c/new', { message: messageContent });
     return response.data;
   } catch (error) {
     console.error('새로운 대화 시작 실패:', error.response ? error.response.data : error.message);
@@ -212,7 +212,7 @@ export const updatePassword = async (password) => {
 };
 
 // 사전학습 모델 생성
-export const createCustomModel = async (modelName, trainingData) => {
+export const createModel = async (modelName, trainingData) => {
   try {
     
     const response = await axiosInstance.post('/chat/g/create', {
@@ -227,7 +227,7 @@ export const createCustomModel = async (modelName, trainingData) => {
 };
 
 // Custom Model 삭제 함수
-export const deleteCustomModel = async (modelId) => {
+export const deleteModel = async (modelId) => {
   try {
     const response = await axiosInstance.delete(`/chat/g/${modelId}`);
     return response.data;
@@ -237,7 +237,7 @@ export const deleteCustomModel = async (modelId) => {
 };
 
 // 모든 커스텀 모델의 정보를 가지고 오는 것
-export const getAllCustomModels = async () => {
+export const getCustomModels = async () => {
   try {
     const response = await axiosInstance.get('/chat/all-g');  
     return response.data.CustomModels;
@@ -247,9 +247,9 @@ export const getAllCustomModels = async () => {
 };
 
 // 모델로 새로운 대화 시작 함수
-export const startNewModelConversation = async (modelName, message) => {
+export const startNewModelConversation = async (modelId, messageContent) => {
   try {
-    const response = await axiosInstance.post(`/chat/g/new/${modelName}`, { message });
+    const response = await axiosInstance.post(`/chat/g/${modelId}/new`, { message: messageContent });
     console.log(response);
     return response.data;
   } catch (error) {
@@ -258,29 +258,50 @@ export const startNewModelConversation = async (modelName, message) => {
 };
 
 // 모델로 기존 대화 재개 함수
-export const resumeConversation = async (modelName, conversationId, message) => {
+export const sendMessagetoModel = async (modelId, conversationId, messageContent, role = 'user') => {
+  const message = {
+    role: role,
+    content: messageContent
+  };
+
   try {
-    const response = await axiosInstance.post(`/chat/g/${modelName}/${conversationId}`, { message });
-    return response.data;
+    const response = await axiosInstance.post(`/g/${modelId}/${conversationId}`, { message: message.content });
+    return response.data.chats;
+  } catch (error) {
+    console.error('메시지 보내기 실패:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+
+// 모델 대화 가져오기 함수
+export const getModelConversation = async (modelId, conversationId) => {
+  try {
+    const response = await axiosInstance.get(`/chat/g/${modelId}/${conversationId}`);
+    return response.data.conversation.chats || [];;
   } catch (error) {
     throw error;
   }
 };
 
-// 커스텀 모델 응답 가져오기 함수
-export const getCustomModelResponse = async (modelName, message) => {
+//get all model conversations
+export const getAllModelConversations = async (modelId) => {
   try {
-    const response = await axiosInstance.post(`/chat/g/${modelName}`, { message });
-    return response.data;
+    const response = await axiosInstance.get(`/chat/g/${modelId}/all-c`);
+    const conversations = response.data.conversations || [];
+    conversations.forEach(conversation => {
+    });
+    return conversations;
   } catch (error) {
-    throw error;
+    console.error('대화 목록 가져오기 실패:', error);
+    return [];
   }
 };
 
-// 모델 이름과 대화 가져오기 함수
-export const getModelNameAndConversation = async (modelName, conversationId) => {
+//delete all model conversations
+export const deleteAllModelConversations = async (modelId) => {
   try {
-    const response = await axiosInstance.get(`/chat/g/${modelName}/${conversationId}`);
+    const response = await axiosInstance.delete(`/chat/g/${modelId}/all-c`);
     return response.data;
   } catch (error) {
     throw error;
