@@ -226,24 +226,63 @@ export const createCustomModel = async (modelName, trainingData) => {
   }
 };
 
-// 사전학습 모델 삭제
-export const deleteCustomModel = async (modelName) => {
+// Custom Model 삭제 함수
+export const deleteCustomModel = async (modelId) => {
   try {
-    const response = await axiosInstance.delete('/chat/g/:modelName', { data: { modelName } });
+    const response = await axiosInstance.delete(`/chat/g/${modelId}`);
     return response.data;
   } catch (error) {
-    console.error('모델 삭제 실패:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
 
-// 사전학습 모델로부터 응답 받기
-export const getCustomModelResponse = async (modelName, prompt) => {
+// 모든 커스텀 모델의 정보를 가지고 오는 것
+export const getAllCustomModels = async () => {
   try {
-    const response = await axiosInstance.post('/chat/c-model/response', { modelName, prompt });
+    const response = await axiosInstance.get('/chat/all-g');  
+    return response.data.CustomModels;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 모델로 새로운 대화 시작 함수
+export const startNewModelConversation = async (modelName, message) => {
+  try {
+    const response = await axiosInstance.post(`/chat/g/new/${modelName}`, { message });
+    console.log(response);
     return response.data;
   } catch (error) {
-    console.error('모델 응답 받기 실패:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+// 모델로 기존 대화 재개 함수
+export const resumeConversation = async (modelName, conversationId, message) => {
+  try {
+    const response = await axiosInstance.post(`/chat/g/${modelName}/${conversationId}`, { message });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 커스텀 모델 응답 가져오기 함수
+export const getCustomModelResponse = async (modelName, message) => {
+  try {
+    const response = await axiosInstance.post(`/chat/g/${modelName}`, { message });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 모델 이름과 대화 가져오기 함수
+export const getModelNameAndConversation = async (modelName, conversationId) => {
+  try {
+    const response = await axiosInstance.get(`/chat/g/${modelName}/${conversationId}`);
+    return response.data;
+  } catch (error) {
     throw error;
   }
 };
