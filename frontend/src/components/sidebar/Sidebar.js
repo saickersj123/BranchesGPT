@@ -84,6 +84,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar, conversation
   useEffect(() => {
     sortedChatRooms().forEach(group => {
       group.rooms.forEach(room => {
+        console.log(`대화 ID: ${room._id}, 마지막 메시지: ${room.chats[room.chats.length - 1]?.content}`);
       });
     });
   }, [conversations]);

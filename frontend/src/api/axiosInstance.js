@@ -239,7 +239,7 @@ export const deleteCustomModel = async (modelId) => {
 // 모든 커스텀 모델의 정보를 가지고 오는 것
 export const getAllCustomModels = async () => {
   try {
-    const response = await axiosInstance.get('/chat/all-g');
+    const response = await axiosInstance.get('/chat/all-g');  
     return response.data.CustomModels;
   } catch (error) {
     throw error;
@@ -270,7 +270,7 @@ export const resumeConversation = async (modelName, conversationId, message) => 
 // 커스텀 모델 응답 가져오기 함수
 export const getCustomModelResponse = async (modelName, message) => {
   try {
-    const response = await axiosInstance.post(`/chat/g/new/${modelName}`, { message });
+    const response = await axiosInstance.post(`/chat/g/${modelName}`, { message });
     return response.data;
   } catch (error) {
     throw error;

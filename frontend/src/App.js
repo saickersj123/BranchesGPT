@@ -6,7 +6,7 @@ import Login from './pages/Login';
 import MyPage from './pages/MyPage';
 import Home from './pages/Home';
 import Pretrain from './pages/Pretrain';
-import { checkAuthStatus, fetchMessages } from './api/axiosInstance';
+import { checkAuthStatus, fetchMessages, resumeConversation } from './api/axiosInstance';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -82,6 +82,16 @@ const App = () => {
     }
   }, []);
 
+  const loadModelMessages = useCallback(async (conversationId) => {
+    try {
+      const data = await resumeConversation(conversationId);
+      console.log(data);
+      setMessages(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    }
+  }, []);
+  
   useEffect(() => {
     if (isLoggedIn) {
       loadMessages();
@@ -120,6 +130,7 @@ const App = () => {
                         user={user}
                         isEditMode={isEditMode}
                         loadMessages={loadMessages}
+                        loadModelMessages={loadModelMessages}
                         messages={messages}
                         setMessages={setMessages}
                         toggleEditMode={toggleEditMode}
@@ -138,6 +149,26 @@ const App = () => {
                         user={user}
                         isEditMode={isEditMode}
                         loadMessages={loadMessages}
+                        loadModelMessages={loadModelMessages}
+                        messages={messages}
+                        setMessages={setMessages}
+                        toggleEditMode={toggleEditMode}
+                        startNewChat={startNewChat}
+                        darkMode={currentMode}
+                        toggleDarkMode={toggleDarkMode}
+                      />
+                    }
+                  />
+                  <Route       
+                    path="/chat/:modelId/:conversationId"
+                    element={
+                      <Home
+                        isLoggedIn={isLoggedIn}
+                        setIsLoggedIn={setIsLoggedIn}
+                        user={user}
+                        isEditMode={isEditMode}
+                        loadMessages={loadMessages}
+                        loadModelMessages={loadModelMessages}
                         messages={messages}
                         setMessages={setMessages}
                         toggleEditMode={toggleEditMode}

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import '../css/ChatBox.css';
-import { sendMessage } from '../api/axiosInstance';
+import { sendMessage, resumeConversation } from '../api/axiosInstance';
 
-const ChatBox = ({ conversationId, onNewMessage, onUpdateMessage, isEditMode, isNewChat, startNewConversationWithMessage, darkMode }) => {
+const ChatBox = ({ conversationId, onNewMessage, onUpdateMessage, isEditMode, isNewChat, startNewConversationWithMessage, startNewModelConversationWithMessage, darkMode, selectedModel }) => {
   const [message, setMessage] = useState('');
 
   const handleMessageChange = (event) => {
@@ -23,17 +23,32 @@ const ChatBox = ({ conversationId, onNewMessage, onUpdateMessage, isEditMode, is
 
     try {
       if (isNewChat) {
-        await startNewConversationWithMessage(message); // 사용자가 입력한 메시지로 새로운 대화 시작
+        if (selectedModel) {
+          await startNewModelConversationWithMessage(message, selectedModel.value); // 모델이 선택된 경우 새로운 모델 대화 시작
+        } else {
+          await startNewConversationWithMessage(message); // 일반 새로운 대화 시작
+        }
       } else {
-        const response = await sendMessage(conversationId, message);
-
-        if (response && response.length > 0) {
-          const aiMessage = {
-            content: response[response.length - 1].content,
-            role: 'assistant',
-            createdAt: new Date().toISOString()
-          };
-          onUpdateMessage(aiMessage); // AI 응답 메시지를 추가하여 상태 업데이트
+        if (selectedModel) {
+          const response = await resumeConversation(selectedModel.value, conversationId, message);
+          if (response && response.length > 0) {
+            const aiMessage = {
+              content: response[response.length - 1].content,
+              role: 'assistant',
+              createdAt: new Date().toISOString()
+            };
+            onUpdateMessage(aiMessage); // AI 응답 메시지를 추가하여 상태 업데이트
+          }
+        } else {
+          const response = await sendMessage(conversationId, message);
+          if (response && response.length > 0) {
+            const aiMessage = {
+              content: response[response.length - 1].content,
+              role: 'assistant',
+              createdAt: new Date().toISOString()
+            };
+            onUpdateMessage(aiMessage); // AI 응답 메시지를 추가하여 상태 업데이트
+          }
         }
       }
       setMessage(''); // 입력 필드 초기화

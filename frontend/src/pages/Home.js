@@ -5,7 +5,8 @@ import ChatList from '../components/ChatList';
 import Sidebar from '../components/sidebar/Sidebar';
 import Navigation from '../components/navbar/Navigation';
 import GridLayout from 'react-grid-layout';
-import { fetchMessages, startNewConversation, fetchConversations, sendMessage, getChatboxes, saveChatbox, resetChatbox } from '../api/axiosInstance';
+import Select from 'react-select';
+import { fetchMessages, startNewConversation, startNewModelConversation, fetchConversations, sendMessage, getChatboxes, saveChatbox, resetChatbox, getAllCustomModels, getModelNameAndConversation } from '../api/axiosInstance';
 import '../css/Home.css';
 
 const MAX_Y_H_SUM = 9;
@@ -26,6 +27,8 @@ const Home = ({
   darkMode,
   toggleDarkMode
 }) => {
+  const [models, setModels] = useState([]);
+  const [selectedModel, setSelectedModel] = useState(null);  // 선택된 모델 저장
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
@@ -62,15 +65,24 @@ const Home = ({
   useEffect(() => {
     const loadConversationMessages = async () => {
       if (urlConversationId) {
-        const fetchedMessages = await fetchMessages(urlConversationId);
-        setMessages(fetchedMessages);
-        setSelectedConversationId(urlConversationId);
-        setIsNewChat(false);
+        try {
+          let fetchedMessages;
+          if (selectedModel) {
+            fetchedMessages = await getModelNameAndConversation(selectedModel.value, urlConversationId);
+          } else {
+            fetchedMessages = await fetchMessages(urlConversationId);
+          }
+          setMessages(fetchedMessages);
+          setSelectedConversationId(urlConversationId);
+          setIsNewChat(false);
+        } catch (error) {
+          console.error('Error loading conversation messages:', error);
+        }
       }
     };
 
     loadConversationMessages();
-  }, [urlConversationId, setMessages]);
+  }, [urlConversationId, setMessages, selectedModel]);
 
   useEffect(() => {
     if (conversations.length > 0 && !urlConversationId) {
@@ -144,6 +156,29 @@ const Home = ({
     setIsSidebarOpen(false);
   };
 
+  // 모델 정보 불러오기
+  useEffect(() => {
+    const fetchAvailableModels = async () => {
+      try {
+        const modelsData = await getAllCustomModels(); // API 호출
+        setModels(modelsData.map(model => ({
+          value: model.modelId,
+          label: model.modelName
+        })));
+      } catch (error) {
+        console.error('Failed to fetch models:', error);
+      }
+    };
+
+    fetchAvailableModels();
+  }, []);
+
+  // 모델 선택 핸들러
+  const handleModelChange = (selectedOption) => {
+    setSelectedModel(selectedOption);
+    setIsNewChat(true); // 새로운 대화를 시작하도록 설정
+  };
+
   const handleNewMessage = useCallback((newMessage) => {
     setMessages((prevMessages) => [...prevMessages, newMessage]);
     updateConversations();
@@ -162,12 +197,20 @@ const Home = ({
 
   const startNewConversationWithMessage = async (messageContent) => {
     try {
-      const newConversationResponse = await startNewConversation(messageContent);
-      const newConversationId = newConversationResponse.conversations[newConversationResponse.conversations.length - 1]._id;
+      let newConversationId;
+      if (selectedModel) {
+        const newConversationResponse = await startNewModelConversation(selectedModel.value, messageContent);
+        newConversationId = newConversationResponse.conversationId; // 새로운 대화 ID를 응답에서 추출
+      } else {
+        const newConversationResponse = await startNewConversation(messageContent);
+        newConversationId = newConversationResponse.conversations[newConversationResponse.conversations.length - 1]._id;
+      }
+
       if (!newConversationId) {
         console.warn('No new conversation started.');
         return;
       }
+
       const response = await sendMessage(newConversationId, messageContent);
 
       if (response && response.length > 0) {
@@ -178,6 +221,46 @@ const Home = ({
         };
         handleUpdateMessage(aiMessage);
       }
+
+      setSelectedConversationId(newConversationId);
+      navigate(`/chat/${newConversationId}`);
+      setIsNewChat(false);
+      return newConversationId;
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        console.error('Unauthorized (401):', error.response.data);
+      } else {
+        console.error('새로운 대화 시작 실패:', error);
+      }
+    }
+  };
+
+  const startNewModelConversationWithMessage = async (messageContent, modelName) => {
+    try {
+      if (!modelName) {
+        console.error('모델이 선택되지 않았습니다.');
+        return;
+      }
+
+      const newConversationResponse = await startNewModelConversation(modelName, messageContent);
+      const newConversationId = newConversationResponse.conversationId; // 새로운 대화 ID를 응답에서 추출
+
+      if (!newConversationId) {
+        console.warn('No new conversation started.');
+        return;
+      }
+
+      const response = await sendMessage(newConversationId, messageContent);
+
+      if (response && response.length > 0) {
+        const aiMessage = {
+          content: response[response.length - 1].content,
+          role: 'assistant',
+          createdAt: new Date().toISOString()
+        };
+        handleUpdateMessage(aiMessage);
+      }
+
       setSelectedConversationId(newConversationId);
       navigate(`/chat/${newConversationId}`);
       setIsNewChat(false);
@@ -309,6 +392,7 @@ const Home = ({
   const handleClosePanel = () => {
     setIsPanelOpen(false);
   };
+
   useEffect(() => {
     if (darkMode === 'dark') {
       document.body.classList.add('dark');
@@ -316,8 +400,10 @@ const Home = ({
       document.body.classList.remove('dark');
     }
   }, [darkMode]);
+
   return (
     <main className={`main-section ${darkMode === 'dark' ? 'dark' : ''}`}>
+
       <Navigation
         isLoggedIn={isLoggedIn}
         setIsLoggedIn={setIsLoggedIn}
@@ -384,9 +470,17 @@ const Home = ({
             >
               <div className="chat-list-container" style={{ flexGrow: 1 }}>
                 {isNewChat ? (
-                  <div className="alert alert-info text-center">
-                    새로운 채팅을 시작해 보세요!
-                  </div>
+                  <>
+                    <div className="alert alert-info text-center">
+                      새로운 채팅을 시작해 보세요!
+                    </div>
+                    <Select
+                      options={models}
+                      value={selectedModel}
+                      onChange={handleModelChange}
+                      placeholder="모델 선택"
+                    />
+                  </>
                 ) : (
                   <ChatList 
                     messages={messages} 
@@ -405,6 +499,8 @@ const Home = ({
                   conversationId={selectedConversationId}
                   isNewChat={isNewChat}
                   startNewConversationWithMessage={startNewConversationWithMessage}
+                  startNewModelConversationWithMessage={startNewModelConversationWithMessage} // 모델 대화 시작 함수 전달
+                  selectedModel={selectedModel}  // 모델 정보 전달
                   darkMode={darkMode}
                 />
               </div>
