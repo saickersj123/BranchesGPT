@@ -25,14 +25,14 @@ export const saveModel = async (userId: string, modelData: any, modelName: strin
   }
 };
 
-export const loadModel = async (userId: string, modelName: string) => {
+export const loadModel = async (userId: string, modelId: string) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found");
     }
 
-    const model = user.CustomModels.find((model) => model.modelName === modelName);
+    const model = user.CustomModels.find((model) => model.modelId === modelId);
     if (!model) {
       throw new Error("Model not found");
     }

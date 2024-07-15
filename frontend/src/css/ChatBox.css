@@ -1,76 +1,80 @@
-/* ChatBox.css */
-
-/* 채팅 입력 컨테이너 스타일 */
+/* 채팅 입력 컨테이너 */
 .chat-input-container {
-  display: flex; /* 플렉스 박스로 설정하여 내부 요소들을 가로로 정렬 */
-  justify-content: center; /* 가로 중앙 정렬 */
-  align-items: center; /* 세로 중앙 정렬 */
-  width: 100%; /* 너비를 100%로 설정하여 부모 요소에 맞춤 */
-  padding: 10px; /* 내부 여백 설정 */
-  box-sizing: border-box; /* padding과 border를 요소의 크기에 포함시킴 */
-  position: relative; /* chat-box-button을 배치하기 위해 상대적 위치 설정 */
+  display: flex; /* 자식 요소를 플렉스 박스로 배치 */
+  justify-content: center; /* 자식 요소를 수평 중앙 정렬 */
+  align-items: center; /* 자식 요소를 수직 중앙 정렬 */
+  width: 100%; /* 너비를 100%로 설정 */
+  box-sizing: border-box; /* 패딩과 테두리를 포함한 박스 크기를 계산 */
+  position: relative; /* 자식 요소의 위치를 상대적으로 설정 */   
 }
 
-/* 텍스트 입력 영역 래퍼 스타일 */
+/* 텍스트 영역 래퍼 */
 .textarea-wrapper {
-  position: relative; /* 상대적 위치 설정 */
-  width: 100%; /* 너비를 100%로 설정하여 부모 요소에 맞춤 */
-  max-width: 600px; /* 최대 너비를 데스크톱 화면에 적합한 값으로 설정 */
+  position: relative; /* 자식 요소의 위치를 상대적으로 설정 */
+  width: 60%; /* 너비를 100%로 설정 */ 
 }
 
-/* 미디어 쿼리를 사용하여 화면 크기에 따라 최대 너비 조정 */
 @media screen and (max-width: 1200px) {
   .textarea-wrapper {
-    max-width: 45%; /* 데스크톱 화면에서 최대 너비를 조정합니다. */
+    max-width: 60%; /* 최대 너비를 60%로 설정 */
   }
 }
 
 @media screen and (max-width: 768px) {
   .textarea-wrapper {
-    max-width: 90%; /* 태블릿 화면에서 최대 너비를 조정합니다. */
+    max-width: 90%; /* 최대 너비를 90%로 설정 */
   }
 }
 
 @media screen and (max-width: 480px) {
   .textarea-wrapper {
-    max-width: 95%; /* 모바일 화면에서 최대 너비를 조정합니다. */
+    max-width: 95%; /* 최대 너비를 95%로 설정 */
   }
 }
 
-
-/* 채팅 입력 텍스트 영역 스타일 */
+/* 채팅 컨테이너 */
 .chat-container {
-  width: 100%; /* 너비를 100%로 설정하여 부모 요소에 맞춤 */
-  height: 10%; /* 높이를 약간 늘립니다 */
-  padding: 5px 20px; /* 내부 여백을 추가합니다 */
-  padding-right: 70px; /* 버튼이 겹치지 않도록 오른쪽에 여유 공간 추가 */
-  box-sizing: border-box; /* padding과 border를 요소의 크기에 포함시킴 */
-  resize: none; /* 크기 조절 비활성화 */
-  border: 1px solid #ddd; /* 경계선을 추가합니다 */
-  border-radius: 30px; /* 경계선의 모서리를 둥글게 합니다 */
-  font-size: 16px; /* 글자 크기를 조절합니다 */
-  background-color: #f0f0f0; /* 배경색을 연회색으로 변경합니다 */
-  
-  /* 스크롤바 스타일 */
-  overflow-y: auto; /* 세로 스크롤바 활성화 */
-  scrollbar-width: thin; /* 스크롤바 너비 설정 */
+  width: 100%; /* 너비를 100%로 설정 */
+  height: 100%; /* 높이를 고정된 값으로 설정 */
+  padding: 10px 60px 10px 20px; /* 내부 여백을 추가, 오른쪽 여백을 60px로 늘림 */
+  box-sizing: border-box; /* 패딩과 테두리를 포함한 박스 크기를 계산 */
+  resize: none; /* 크기 조절 비활성화 */ 
+  border-radius: 30px; /* 테두리 모서리를 30px 둥글게 설정 */
+  font-size: 12px; /* 글자 크기를 16px로 설정 */
+  background-color: #f0f0f0; /* 배경 색상을 연한 회색으로 설정 */
+  overflow-y: hidden; /* 세로 스크롤 숨김 */ 
 }
 
-/* 채팅 입력 버튼 스타일 */
+.chat-container:focus {
+  outline: none; /* 포커스 시 아웃라인 제거 */
+  box-shadow: none; /* 포커스 시 그림자 제거 */
+  background-color: #e0e0e0; /* 포커스 시 배경 색상을 연한 회색으로 변경 */
+}
+
+body.dark .chat-container {
+  background-color: #575656; /* 다크 모드 ChatBox 배경 색상 */
+}
+
+body.dark .chat-container:focus {
+  background-color: #858282; /* 다크 모드에서 포커스 시 배경 색상 */
+}
+
+/* 채팅 상자 버튼 */
 .chat-box-button {
-  position: absolute; /* 위치를 절대적으로 지정하여 텍스트 영역과 겹치지 않게 함 */
-  right: 20px; /* 오른쪽 여백 설정 */
-  bottom: 55%; /* 아래쪽 여백을 중앙 정렬 */
-  transform: translateY(50%); /* 버튼을 세로 중앙 정렬하기 위한 변형 */
-  padding: 5px 10px; /* 내부 여백 설정 */
-  border: none; /* 테두리 없음 */
-  background-color: #000000; /* 배경색을 검정으로 설정 */
-  color: white; /* 글자색 흰색으로 설정 */
-  cursor: pointer; /* 커서를 포인터로 변경하여 클릭 가능한 상태로 표시 */
-  border-radius: 50px; /* 둥근 테두리 설정 */
+  position: absolute; /* 위치를 절대적으로 설정 */
+  right: 10px; /* 버튼을 텍스트 영역의 오른쪽 가장자리에 배치 */
+  bottom: 50%; /* 아래쪽 여백을 중앙 정렬 */
+  transform: translateY(50%); /* 수직 중앙 정렬 */
+  padding: 5px 10px; /* 내부 여백을 줄임 */
+  border: none; /* 테두리를 없음으로 설정 */
+  color: rgb(0, 0, 0); /* 글자 색상을 검정으로 설정 */
+  background-color: transparent; /* 배경 색상을 투명으로 설정 */
+  cursor: pointer; /* 커서를 포인터로 변경 */
+  border-radius: 20px; /* 테두리 모서리를 20px 둥글게 설정 */
+  font-size: 10px; /* 글자 크기를 조정 */
 }
 
-/* 채팅 입력 버튼 호버 스타일 */
+/* 채팅 상자 버튼 호버 효과 */
 .chat-box-button:hover {
-  background-color: #0056b3; /* 호버 시 배경색 변경 */
+  background-color: gainsboro; /* 배경 색상을 밝은 회색으로 변경 */
 }

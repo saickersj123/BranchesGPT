@@ -1,60 +1,60 @@
-import React, { useState } from 'react'; // React와 useState 훅을 가져옵니다.
-import { Modal, Form, Button, Alert, InputGroup } from 'react-bootstrap'; // react-bootstrap에서 필요한 컴포넌트를 가져옵니다.
-import styled from 'styled-components'; // styled-components를 가져옵니다.
-import { signupUser } from '../api/axiosInstance'; // signupUser 함수를 가져옵니다.
-import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // FontAwesome 아이콘을 가져옵니다.
+import React, { useState } from 'react';
+import { Modal, Form, Button, Alert, InputGroup } from 'react-bootstrap';
+import styled from 'styled-components';
+import { signupUser } from '../api/axiosInstance';
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
-const StyledForm = styled(Form)` // 스타일을 적용한 Form 컴포넌트를 정의합니다.
+const StyledForm = styled(Form)`
   display: flex;
   flex-direction: column;
   gap: 15px;
 `;
 
-const StyledButton = styled(Button)` // 스타일을 적용한 Button 컴포넌트를 정의합니다.
+const StyledButton = styled(Button)`
   width: 100%;
   margin-top: 10px;
 `;
 
-const Signup = ({ show, onHide }) => { // Signup 컴포넌트를 정의합니다.
-  const [email, setEmail] = useState(''); // 이메일 상태를 정의합니다.
-  const [password, setPassword] = useState(''); // 비밀번호 상태를 정의합니다.
-  const [name, setName] = useState(''); // 닉네임 상태를 정의합니다.
-  const [error, setError] = useState(''); // 에러 메시지 상태를 정의합니다.
-  const [success, setSuccess] = useState(false); // 성공 메시지 상태를 정의합니다.
-  const [validate, setValidate] = useState(false); // 검증 상태를 정의합니다.
+const Signup = ({ show, onHide }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [validate, setValidate] = useState(false);
 
-  const isValidEmail = (email) => { // 이메일 형식을 검증하는 함수를 정의합니다.
+  const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const isValidPassword = (password) => { // 비밀번호 형식을 검증하는 함수를 정의합니다.
+  const isValidPassword = (password) => {
     return password.length >= 8 && password.length <= 15;
   };
 
-  const handleSubmit = async (e) => { // 폼 제출을 처리하는 비동기 함수입니다.
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setValidate(true);
 
-    if (!email || !password || !name) { // 모든 필드가 입력되었는지 확인합니다.
+    if (!email || !password || !name) {
       setError('모든 필드를 입력하세요.');
       return;
     }
 
-    if (!isValidEmail(email)) { // 이메일 형식을 검증합니다.
+    if (!isValidEmail(email)) {
       setError('유효한 이메일 주소를 입력하세요.');
       return;
     }
 
-    if (!isValidPassword(password)) { // 비밀번호 형식을 검증합니다.
+    if (!isValidPassword(password)) {
       setError('8~15자리의 비밀번호를 입력하세요.');
       return;
     }
 
     try {
-      const response = await signupUser(email, password, name); // 회원가입 요청을 보냅니다.
+      const response = await signupUser(email, password, name);
 
-      if (response.status === 201) {
+      if (response.success) {
         setSuccess(true);
         setError('');
         setValidate(false);
@@ -74,13 +74,13 @@ const Signup = ({ show, onHide }) => { // Signup 컴포넌트를 정의합니다
 
   return (
     <>
-      <Modal show={show} onHide={onHide}> {/* 회원가입 모달을 렌더링합니다. */}
+      <Modal show={show} onHide={onHide}>
         <Modal.Header closeButton>
           <Modal.Title>회원가입</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {error && <Alert variant="danger">{error}</Alert>} {/* 에러 메시지를 렌더링합니다. */}
-          {success && <Alert variant="success">회원가입에 성공했습니다!</Alert>} {/* 성공 메시지를 렌더링합니다. */}
+          {error && <Alert variant="danger">{error}</Alert>}
+          {success && <Alert variant="success">회원가입에 성공했습니다!</Alert>}
           <StyledForm onSubmit={handleSubmit}>
             <Form.Group controlId="formEmail">
               <Form.Label>이메일 주소</Form.Label>
@@ -133,6 +133,6 @@ const Signup = ({ show, onHide }) => { // Signup 컴포넌트를 정의합니다
   );
 };
 
-export default Signup; // Signup 컴포넌트를 기본 내보내기로 설정합니다.
+export default Signup;
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms)); // 지연 함수를 정의합니다.
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

@@ -57,7 +57,7 @@ const PasswordGroup = styled.div`
     `}
 `;
 
-const Login = ({ setIsLoggedIn }) => {
+const Login = ({ setIsLoggedIn, setUser }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -96,10 +96,10 @@ const Login = ({ setIsLoggedIn }) => {
     try {
       const response = await loginUser(email, password);
       if (response.message === 'OK') {
-        setTimeout(() => {
-          setIsLoggedIn(true);
-          navigate('/');
-        }, 1000); // 로그인 성공 후 1초 후 홈 페이지로 이동
+        setIsLoggedIn(true);
+        setUser(response.data); // 유저 정보 저장
+
+        navigate('/');
       } else {
         setError(response.message || '로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.');
         setLoading(false);

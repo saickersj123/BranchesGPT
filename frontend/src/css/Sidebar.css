@@ -12,6 +12,12 @@
   transform: translateX(-100%); /* 초기 상태에서 사이드바를 화면 밖으로 이동 */
 }
 
+/* 다크 모드 스타일 추가 */
+body.dark .sidebar {
+  background-color: #333333;
+  color: #ffffff;
+}
+
 /* 화면 너비가 769px 이상 1000px 이하일 때 */
 @media (max-width: 1000px) and (min-width: 769px) {
   .sidebar {
@@ -31,20 +37,6 @@
   .sidebar-menu a {
     font-size: 12px; /* 폰트 크기를 줄여서 내용이 잘리지 않도록 함 */
     margin-bottom: 10px; /* 아이템 간의 여백을 줄임 */
-  }
-}
-
-/* 데스크탑 사이드바 메뉴 마진 설정 */
-.sidebar-menu {
-  margin-top: 5vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* 모바일 사이드바 메뉴 마진 설정 */
-@media (max-width: 768px) {
-  .sidebar-menu {
-    margin-top: 10vh;
   }
 }
 
@@ -72,18 +64,35 @@
   transition: right 0.3s ease;
 }
 
-.sidebar.closed .toggle-button {
-  right: -50px;
+/* 다크 모드 스타일 추가 */
+body.dark .sidebar .toggle-button {
+  color: #ffffff;
 }
 
-.sidebar.open .toggle-button {
-  right: -50px;
+.sidebar-menu {
+  margin-top: 5vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .sidebar-menu {
+    margin-top: 10vh;
+  }
 }
 
 .sidebar-menu p {
-  margin-bottom: 15px;
+  margin-bottom: 0px;
   color: #333;
   cursor: pointer; /* 커서를 포인터로 변경하여 클릭 가능한 상태로 만듭니다. */
+  white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 설정 */
+  overflow: hidden; /* 텍스트가 사이드바를 넘어서지 않도록 설정 */
+  text-overflow: ellipsis; /* 넘친 텍스트를 생략 부호(...)로 표시 */
+}
+
+/* 다크 모드 스타일 추가 */
+body.dark .sidebar-menu p {
+  color: #ffffff;
 }
 
 .sidebar-menu a {
@@ -92,18 +101,20 @@
   text-decoration: none;
 }
 
-.sidebar-menu a:hover {
-  color: #007bff;
+/* 다크 모드 스타일 추가 */
+body.dark .sidebar-menu a {
+  color: #ffffff;
 }
 
-.sidebar-menu p {
-  white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 설정 */
-  overflow: hidden; /* 텍스트가 사이드바를 넘어서지 않도록 설정 */
-  text-overflow: ellipsis; /* 넘친 텍스트를 생략 부호(...)로 표시 */
-}
-
+.sidebar-menu a:hover,
 .sidebar-menu p:hover {
   color: #007bff;
+}
+
+/* 다크 모드 스타일 추가 */
+body.dark .sidebar-menu a:hover,
+body.dark .sidebar-menu p:hover {
+  color: #00ffff;
 }
 
 .chat-date-group {
@@ -117,11 +128,20 @@
   margin-bottom: 10px;
 }
 
+/* 다크 모드 스타일 추가 */
+body.dark .chat-date {
+  color: #dddddd;
+}
+
 .chat-room {
+  display: flex;
+  align-items: center;  
+  justify-content: space-between;
   margin-bottom: 15px;
 }
 
 .last-message {
+  flex-grow: 1; 
   color: #333;
   cursor: pointer;
   white-space: nowrap;
@@ -129,7 +149,11 @@
   text-overflow: ellipsis;
 }
 
-/* 새로운 스타일 추가 */
+/* 다크 모드 스타일 추가 */
+body.dark .last-message {
+  color: #ffffff;
+}
+
 .no-chat-rooms {
   text-align: center;
   padding: 20px;
@@ -141,4 +165,48 @@
   font-weight: bold;
   color: #555;
   white-space: normal; /* 텍스트가 줄 바꿈되도록 설정 */
+}
+
+/* 다크 모드 스타일 추가 */
+body.dark .no-chat-rooms p {
+  color: #dddddd;
+}
+
+.delete-button {  
+  background: none; /* 배경을 없앱니다 */
+  border: none; /* 테두리를 없앱니다 */
+  cursor: pointer; /* 커서를 포인터로 변경합니다 */
+  color: #ff0000; /* 삭제 버튼의 색상을 빨간색으로 설정합니다 */
+  margin-left: 10px; /* 메시지와 삭제 버튼 사이의 간격 설정 */
+  display: flex;
+  align-items: center; /* 버튼의 내용이 중앙에 오도록 설정 */
+}
+
+.delete-all-button {
+  margin-bottom: 20px; /* 전체 삭제 버튼을 사이드바 상단에 배치 */
+  padding: 10px 15px;
+  background-color: #FF00FF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* 살짝 입체감 부여 */
+}
+
+.delete-all-button:hover {
+  background-color: #00FFFF;
+}
+
+/* 다크 모드 스타일 추가 */
+body.dark .delete-all-button {
+  background-color: #555555;
+  color: #ffffff;
+}
+
+body.dark .delete-all-button:hover {
+  background-color: #777777;
 }

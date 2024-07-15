@@ -1,0 +1,138 @@
+.panel-container {
+  position: fixed;
+  right: 0;
+  top: 70px;
+  width: 25%;
+  height: calc(100% - 70px);
+  background-color: #f4f4f4;
+  border-left: 1px solid #ccc;
+  padding: 20px;
+  z-index: 1000;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: Arial, sans-serif;
+}
+
+.panel-container.dark {
+  background-color: #1a1a1a;
+  color: #fff;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.panel-header .fa-times {
+  cursor: pointer;
+  font-size: 24px;
+  color: #333;
+}
+
+.panel-header .fa-times:hover {
+  color: #666;
+}
+
+.panel-content {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 10px;
+}
+
+.panel-section {
+  margin-bottom: 20px;
+}
+
+.panel-section h3 {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 5px;
+  color: #333;
+  font-size: 18px;
+}
+
+.panel-container.dark .panel-section h3 {
+  color: #fff;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.color-buttons {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.color-button {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.2s;
+}
+
+.color-button:hover {
+  transform: scale(1.1);
+}
+
+.color-picker-button {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  outline: none;
+  background-color: #ffffff;
+  background-image: url('../img/RGB_Pick.png');
+  background-size: cover;
+  transition: transform 0.2s;
+}
+
+.color-picker-button:hover {
+  transform: scale(1.1);
+}
+
+.color-picker-popover {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.color-picker-cover {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+input[type="checkbox"] {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+body.dark-mode {
+  background-color: #212121;
+  color: #fff;
+}
+
+input[type="checkbox"]:focus {
+  outline: none;
+}
