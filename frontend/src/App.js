@@ -150,7 +150,7 @@ const App = () => {
                   <Route
                     path="/mypage"
                     element={isLoggedIn ? <MyPage darkMode={currentMode} toggleDarkMode={toggleDarkMode} /> : <Navigate to="/" />}
-                  />
+                  />  
                   <Route path="/pretrain" element={<Pretrain darkMode={currentMode} toggleDarkMode={toggleDarkMode} />} />
                 </Routes>
               </div>
