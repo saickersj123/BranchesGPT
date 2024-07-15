@@ -82,7 +82,7 @@ chatRoutes.post(
 
 //delete custom model
 chatRoutes.delete(
-    "/g/:modelName",
+    "/g/:modelId",
     verifyToken,
     deleteCustomModel,
 );
