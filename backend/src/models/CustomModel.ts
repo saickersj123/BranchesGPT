@@ -1,10 +1,10 @@
 import mongoose, { Schema } from "mongoose";
-import { randomUUID } from "crypto";
+import conversationSchema from "./Conversation.js";
 
 const modelSchema = new mongoose.Schema({
     modelId: {
         type: String,
-        default: randomUUID(),
+        required: true,
     },
     modelName: {
         type: String,
@@ -14,6 +14,7 @@ const modelSchema = new mongoose.Schema({
         type: Schema.Types.Mixed,
         required: true,
     },
+    conversations: [conversationSchema],
     createdAt: {
         type: Date,
         default: Date.now,

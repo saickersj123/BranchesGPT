@@ -232,7 +232,7 @@ export const deleteCustomModel = async (
 	}
   };
 
-export const getCustomModelResponse = async (
+export const generateModelChatCompletion = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -240,17 +240,13 @@ export const getCustomModelResponse = async (
 	try {
 	  	const userId = res.locals.jwtData.id;
 	  	const { message } = req.body;
-		const { modelName } = req.params;
+		const { modelId } = req.params;
   
 	  	//Load custom model
-	  	const model = await loadModel(userId, modelName);
+	  	const model = await loadModel(userId, modelId);
   
-	  	const user = await User.findById(userId);
-	  	if (!user) {
-			return res.status(401).json("User not registered / token malfunctioned");
-	 	}
 		// Prepare messages for OpenAI API
-		const conversation = user.conversations[user.conversations.length - 1];
+		const conversation = model.conversations[model.conversations.length - 1];
 	  	const chats = conversation.chats.map(({ role, content }) => ({
 			role,
 			content,
@@ -272,7 +268,7 @@ export const getCustomModelResponse = async (
   
 		// push latest response to db
 	  	conversation.chats.push(response.choices[0].message);
-	  	await user.save();
+	  	await model.save();
   
 	  	return res.status(200).json({ chats: conversation.chats });
 	} catch (error) {
@@ -281,7 +277,7 @@ export const getCustomModelResponse = async (
 	}
   };
 
-export const getAllCustomModels = async (
+export const getCustomModels = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -307,28 +303,133 @@ export const getAllCustomModels = async (
 	}
 };
 
-export const getModelName = async (
+export const getModelConversation = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
 	try {
+		const userId = res.locals.jwtData.id;
+		const { conversationId, modelId } = req.params;
+		const model = await loadModel(userId, modelId);
 
-		const userId = (res.locals.jwtData.id); // get variable stored in previous middleware
-        const { modelName } = req.params;
-
-		const gotmodelName = await loadModel(userId, modelName);
-
-		if (!gotmodelName) {
+		const conversation = model.conversations.id(conversationId);
+		if (!conversation) {
 			return res.status(404).json({
 				message: "ERROR",
-				cause: "Model not found",
+				cause: "Conversation not found",
 			});
 		}
 
-		return res.status(200).json({ message: "OK", gotmodelName });
+		return res.status(200).json({ message: "OK", conversation });
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({ message: "ERROR", cause: err.message });
+	}
+};
+
+export const deleteModelConversation = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const userId = res.locals.jwtData.id;
+		const { modelId, conversationId } = req.params;
+		const model = await loadModel(userId, modelId);
+
+		const conversation = model.conversations.id(conversationId);
+		if (!conversation) {
+			return res.status(404).json({
+				message: "ERROR",
+				cause: "Conversation not found",
+			});
+		}
+
+		// Remove the conversation
+		model.conversations.pull(conversationId);
+		await model.save();
+
+		return res.status(200).json({ message: "OK", conversations: model.conversations });
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json({ message: "ERROR", cause: err.message });
+	}
+};
+
+export const startModelConversation = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const userId = res.locals.jwtData.id;
+		const { modelId } = req.params;
+		const model = await loadModel(userId, modelId);
+		model.conversations.push({ chats: [] });
+		await model.save();
+
+		return res.status(200).json({ message: "New conversation started", conversations: model.conversations });
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json({ message: "ERROR", cause: err.message });
+	}
+};
+
+export const getModel = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const userId = res.locals.jwtData.id;
+		const { modelId } = req.params;
+		const model = await loadModel(userId, modelId);
+
+		return res.status(200).json({ message: "OK", model });
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json({ message: "ERROR", cause: err.message });
+	}
+};
+
+export const getModelConversations = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const { modelId } = req.params;
+		const userId = res.locals.jwtData.id; // get variable stored in previous middleware
+        const model = await loadModel(userId, modelId);
+		const conversations = model.conversations;
+		if(!conversations){
+			return res.status(404).json({ message: "ERROR", cause: "Conversations not found" });
+		}
+
+		return res.status(200).json({ message: "OK", conversations });
+	} catch (err) {
+		console.log(err);
+		return res.status(200).json({ message: "ERROR", cause: err.message });
+	}
+};
+
+export const deleteModelConversations = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const { modelId } = req.params;
+		const userId = res.locals.jwtData.id; // get variable stored in previous middleware
+        const model = await loadModel(userId, modelId);
+
+        //@ts-ignore
+        model.conversations = [];
+        await model.save()
+		return res.status(200).json({ message: "OK", conversations: model.conversations });
+	} catch (err) {
+		console.log(err);
+		return res.status(200).json({ message: "ERROR", cause: err.message });
 	}
 };
