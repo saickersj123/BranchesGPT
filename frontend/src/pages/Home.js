@@ -5,18 +5,9 @@ import ChatBox from '../components/ChatBox';
 import ChatList from '../components/ChatList';
 import Sidebar from '../components/sidebar/Sidebar';
 import GridLayout from 'react-grid-layout';
-import {  logout, sendMessagetoModel,
-          } from '../api/axiosInstance';
+import { logout, sendMessagetoModel } from '../api/axiosInstance';
 import { Dropdown } from 'react-bootstrap';
-import {  fetchMessages,
-          startNewConversation, 
-          startNewModelConversation, 
-          fetchConversations, 
-          sendMessage, 
-          getChatboxes, 
-          saveChatbox, 
-          resetChatbox, 
-           } from '../api/axiosInstance';
+import { fetchMessages, startNewModelConversation, fetchConversations, getChatboxes, saveChatbox, resetChatbox } from '../api/axiosInstance';
 import '../css/Home.css';
 import LoginModal from '../components/LoginModal';
 
@@ -32,7 +23,9 @@ const Home = ({
   user,
   messages,
   setMessages,
-  showTime
+  showTime,
+  toggleLayoutEditing,
+  startNewConversationWithMessage
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
@@ -48,7 +41,7 @@ const Home = ({
   const navigate = useNavigate();
   const { conversationId: urlConversationId } = useParams();
   const [isLayoutEditing, setIsLayoutEditing] = useState(false);
-  
+
   useEffect(() => {
     if (user) {
       setUsername(user.name);
@@ -84,33 +77,26 @@ const Home = ({
   }, [urlConversationId, setMessages]);
 
   useEffect(() => {
-    if (conversations.length > 0 && !urlConversationId) {
-      setSelectedConversationId(conversations[0]._id);
-      navigate(`/chat/${conversations[0]._id}`);
-    } else if (conversations.length === 0) {
-      setSelectedConversationId(null);
-      navigate('/');
-    }
-  }, [conversations, urlConversationId, navigate]);
-
-  useEffect(() => {
     const loadConversations = async () => {
       try {
         const fetchedConversations = await fetchConversations();
         setConversations(fetchedConversations);
-        if (fetchedConversations.length > 0) {
-          setSelectedConversationId(fetchedConversations[fetchedConversations.length - 1]._id);
-          navigate(`/chat/${fetchedConversations[fetchedConversations.length - 1]._id}`);
+
+        if (fetchedConversations.length === 0) {
+          setIsNewChat(true);
+        } else if (fetchedConversations.length > 0 && !urlConversationId) {
+          setSelectedConversationId(fetchedConversations[0]._id);
+          navigate(`/chat/${fetchedConversations[0]._id}`);
         }
       } catch (error) {
-        console.error('대화 목록 가져오기 실패:', error);
+        console.error('Failed to fetch conversations:', error);
       }
     };
 
     if (isLoggedIn) {
       loadConversations();
     }
-  }, [isLoggedIn, navigate]);
+  }, [isLoggedIn, navigate, urlConversationId]);
 
   useEffect(() => {
     const loadChatboxLayout = async () => {
@@ -136,7 +122,7 @@ const Home = ({
           originalLayoutRef.current = INITIAL_LAYOUT;
         }
       } catch (error) {
-        console.error('Chatbox layout 가져오기 실패:', error);
+        console.error('Failed to fetch chatbox layout:', error);
         setCurrentLayout(INITIAL_LAYOUT);
         originalLayoutRef.current = INITIAL_LAYOUT;
       }
@@ -147,11 +133,10 @@ const Home = ({
     }
   }, [isLoggedIn]);
 
-const handleLoginClick = () => {
+  const handleLoginClick = () => {
     navigate('/login');
   };
 
-  // Load the sidebar state from localStorage when the component mounts
   useEffect(() => {
     const initialSidebarState = loadSidebarState();
     setIsSidebarOpen(initialSidebarState);
@@ -178,7 +163,7 @@ const handleLoginClick = () => {
   };
 
   const handleProfileClick = async () => {
-      navigate("/mypage")
+    navigate("/mypage");
   };
 
   const handleLogoutClick = async () => {
@@ -192,7 +177,7 @@ const handleLoginClick = () => {
       }
     } catch (error) {
       alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
-    } 
+    }
   };
 
   const handleChatInputAttempt = () => {
@@ -211,62 +196,34 @@ const handleLoginClick = () => {
     updateConversations();
   }, [setMessages]);
 
-  const handleConversationSelect = (conversationId) => {
-    setSelectedConversationId(conversationId);
-    setIsNewChat(false);
-    navigate(`/chat/${conversationId}`);
-  };
-
-  const startNewConversationWithMessage = async (messageContent) => {
+  const handleConversationSelect = async (conversationId) => {
     try {
-        const newConversationResponse = await startNewConversation(messageContent);
-        let newConversationId = newConversationResponse.conversations[newConversationResponse.conversations.length - 1]._id;
-      
-        if (!newConversationId) {
-        console.warn('No new conversation started.');
-        return;
-      }
-
-      const response = await sendMessage(newConversationId, messageContent);
-
-      if (response && response.length > 0) {
-        const aiMessage = {
-          content: response[response.length - 1].content,
-          role: 'assistant',
-          createdAt: new Date().toISOString()
-        };
-        handleUpdateMessage(aiMessage);
-      }
-
-      setSelectedConversationId(newConversationId);
-      navigate(`/chat/${newConversationId}`);
+      const fetchedMessages = await fetchMessages(conversationId);
+      setMessages(fetchedMessages);
+      setSelectedConversationId(conversationId);
       setIsNewChat(false);
-      return newConversationId;
+      navigate(`/chat/${conversationId}`);
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.error('Unauthorized (401):', error.response.data);
-      } else {
-        console.error('새로운 대화 시작 실패:', error);
-      }
+      console.error('Failed to load conversation messages:', error);
     }
   };
 
-  const startNewModelConversationWithMessage = async (messageContent, modelId) => {
+  const startNewModelConversationWithMessage = async (messageContent, modelName) => {
     try {
-      if (!modelId) {
-        console.error('모델이 선택되지 않았습니다.');
+      if (!modelName) {
+        console.error('No model selected.');
         return;
       }
 
-      const newConversationResponse = await startNewModelConversation(modelId, messageContent);
-      const newConversationId = newConversationResponse.conversationId; // 새로운 대화 ID를 응답에서 추출
+      const newConversationResponse = await startNewModelConversation(modelName, messageContent);
+      const newConversationId = newConversationResponse.conversationId;
 
       if (!newConversationId) {
         console.warn('No new conversation started.');
         return;
       }
 
-      const response = await sendMessagetoModel(modelId, newConversationId, messageContent);
+      const response = await sendMessagetoModel(modelName, newConversationId, messageContent);
 
       if (response && response.length > 0) {
         const aiMessage = {
@@ -285,7 +242,7 @@ const handleLoginClick = () => {
       if (error.response && error.response.status === 401) {
         console.error('Unauthorized (401):', error.response.data);
       } else {
-        console.error('새로운 대화 시작 실패:', error);
+        console.error('Failed to start new conversation:', error);
       }
     }
   };
@@ -295,7 +252,7 @@ const handleLoginClick = () => {
       const fetchedConversations = await fetchConversations();
       setConversations(fetchedConversations);
     } catch (error) {
-      console.error('대화 목록 갱신 실패:', error);
+      console.error('Failed to update conversations:', error);
     }
   };
 
@@ -359,7 +316,7 @@ const handleLoginClick = () => {
       setCurrentLayout(INITIAL_LAYOUT);
       originalLayoutRef.current = INITIAL_LAYOUT;
     } catch (error) {
-      console.error('Chatbox layout 초기화 실패:', error);
+      console.error('Failed to reset chatbox layout:', error);
     }
   };
 
@@ -375,7 +332,7 @@ const handleLoginClick = () => {
       originalLayoutRef.current = currentLayout;
       setIsLayoutEditing(false);
     } catch (error) {
-      console.error('Chatbox layout 저장 실패:', error);
+      console.error('Failed to save chatbox layout:', error);
     }
   };
 
@@ -388,6 +345,11 @@ const handleLoginClick = () => {
     setIsLayoutEditing(true);
   };
 
+  const handleNewConversation = async (newConversationId) => {
+    setSelectedConversationId(newConversationId);
+    setIsNewChat(false);
+    navigate(`/chat/${newConversationId}`);
+  };
 
   useEffect(() => {
     if (conversations.length === 0) {
@@ -398,12 +360,17 @@ const handleLoginClick = () => {
     }
   }, [conversations, urlConversationId, navigate]);
 
-  const handleConversationDelete = async () => {
+  const handleConversationDelete = async (resetChat = false) => {
     try {
       const updatedConversations = await fetchConversations();
       setConversations(updatedConversations);
+      if (resetChat) {
+        setSelectedConversationId(null);
+        setIsNewChat(true);
+        navigate('/');
+      }
     } catch (error) {
-      console.error('대화 목록 업데이트 실패:', error);
+      console.error('Failed to update conversations list:', error);
     }
   };
 
@@ -427,10 +394,7 @@ const handleLoginClick = () => {
             closeSidebar={closeSidebar}
             conversations={conversations}
             onConversationSelect={handleConversationSelect}
-            onNewChat={() => {
-              setMessages([]);
-              setIsNewChat(true);
-            }}
+            onNewConversation={handleNewConversation}
             onConversationDelete={handleConversationDelete}
           />
           {isLayoutEditing ? (

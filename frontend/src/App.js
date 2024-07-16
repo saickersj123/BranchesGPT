@@ -5,7 +5,10 @@ import Login from './pages/Login';
 import MyPage from './pages/MyPage';
 import Home from './pages/Home';
 import FineTune from './pages/FineTune';
-import { checkAuthStatus, fetchMessages, getModelConversation,} from './api/axiosInstance';
+import {  checkAuthStatus, 
+          fetchMessages, 
+          getModelConversation, 
+          } from './api/axiosInstance';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -51,7 +54,7 @@ const App = () => {
       console.error('Error loading messages:', error);
     }
   };
-  
+
   return (
     <Router>
       <div>

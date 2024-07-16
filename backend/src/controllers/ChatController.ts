@@ -125,7 +125,8 @@ export const startNewConversation = async (
 		user.conversations.push({ chats: [] });
 		await user.save();
 
-		return res.status(200).json({ message: "New conversation started", conversations: user.conversations });
+		return res.status(200).json({ message: "New conversation started", 
+					conversation: user.conversations[user.conversations.length - 1]  });
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({ message: "ERROR", cause: err.message });

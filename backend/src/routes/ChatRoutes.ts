@@ -28,12 +28,10 @@ chatRoutes.get("/", (req, res, next) => {
 
 // protected API
 //new conversation
-chatRoutes.post(
+chatRoutes.get(
 	"/c/new",
-	validate(chatCompletionValidator),
 	verifyToken,
 	startNewConversation,
-	generateChatCompletion,
 );
 
 //resume conversation

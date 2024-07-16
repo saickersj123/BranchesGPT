@@ -88,14 +88,10 @@ export const mypage = async (password) => {
 };
 
 // 새로운 대화 시작
-export const startNewConversation = async (messageContent) => {
-  const message = {
-    role: 'user',
-    content: messageContent
-  };
+export const startNewConversation = async ( ) => {
   try {
-    const response = await axiosInstance.post('/chat/c/new', { message });
-    return response.data;
+    const response = await axiosInstance.get('/chat/c/new');
+    return response.data.conversation.id;
   } catch (error) {
     console.error('새로운 대화 시작 실패:', error.response ? error.response.data : error.message);
     throw error;

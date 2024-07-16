@@ -1,25 +1,24 @@
-// src/components/sidebar/Sidebar.js
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { FaTrashAlt, FaPlus, FaRobot, FaMinus } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
-import { deleteConversation, deleteAllChats, startNewConversation, sendMessage } from '../../api/axiosInstance';
+import { deleteConversation, deleteAllChats, startNewConversation } from '../../api/axiosInstance';
 import '../../css/Sidebar.css';
 
-const Sidebar = ({  isOpen, 
-                    toggleSidebar, 
-                    closeSidebar, 
-                    conversations, 
-                    onConversationDelete, 
-                    onNewModel,
-                    setIsNewChat,
-                    handleUpdateMessage,
-                    setSelectedConversationId, }) => {
-  const navigate = useNavigate();
+const Sidebar = ({ 
+  isOpen, 
+  toggleSidebar, 
+  closeSidebar, 
+  conversations, 
+  onConversationDelete, 
+  onNewModel, 
+  onNewConversation, 
+  onConversationSelect 
+}) => {
   const sidebarRef = useRef(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
   const [deleteRoomId, setDeleteRoomId] = useState(null);
+
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     const date = new Date(dateString);
@@ -45,11 +44,11 @@ const Sidebar = ({  isOpen,
   const confirmDelete = async () => {
     try {
       await deleteConversation(deleteRoomId);
-      onConversationDelete();
+      onConversationDelete(true);
       setShowDeleteModal(false);
-      alert('대화가 성공적으로 삭제되었습니다.');
+      console.log('대화가 성공적으로 삭제되었습니다.');
     } catch (error) {
-      alert('대화 삭제에 실패했습니다. 다시 시도해주세요.');
+      console.log('대화 삭제에 실패했습니다. 다시 시도해주세요.');
     }
   };
 
@@ -60,14 +59,13 @@ const Sidebar = ({  isOpen,
   const confirmDeleteAllChats = async () => {
     try {
       await deleteAllChats();
-      alert('대화기록이 성공적으로 삭제되었습니다.');
-      onConversationDelete();
+      console.log('대화기록이 성공적으로 삭제되었습니다.');
+      onConversationDelete(true);
       setShowDeleteAllModal(false);
     } catch (error) {
-      alert('대화기록 삭제에 실패했습니다. 다시 시도해주세요.');
+      console.log('대화기록 삭제에 실패했습니다. 다시 시도해주세요.');
     }
   };
-
 
   const sortedChatRooms = useCallback(() => {
     const grouped = groupByDate(conversations);
@@ -84,39 +82,6 @@ const Sidebar = ({  isOpen,
     return message.substring(0, length) + '...';
   };
 
-  const onNewConversation = async (messageContent, role = 'user') => {
-    try {
-        const newConversationResponse = await startNewConversation(messageContent, role);
-        let newConversationId = newConversationResponse.conversations[newConversationResponse.conversations.length - 1]._id;
-      
-        if (!newConversationId) {
-        console.warn('No new conversation started.');
-        return;
-      }
-
-      const response = await sendMessage(newConversationId, messageContent);
-
-      if (response && response.length > 0) {
-        const aiMessage = {
-          content: response[response.length - 1].content,
-          role: 'assistant',
-          createdAt: new Date().toISOString()
-        };
-        handleUpdateMessage(aiMessage);
-      }
-
-      setSelectedConversationId(newConversationId);
-      navigate(`/chat/${newConversationId}`);
-      setIsNewChat(false);
-      return newConversationId;
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.error('Unauthorized (401):', error.response.data);
-      } else {
-        console.error('새로운 대화 시작 실패:', error);
-      }
-    }
-  };
   useEffect(() => {
     sortedChatRooms().forEach(group => {
       group.rooms.forEach(room => {
@@ -125,10 +90,30 @@ const Sidebar = ({  isOpen,
     });
   }, [conversations, sortedChatRooms]);
 
+  const startConversation = async () => {
+    try {
+      const newConversationResponse = await startNewConversation();
+      const newConversationId = newConversationResponse;
+
+      if (newConversationId) {
+        // Update Home state with the new conversation ID
+        onNewConversation(newConversationId);
+      } else {
+        console.warn('No new conversation started.');
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        console.error('Unauthorized (401):', error.response.data);
+      } else {
+        console.error('Failed to start new conversation:', error);
+      }
+    }
+  };
+
   return (
     <div className={`sidebar ${isOpen ? 'open' : 'closed'}`} ref={sidebarRef}>
       <div className="sidebar-header">
-        <button className="new-conversation-button" onClick={onNewConversation}>
+        <button className="new-conversation-button" onClick={() => startConversation()}>
           <FaPlus size={20} />
         </button>
         <button className="new-model-button" onClick={onNewModel}>
@@ -139,16 +124,20 @@ const Sidebar = ({  isOpen,
         <div className="sidebar-menu">
           {conversations.length === 0 ? (
             <div className="no-chat-rooms">
-              <p>대화가 없습니다.</p>
+              <p>대화 내역이 이곳에 기록돼요.</p>
             </div>
           ) : (
             sortedChatRooms().map((group, index) => (
               <div key={index} className="chat-date-group">
                 <h3 className="chat-date">{formatDate(group.date)}</h3>
                 {group.rooms.map((room, idx) => (
-                  <div key={idx} className="chat-room">
+                  <div 
+                    key={idx} 
+                    className="chat-room"
+                    onClick={() => onConversationSelect(room._id)}
+                  >
                     <span className="room-title">
-                      {room.chats.length > 0 ? truncateMessage(room.chats[room.chats.length - 1].content, 40) : "No messages yet"}
+                      {room.chats.length > 0 ? truncateMessage(room.chats[room.chats.length - 1].content, 40) : "새 대화를 시작하세요."}
                     </span>
                     <button className="delete-button" onClick={() => handleDeleteClick(room._id)}>
                       <FaMinus size={16} />

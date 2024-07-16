@@ -46,7 +46,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 10px;
   margin-bottom: 15px;
+}
+.chat-room:hover {
+  background-color: gainsboro;
 }
 
 .last-message {
