@@ -162,6 +162,13 @@ const Home = ({
     saveSidebarState(false);
   };
 
+  useState(() => {
+    if(!isLoggedIn){
+      setIsSidebarOpen(false);
+      saveSidebarState(false);
+    }
+  }, [])
+  
   const handleProfileClick = async () => {
     navigate("/mypage");
   };
@@ -420,7 +427,7 @@ const Home = ({
             </div>
           )}
         </>
-      ) : (
+      ) : ( 
         <div className="login-container">
           <button className="login-button" onClick={handleLoginClick}>로그인</button>
         </div>
