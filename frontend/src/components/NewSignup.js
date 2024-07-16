@@ -21,7 +21,6 @@ const Signup = ({ show, onHide }) => {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [validate, setValidate] = useState(false);
 
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -34,7 +33,6 @@ const Signup = ({ show, onHide }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setValidate(true);
 
     if (!email || !password || !name) {
       setError('모든 필드를 입력하세요.');
@@ -57,7 +55,6 @@ const Signup = ({ show, onHide }) => {
       if (response.success) {
         setSuccess(true);
         setError('');
-        setValidate(false);
         await delay(1000); // 1초 지연 후 모달을 닫습니다.
         onHide();
       } else {

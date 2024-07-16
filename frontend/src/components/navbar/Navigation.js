@@ -150,6 +150,10 @@ const Navigation = ({
     setIsColorPickerPanelOpen(false);
   };
 
+  const returntoChat = () => {
+    navigate('/chat/new');
+  };
+
   return (
     <div className={`main-container ${isColorPickerPanelOpen ? 'shrink' : ''} ${mode === 'dark' ? 'dark' : ''}`}>
       <Navbar collapseOnSelect expand="lg" className={`fixed-top justify-content-between ${mode === 'dark' ? 'navbar-dark' : 'navbar-light'}`}>
@@ -276,7 +280,7 @@ const Navigation = ({
                             </Dropdown>
                           )}
                           {isMyPage && (
-                            <Nav.Link onClick={handleLogout}>
+                            <Nav.Link onClick={returntoChat}>
                               {isLoading ? <FontAwesomeIcon icon={faSignOutAlt} spin className="icon" /> : <FontAwesomeIcon icon={faSignOutAlt} className="icon" />}
                               <span className="icon-text"> </span>
                             </Nav.Link>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button, Form, Container, Row, Col, Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faPen } from '@fortawesome/free-solid-svg-icons';
@@ -14,7 +14,6 @@ const MyPage = ({ darkMode }) => {
   const [newPassword, setNewPassword] = useState('');
   const [isEditingname, setIsEditingname] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
-  const [email, setEmail] = useState('');
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
@@ -28,7 +27,6 @@ const MyPage = ({ darkMode }) => {
       if (response.message === 'OK') {
         setIsPasswordVerified(true);
         setname(response.name);
-        setEmail(response.email);
       } else if (response.cause === 'Incorrect Password') {
         alert('비밀번호가 일치하지 않습니다.');
       }
@@ -93,9 +91,6 @@ const MyPage = ({ darkMode }) => {
     setNewPassword('');
   };
 
-  const handleCloseMyPage = () => {
-    window.history.back();
-  };
 
   return (
     <Container className={`mypage-container ${darkMode ? 'dark' : ''}`} style={{ marginTop: '100px' }}>
@@ -125,7 +120,7 @@ const MyPage = ({ darkMode }) => {
                   <Card.Title>마이페이지</Card.Title>
                   <Form>
                     <Form.Group as={Row} className="name-section">
-                      <Form.Label column sm={4}>현재 닉네임 :</Form.Label>
+                      <Form.Label column sm={4}>현재 이름 :</Form.Label>
                       <Col sm={6}>
                         <Form.Control plaintext readOnly value={name} />
                       </Col>
@@ -138,7 +133,7 @@ const MyPage = ({ darkMode }) => {
                     {isEditingname && (
                       <div className="edit-section">
                         <Form.Group>
-                          <Form.Label>새 닉네임 :</Form.Label>
+                          <Form.Label>새 이름 :</Form.Label>
                           <Form.Control
                             type="text"
                             value={newname}

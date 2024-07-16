@@ -1,13 +1,10 @@
-import React, { useEffect, useRef } from 'react';
-import { FaBars, FaTimes, FaTrashAlt } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import { useMediaQuery } from 'react-responsive';
-import { deleteConversation, deleteAllChats } from '../../api/axiosInstance'; // 삭제 API 함수 임포트
+// src/components/sidebar/Sidebar.js
+import React, { useEffect, useRef, useCallback } from 'react';
+import { FaTimes, FaTrashAlt } from 'react-icons/fa';
+import { deleteConversation, deleteAllChats } from '../../api/axiosInstance';
 import '../../css/Sidebar.css';
 
-const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar, conversations, onConversationSelect, onNewChat, onConversationDelete }) => {
-  const navigate = useNavigate();
-  const isMobile = useMediaQuery({ query: '(max-width: 1000px)' });
+const Sidebar = ({ isOpen, toggleSidebar, closeSidebar, conversations, onConversationDelete }) => {
   const sidebarRef = useRef(null);
 
   const formatDate = (dateString) => {
@@ -27,7 +24,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar, conversation
     }, {});
   };
 
-  const sortedChatRooms = () => {
+  const sortedChatRooms = useCallback(() => {
     const grouped = groupByDate(conversations);
     return Object.keys(grouped)
       .sort((a, b) => new Date(a) - new Date(b))
@@ -35,20 +32,12 @@ const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar, conversation
         date,
         rooms: grouped[date].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       }));
-  };
-
-  const handleRoomClick = (roomId) => {
-    onConversationSelect(roomId);
-    navigate(`/chat/${roomId}`);
-    if (isMobile) {
-      closeSidebar();
-    }
-  };
+  }, [conversations]);
 
   const handleDeleteClick = async (roomId) => {
     try {
       await deleteConversation(roomId);
-      onConversationDelete(); // 삭제 후 상태 업데이트 호출
+      onConversationDelete();
       closeSidebar();
       alert('대화가 성공적으로 삭제되었습니다.');
     } catch (error) {
@@ -60,7 +49,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar, conversation
     try {
       await deleteAllChats();
       alert('대화기록이 성공적으로 삭제되었습니다.');
-      onConversationDelete(); // 삭제 후 상태 업데이트 호출
+      onConversationDelete();
       closeSidebar();
     } catch (error) {
       alert('대화기록 삭제에 실패했습니다. 다시 시도해주세요.');
@@ -68,32 +57,15 @@ const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar, conversation
   };
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target) && isOpen) {
-        closeSidebar();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen, closeSidebar]);
-
-  // 사이드바 순서를 콘솔에 출력
-  useEffect(() => {
     sortedChatRooms().forEach(group => {
       group.rooms.forEach(room => {
         console.log(`대화 ID: ${room._id}, 마지막 메시지: ${room.chats[room.chats.length - 1]?.content}`);
       });
     });
-  }, [conversations]);
+  }, [conversations, sortedChatRooms]);
 
   return (
     <div className={`sidebar ${isOpen ? 'open' : 'closed'}`} ref={sidebarRef}>
-      <button className="toggle-button" onClick={toggleSidebar}>
-        {isOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
-      </button>
       <div className="sidebar-menu">
         {conversations.length > 0 && (
           <button className="delete-all-button" onClick={handleDeleteAllChats}>
@@ -110,9 +82,6 @@ const Sidebar = ({ isOpen, toggleSidebar, isLoggedIn, closeSidebar, conversation
               <h3 className="chat-date">{formatDate(group.date)}</h3>
               {group.rooms.map((room, idx) => (
                 <div key={idx} className="chat-room">
-                  <p className="last-message" onClick={() => handleRoomClick(room._id)}>
-                    {room.chats[room.chats.length - 1]?.content}
-                  </p>
                   <button className="delete-button" onClick={() => handleDeleteClick(room._id)}>
                     <FaTrashAlt size={16} />
                   </button>

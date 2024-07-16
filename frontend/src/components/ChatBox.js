@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import '../css/ChatBox.css';
-import { sendMessage, resumeConversation } from '../api/axiosInstance';
+import {  sendMessage,
+          sendMessagetoModel, } from '../api/axiosInstance';
 
 const ChatBox = ({ conversationId, onNewMessage, onUpdateMessage, isEditMode, isNewChat, startNewConversationWithMessage, startNewModelConversationWithMessage, darkMode, selectedModel }) => {
   const [message, setMessage] = useState('');
@@ -30,7 +31,7 @@ const ChatBox = ({ conversationId, onNewMessage, onUpdateMessage, isEditMode, is
         }
       } else {
         if (selectedModel) {
-          const response = await resumeConversation(selectedModel.value, conversationId, message);
+          const response = await sendMessagetoModel(selectedModel.value, conversationId, message);
           if (response && response.length > 0) {
             const aiMessage = {
               content: response[response.length - 1].content,
@@ -73,7 +74,7 @@ const ChatBox = ({ conversationId, onNewMessage, onUpdateMessage, isEditMode, is
           value={message}
           onChange={handleMessageChange}
           onKeyPress={handleKeyPress}
-          placeholder="메시지를 입력하세요..."
+          placeholder="메시지를 입력하세요."
           className={`chat-container ${darkMode === 'dark' ? 'dark' : ''}`}
           disabled={isEditMode}
         />

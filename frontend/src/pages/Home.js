@@ -1,12 +1,22 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { FaBars } from 'react-icons/fa';
+
 import ChatBox from '../components/ChatBox';
 import ChatList from '../components/ChatList';
 import Sidebar from '../components/sidebar/Sidebar';
-import Navigation from '../components/navbar/Navigation';
 import GridLayout from 'react-grid-layout';
 import Select from 'react-select';
-import { fetchMessages, startNewConversation, startNewModelConversation, fetchConversations, sendMessage, getChatboxes, saveChatbox, resetChatbox, getAllCustomModels, getModelNameAndConversation } from '../api/axiosInstance';
+import {  fetchMessages,
+          startNewConversation, 
+          startNewModelConversation, 
+          fetchConversations, 
+          sendMessage, 
+          getChatboxes, 
+          saveChatbox, 
+          resetChatbox, 
+          getCustomModels, 
+          getModelConversation } from '../api/axiosInstance';
 import '../css/Home.css';
 
 const MAX_Y_H_SUM = 9;
@@ -68,7 +78,7 @@ const Home = ({
         try {
           let fetchedMessages;
           if (selectedModel) {
-            fetchedMessages = await getModelNameAndConversation(selectedModel.value, urlConversationId);
+            fetchedMessages = await getModelConversation(selectedModel.value, urlConversationId);
           } else {
             fetchedMessages = await fetchMessages(urlConversationId);
           }
@@ -111,7 +121,7 @@ const Home = ({
     if (isLoggedIn) {
       loadConversations();
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, navigate]);
 
   useEffect(() => {
     const loadChatboxLayout = async () => {
@@ -160,7 +170,7 @@ const Home = ({
   useEffect(() => {
     const fetchAvailableModels = async () => {
       try {
-        const modelsData = await getAllCustomModels(); // API 호출
+        const modelsData = await getCustomModels(); // API 호출
         setModels(modelsData.map(model => ({
           value: model.modelId,
           label: model.modelName
@@ -403,30 +413,11 @@ const Home = ({
 
   return (
     <main className={`main-section ${darkMode === 'dark' ? 'dark' : ''}`}>
-
-      <Navigation
-        isLoggedIn={isLoggedIn}
-        setIsLoggedIn={setIsLoggedIn}
-        toggleEditMode={toggleEditMode}
-        isEditMode={isEditMode}
-        handleSaveClick={handleSaveClick}
-        handleCancelClick={handleCancelClick}
-        handleResetLayout={handleResetLayout}
-        loadMessages={loadMessages}
-        startNewConversationWithMessage={() => {
-          setMessages([]);
-          setIsNewChat(true);
-        }}
-        showTime={showTime}
-        setShowTime={setShowTime}
-        darkMode={darkMode}
-        toggleDarkMode={toggleDarkMode}
-        isPanelOpen={isPanelOpen}
-        handleOpenPanel={handleOpenPanel}
-        handleClosePanel={handleClosePanel}
-      />
       {isLoggedIn && (
         <>
+          <button className="toggle-sidebar-button" onClick={toggleSidebar}>
+            <FaBars size={20} />
+          </button>
           <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={toggleSidebar}></div>
           <Sidebar
             isOpen={isSidebarOpen}
@@ -466,7 +457,7 @@ const Home = ({
             <div
               key="chatContainer"
               className={`grid-item chat-container ${isEditMode ? 'edit-mode' : ''} ${!isEditMode ? 'no-border' : ''}`}
-              data-grid={{...currentLayout.find(item => item.i === 'chatContainer'), resizeHandles: isEditMode ? ['s', 'e', 'w', 'n'] : [] }}
+              data-grid={{ ...currentLayout.find(item => item.i === 'chatContainer'), resizeHandles: isEditMode ? ['s', 'e', 'w', 'n'] : [] }}
             >
               <div className="chat-list-container" style={{ flexGrow: 1 }}>
                 {isNewChat ? (
@@ -482,9 +473,9 @@ const Home = ({
                     />
                   </>
                 ) : (
-                  <ChatList 
-                    messages={messages} 
-                    username={username} 
+                  <ChatList
+                    messages={messages}
+                    username={username}
                     conversationId={selectedConversationId}
                     showTime={showTime}
                     darkMode={darkMode}
@@ -499,8 +490,8 @@ const Home = ({
                   conversationId={selectedConversationId}
                   isNewChat={isNewChat}
                   startNewConversationWithMessage={startNewConversationWithMessage}
-                  startNewModelConversationWithMessage={startNewModelConversationWithMessage} // 모델 대화 시작 함수 전달
-                  selectedModel={selectedModel}  // 모델 정보 전달
+                  startNewModelConversationWithMessage={startNewModelConversationWithMessage}
+                  selectedModel={selectedModel}
                   darkMode={darkMode}
                 />
               </div>

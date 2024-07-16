@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import './css/App.css';
-import Navigation from './components/navbar/Navigation';
 import Login from './pages/Login';
 import MyPage from './pages/MyPage';
 import Home from './pages/Home';
 import Pretrain from './pages/Pretrain';
-import { checkAuthStatus, fetchMessages, resumeConversation } from './api/axiosInstance';
+import {  checkAuthStatus,
+          fetchMessages, 
+          getModelConversation, } from './api/axiosInstance';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -82,9 +83,9 @@ const App = () => {
     }
   }, []);
 
-  const loadModelMessages = useCallback(async (conversationId) => {
+  const loadModelMessages = useCallback(async (modelId, conversationId) => {
     try {
-      const data = await resumeConversation(conversationId);
+      const data = await getModelConversation(modelId, conversationId);
       console.log(data);
       setMessages(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -92,28 +93,13 @@ const App = () => {
     }
   }, []);
   
-  useEffect(() => {
-    if (isLoggedIn) {
-      loadMessages();
-    }
-  }, [isLoggedIn, loadMessages]);
-
   const startNewChat = () => {
+    
   };
 
   return (
     <Router>
       <div>
-        <Navigation
-          isLoggedIn={isLoggedIn}
-          setIsLoggedIn={setIsLoggedIn}
-          toggleEditMode={toggleEditMode}
-          isEditMode={isEditMode}
-          loadMessages={loadMessages}
-          startNewConversationWithMessage={startNewChat}
-          darkMode={currentMode}
-          toggleDarkMode={toggleDarkMode}
-        />
         <Routes>
           <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} darkMode={currentMode} toggleDarkMode={toggleDarkMode} />} />
           <Route

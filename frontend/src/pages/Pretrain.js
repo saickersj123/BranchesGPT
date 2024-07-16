@@ -1,7 +1,11 @@
 // Pretrain.js
 
 import React, { useState, useEffect } from 'react';
-import { createCustomModel, getAllCustomModels, deleteCustomModel, startNewModelConversation, resumeConversation } from '../api/axiosInstance';
+import {  createModel,
+          getCustomModels, 
+          deleteModel, 
+          startNewModelConversation, 
+          sendMessagetoModel, } from '../api/axiosInstance';
 import { Container, Row, Col, Form, Button, Alert, ListGroup } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/Pretrain.css';
@@ -23,7 +27,7 @@ const Pretrain = () => {
   useEffect(() => {
     const fetchCustomModels = async () => {
       try {
-        const models = await getAllCustomModels();
+        const models = await getCustomModels();
         setCustomModels(models);
       } catch (err) {
         setError(err.response ? err.response.data.cause : err.message);
@@ -49,9 +53,9 @@ const Pretrain = () => {
       console.log("Model Name: ", modelName);
       console.log("Training Data: ", trainingData);
 
-      const response = await createCustomModel(modelName, trainingData);
+      await createModel(modelName, trainingData);
       setResponseMessage('Model created successfully');
-      const updatedModels = await getAllCustomModels();
+      const updatedModels = await getCustomModels();
       setCustomModels(updatedModels);
     } catch (error) {
       setResponseMessage(`Error creating model: ${error.response ? error.response.data.error : error.message}`);
@@ -63,8 +67,8 @@ const Pretrain = () => {
   const handleDelete = async (modelId) => {
     try {
       console.log(`Deleting model with ID: ${modelId}`);
-      await deleteCustomModel(modelId);
-      const updatedModels = await getAllCustomModels();
+      await deleteModel(modelId);
+      const updatedModels = await getCustomModels();
       setCustomModels(updatedModels);
     } catch (error) {
       console.error(`Failed to delete model: ${error.message}`);
@@ -97,7 +101,7 @@ const Pretrain = () => {
   const handleResumeConversation = async (modelName, message) => {
     try {
       console.log(`Resuming conversation with model: ${modelName} and message: ${message}`);
-      const response = await resumeConversation(modelName, conversationId, message);
+      const response = await sendMessagetoModel(modelName, conversationId, message);
       console.log('Received response:', response);
       setMessages(response.chats);
       setNewMessage('');
