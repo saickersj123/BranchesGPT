@@ -24,35 +24,6 @@ const App = () => {
     }
   });
 
-  const getSystemMode = () => {
-    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return isDarkMode ? 'dark' : 'light';
-  };
-
-  const getCurrentMode = () => {
-    return mode === 'system' ? getSystemMode() : mode;
-  };
-
-  const currentMode = getCurrentMode();
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (currentMode === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.add('light');
-    }
-
-    return () => {
-      root.classList.remove('dark');
-      root.classList.remove('light');
-    };
-  }, [currentMode]);
-
-  const toggleDarkMode = (newMode) => {
-    setMode(newMode);
-    localStorage.setItem('mode', newMode);
-  };
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -101,11 +72,11 @@ const App = () => {
     <Router>
       <div>
         <Routes>
-          <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} darkMode={currentMode} toggleDarkMode={toggleDarkMode} />} />
+          <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
           <Route
             path="*"
             element={
-              <div  className={`app-container ${currentMode}`}>
+              <div  className={`app-container`}>
                 <Routes>
                   <Route
                     path="/"
@@ -121,8 +92,7 @@ const App = () => {
                         setMessages={setMessages}
                         toggleEditMode={toggleEditMode}
                         startNewChat={startNewChat}
-                        darkMode={currentMode}
-                        toggleDarkMode={toggleDarkMode}
+
                       />
                     }
                   />
@@ -140,8 +110,6 @@ const App = () => {
                         setMessages={setMessages}
                         toggleEditMode={toggleEditMode}
                         startNewChat={startNewChat}
-                        darkMode={currentMode}
-                        toggleDarkMode={toggleDarkMode}
                       />
                     }
                   />
@@ -159,16 +127,13 @@ const App = () => {
                         setMessages={setMessages}
                         toggleEditMode={toggleEditMode}
                         startNewChat={startNewChat}
-                        darkMode={currentMode}
-                        toggleDarkMode={toggleDarkMode}
                       />
                     }
                   />
                   <Route
                     path="/mypage"
-                    element={isLoggedIn ? <MyPage darkMode={currentMode} toggleDarkMode={toggleDarkMode} /> : <Navigate to="/" />}
                   />  
-                  <Route path="/pretrain" element={<Pretrain darkMode={currentMode} toggleDarkMode={toggleDarkMode} />} />
+                  <Route path="/pretrain" />
                 </Routes>
               </div>
             }
