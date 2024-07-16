@@ -171,6 +171,8 @@ const Home = ({
       const logoutSuccess = await logout();
       if (logoutSuccess) {
         setIsLoggedIn(false);
+        setIsSidebarOpen(false);
+        saveSidebarState(false);
         navigate('/');
       } else {
         alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
