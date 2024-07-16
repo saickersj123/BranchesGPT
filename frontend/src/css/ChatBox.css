@@ -14,34 +14,14 @@
   width: 100%; /* 너비를 100%로 설정 */ 
 }
 
-@media screen and (max-width: 1200px) {
-  .textarea-wrapper {
-    max-width: 60%; /* 최대 너비를 60%로 설정 */
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .textarea-wrapper {
-    max-width: 90%; /* 최대 너비를 90%로 설정 */
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .textarea-wrapper {
-    max-width: 95%; /* 최대 너비를 95%로 설정 */
-  }
-}
-
 /* 채팅 컨테이너 */
 .chat-container {
   width: 100%; /* 너비를 100%로 설정 */
   height: 100%; /* 높이를 고정된 값으로 설정 */
-  padding: 10px 60px 10px 20px; /* 내부 여백을 추가, 오른쪽 여백을 60px로 늘림 */
   box-sizing: border-box; /* 패딩과 테두리를 포함한 박스 크기를 계산 */
   resize: none; /* 크기 조절 비활성화 */ 
   border-radius: 30px; /* 테두리 모서리를 30px 둥글게 설정 */
   font-size: 16px; /* 글자 크기를 16px로 설정 */
-  background-color: #f0f0f0; /* 배경 색상을 연한 회색으로 설정 */
   overflow-y: hidden; /* 세로 스크롤 숨김 */ 
 }
 
@@ -49,14 +29,6 @@
   outline: none; /* 포커스 시 아웃라인 제거 */
   box-shadow: none; /* 포커스 시 그림자 제거 */
   background-color: #e0e0e0; /* 포커스 시 배경 색상을 연한 회색으로 변경 */
-}
-
-body.dark .chat-container {
-  background-color: #575656; /* 다크 모드 ChatBox 배경 색상 */
-}
-
-body.dark .chat-container:focus {
-  background-color: #858282; /* 다크 모드에서 포커스 시 배경 색상 */
 }
 
 /* 채팅 상자 버튼 */

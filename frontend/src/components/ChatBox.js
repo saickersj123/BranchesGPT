@@ -4,11 +4,24 @@ import '../css/ChatBox.css';
 import {  sendMessage,
           sendMessagetoModel, } from '../api/axiosInstance';
 
-const ChatBox = ({ conversationId, onNewMessage, onUpdateMessage, isEditMode, isNewChat, startNewConversationWithMessage, startNewModelConversationWithMessage, darkMode, selectedModel }) => {
+const ChatBox = ({  conversationId,
+                    onNewMessage, 
+                    onUpdateMessage, 
+                    isEditMode, 
+                    isNewChat, 
+                    startNewConversationWithMessage, 
+                    startNewModelConversationWithMessage, 
+                    selectedModel,
+                    onChatInputAttempt,
+                    isLoggedIn, }) => {
   const [message, setMessage] = useState('');
 
   const handleMessageChange = (event) => {
-    setMessage(event.target.value);
+    if (!isLoggedIn) {
+      onChatInputAttempt();
+    } else {
+      setMessage(event.target.value);
+    }
   };
 
   const sendMessageToServer = async () => {
@@ -66,22 +79,22 @@ const ChatBox = ({ conversationId, onNewMessage, onUpdateMessage, isEditMode, is
   };
 
   return (
-    <Form className={`chat-input-container ${darkMode === 'dark' ? 'dark' : ''}`} onSubmit={(e) => e.preventDefault()}>
+    <Form className={`chat-input-container`} onSubmit={(e) => e.preventDefault()}>
       <Form.Group controlId="messageInput" className="textarea-wrapper">
         <Form.Control
           as="textarea"
           rows={1}
           value={message}
           onChange={handleMessageChange}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyPress}
           placeholder="메시지를 입력하세요."
-          className={`chat-container ${darkMode === 'dark' ? 'dark' : ''}`}
+          className={`chat-container`}
           disabled={isEditMode}
         />
         <Button
           type="submit"
           onClick={sendMessageToServer}
-          className={`chat-box-button ${darkMode === 'dark' ? 'dark' : ''}`}
+          className={`chat-box-button`}
           disabled={isEditMode}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-right" viewBox="0 0 16 16">

@@ -25,40 +25,22 @@ body, html {
   overflow: hidden;
 }
 
-body.dark {
-  background: #2b2a2a;
-  --button-color: #ffffff;
-  --my-chat-bubble-color: #333333;
-  --my-chat-text-color: #ffffff;
-  --other-chat-bubble-color: #444444;
-  --other-chat-text-color: #ffffff;
-  --chat-container-bg-color: #2b2a2a;
-  --chatbox-bg-color: #575656; /* 다크 모드 ChatBox 배경 색상 */
-}
-
 .main-section {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
 }
 
-.main-section.dark {
-  background: #2b2a2a; /* 다크 모드 배경 색상 */
-}
 
 .main-content {
   position: relative;
   width: 100%;
-  padding-left: 0; /* Ensure no padding */
+  transition: margin-left 0.3s ease;
 }
 
 .main-content.shifted-right {
-  margin-left: 20%; /* 사이드바 너비만큼 오른쪽으로 이동 */
-}
-
-.main-content.shifted-left {
-  margin-left: 0; /* 패널이 열릴 때 왼쪽으로 이동 */
+  margin-left: 80px; /* 사이드바 너비만큼 오른쪽으로 이동 */
 }
 
 .grid-container {
@@ -78,9 +60,6 @@ body.dark {
   overflow: hidden;
 }
 
-.grid-item.dark {
-  background: var(--chat-container-bg-color);
-}
 
 .grid-item.no-border {
   border: none;
@@ -105,8 +84,8 @@ body.dark {
 .chat-box-container {
   overflow-y: hidden;
   flex: none;
-  height: 4rem;
-  margin: 10px;
+  height: 10%;
+  margin: 0px;
   padding: 10px;
   box-sizing: border-box;
 }
@@ -134,19 +113,6 @@ body.dark {
   z-index: 50;
 }
 
-@media (max-width: 1000px) {
-  .main-content.shifted-right {
-    margin-left: 0;
-  }
-
-  .main-content.shifted-left {
-    margin-left: 0;
-  }
-
-  .ChatBoxFixed {
-    width: 100%;
-  }
-}
 
 .show-scrollbar {
   overflow: auto !important;
@@ -200,155 +166,102 @@ body.dark {
   border: none;
 }
 
-/* Sidebar CSS */
-.sidebar {
+/* Settings Dropdown */
+.settings-container {
   position: fixed;
-  left: 0;
-  top: 0;
-  width: 20%;
-  height: 100%;
-  background-color: #f4f4f4;
-  padding: 10px 0; /* Remove top padding */
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-  z-index: 1000;
-  transform: translateX(-100%);
-}
-
-.sidebar-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 900;
-  display: none;
-}
-
-/* 화면 너비가 769px 이상 1000px 이하일 때 */
-@media (max-width: 1000px) and (min-width: 769px) {
-  .sidebar {
-    width: 40%;
-  }
-}
-
-/* 화면 너비가 768px 이하일 때 */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 60%;
-    padding: 15px; /* 패딩을 줄여서 내용이 더 많이 보이도록 함 */
-  }
-  .sidebar .toggle-button {
-    right: -40px; /* 버튼의 위치도 약간 조정 */
-  }
-  .sidebar-menu a {
-    font-size: 12px; /* 폰트 크기를 줄여서 내용이 잘리지 않도록 함 */
-    margin-bottom: 10px; /* 아이템 간의 여백을 줄임 */
-  }
-}
-
-.sidebar.closed {
-  transform: translateX(-100%);
-}
-
-.sidebar.open {
-  transform: translateX(0);
-}
-
-.toggle-sidebar-button {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  width: 40px;
-  height: 40px;
+  top: 15px;
+  right: 20px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
   z-index: 1100;
 }
 
-.sidebar-menu {
-  margin-top: 5vh;
-  display: flex;
-  flex-direction: column;
-}
-
-@media (max-width: 768px) {
-  .sidebar-menu {
-    margin-top: 10vh;
-  }
-}
-
-.sidebar-menu p {
-  margin-bottom: 0;
-  color: #333;
-  cursor: pointer; /* 커서를 포인터로 변경하여 클릭 가능한 상태로 만듭니다. */
-  white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 설정 */
-  overflow: hidden; /* 텍스트가 사이드바를 넘어서지 않도록 설정 */
-  text-overflow: ellipsis; /* 넘친 텍스트를 생략 부호(...)로 표시 */
-}
-
-.sidebar-menu a {
-  margin-bottom: 15px;
-  color: #333;
-  text-decoration: none;
-}
-
-.sidebar-menu a:hover,
-.sidebar-menu p:hover {
-  color: #007bff;
-}
-
-.chat-date-group {
-  margin-bottom: 20px;
-}
-
-.chat-date {
-  font-size: 16px;
-  font-weight: bold;
-  color: #555;
-  margin-bottom: 10px;
-}
-
-.chat-room {
-  display: flex;
-  align-items: center;  
-  justify-content: space-between;
-  margin-bottom: 15px;
-}
-
-.last-message {
-  flex-grow: 1; 
-  color: #333;
+.settings-button {
+  background: none;
+  border: none;
   cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.no-chat-rooms {
-  text-align: center;
-  padding: 20px;
-  color: #888;
-}
-
-.no-chat-rooms p {
-  font-size: 16px;
-  font-weight: bold;
-  color: #555;
-  white-space: normal; /* 텍스트가 줄 바꿈되도록 설정 */
-}
-
-.delete-button {  
-  background: none; /* 배경을 없앱니다 */
-  border: none; /* 테두리를 없앱니다 */
-  cursor: pointer; /* 커서를 포인터로 변경합니다 */
-  color: #ff0000; /* 삭제 버튼의 색상을 빨간색으로 설정합니다 */
-  margin-left: 10px; /* 메시지와 삭제 버튼 사이의 간격 설정 */
   display: flex;
-  align-items: center; /* 버튼의 내용이 중앙에 오도록 설정 */
+  align-items: center;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  z-index: 1200;
+}
+
+.dropdown-menu button {
+  display: block;
+  width: 100%;
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.dropdown-menu button:hover {
+  background-color: #f0f0f0;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 15px;
+  left: 60px;
+  z-index: 1100;
+  transition: left 1.3s ease;
+}
+
+.header-container.shifted-header {
+  margin-left: 18%; /* Adjust this value based on your sidebar width */
+}
+
+.brand-text {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.login-container {
+  position: fixed;
+  top: 15px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  z-index: 1100;
+}
+
+.login-button {
+  background-color: grey;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.login-button:hover {
+  background-color: black;
+}
+
+.settings-container .save-button,
+.settings-container .cancel-button,
+.settings-container .reset-button {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 10px 15px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.settings-container .save-button:hover,
+.settings-container .cancel-button:hover,
+.settings-container .reset-button:hover {
+  background-color: #e0e0e0;
 }

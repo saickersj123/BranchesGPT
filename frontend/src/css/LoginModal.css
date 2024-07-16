@@ -1,0 +1,11 @@
+/* Define the blur effect for the background */
+.modal-open .main-section {
+    filter: blur(5px);
+    pointer-events: none;
+  }
+  
+  /* Ensure the modal itself is not blurred */
+  .modal-open .modal {
+    filter: none;
+    pointer-events: auto;
+  }

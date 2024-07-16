@@ -9,36 +9,7 @@
   padding: 10px 0; /* Remove top padding */
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
-  z-index: 1000;
-  transform: translateX(-100%);
-}
-
-body.dark .sidebar {
-  background-color: #333333;
-  color: #ffffff;
-}
-
-@media (max-width: 1000px) and (min-width: 769px) {
-  .sidebar {
-    width: 40%;
-  }
-}
-
-@media (max-width: 768px) {
-  .sidebar {
-    width: 60%;
-    padding: 15px 0; /* Remove top padding */
-  }
-  .sidebar .toggle-button {
-    right: -40px;
-  }
-  .sidebar-menu a {
-    font-size: 12px;
-    margin-bottom: 10px;
-  }
-}
-
-.sidebar.closed {
+  z-index: 1050;
   transform: translateX(-100%);
 }
 
@@ -46,70 +17,19 @@ body.dark .sidebar {
   transform: translateX(0);
 }
 
-.sidebar .toggle-button {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  width: 50px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: black;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  transition: left 0.3s ease;
-}
-
-body.dark .sidebar .toggle-button {
-  color: #ffffff;
-}
-
 .sidebar-menu {
-  margin-top: 60px;
+  margin-top: 25%;
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
 }
 
-@media (max-width: 768px) {
-  .sidebar-menu {
-    margin-top: 10vh;
-  }
-}
-
-.sidebar-menu p {
-  margin-bottom: 0px;
-  color: #333;
-  cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-body.dark .sidebar-menu p {
-  color: #ffffff;
-}
-
-.sidebar-menu a {
-  margin-bottom: 15px;
-  color: #333;
-  text-decoration: none;
-}
-
-body.dark .sidebar-menu a {
-  color: #ffffff;
-}
 
 .sidebar-menu a:hover,
 .sidebar-menu p:hover {
   color: #007bff;
 }
 
-body.dark .sidebar-menu a:hover,
-body.dark .sidebar-menu p:hover {
-  color: #00ffff;
-}
 
 .chat-date-group {
   margin-bottom: 20px;
@@ -120,10 +40,6 @@ body.dark .sidebar-menu p:hover {
   font-weight: bold;
   color: #555;
   margin-bottom: 10px;
-}
-
-body.dark .chat-date {
-  color: #dddddd;
 }
 
 .chat-room {
@@ -142,9 +58,6 @@ body.dark .chat-date {
   text-overflow: ellipsis;
 }
 
-body.dark .last-message {
-  color: #ffffff;
-}
 
 .no-chat-rooms {
   text-align: center;
@@ -159,46 +72,58 @@ body.dark .last-message {
   white-space: normal;
 }
 
-body.dark .no-chat-rooms p {
-  color: #dddddd;
-}
 
 .delete-button {
   background: none;
   border: none;
   cursor: pointer;
-  color: #ff0000;
   margin-left: 10px;
   display: flex;
   align-items: center;
 }
+.delete-button:hover {
+  background-color: transparent;
+  color: red;
+}
 
 .delete-all-button {
-  margin-bottom: 20px;
-  padding: 10px 15px;
-  background-color: #FF00FF;
-  color: white;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: none;
   border: none;
-  border-radius: 4px;
+  color: #000000;
   cursor: pointer;
-  font-size: 14px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .delete-all-button:hover {
-  background-color: #00FFFF;
+  background-color: transparent;
+  color: red;
 }
 
-body.dark .delete-all-button {
-  background-color: #555555;
-  color: #ffffff;
+.confirmation-tab {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  z-index: 1000;
+  text-align: center;
 }
 
-body.dark .delete-all-button:hover {
-  background-color: #777777;
+.confirmation-buttons {
+  margin-top: 20px;
+}
+
+.confirmation-buttons button {
+  margin: 0 10px;
+  padding: 10px 20px;
+  cursor: pointer;
 }
 
 .toggle-sidebar-button {
@@ -216,10 +141,6 @@ body.dark .delete-all-button:hover {
   z-index: 1100;
 }
 
-body.dark .toggle-sidebar-button {
-  color: #ffffff;
-}
-
 .sidebar-overlay {
   position: fixed;
   top: 0;
@@ -235,8 +156,50 @@ body.dark .toggle-sidebar-button {
   display: none;
 }
 
-.main-content {
-  position: relative;
-  width: 100%;
-  padding-left: 0; /* Ensure no padding */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 50px); /* Adjust based on header height */
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.new-conversation-button {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 5px;
+  cursor: pointer;
+  z-index: 1100;
+}
+.new-model-button {
+  position: fixed;
+  top: 9px;
+  right: 60px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 5px;
+  cursor: pointer;
+  z-index: 1100;
+}
+
+.room-title {
+  margin-left: 3%;
+  font-size: 16px;
 }

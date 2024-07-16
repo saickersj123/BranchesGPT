@@ -28,7 +28,7 @@
   transform: translateY(-50%);   /* 버튼을 컨테이너의 수직 중앙으로 이동 */
   border: none;                  /* 기본 버튼 테두리 제거 */
   background-color: transparent;     
-  color: aqua;
+  color: grey;
   display: flex;                 /* 버튼 내용물에 플렉스박스 레이아웃 적용 */
   align-items: center;           /* 버튼 내용물을 수직으로 가운데 정렬 */
   justify-content: center;       /* 버튼 내용물을 수평으로 가운데 정렬 */
@@ -45,7 +45,8 @@
 }
 
 .center-box {
-  padding: 2rem;
+  margin-top: 25%;
+  padding: 5%;
   background-color: #ffffff;
   border-radius: 1rem;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -71,58 +72,4 @@
 
 button .fa-pen {
   color: aqua;
-}
-
-/* 라이트 모드 스타일 */
-body.light .mypage-container {
-  background-color: #f8f9fa;
-  color: #212529;
-}
-
-body.light .password-input-container input {
-  background-color: #ffffff;
-  color: #212529;
-  border: 1px solid #ced4da;
-}
-
-body.light .name-section .form-control-plaintext,
-body.light .password-section .form-control-plaintext {
-  color: #212529;
-}
-
-body.light .center-box {
-  background-color: #ffffff;
-  color: #212529;
-}
-
-body.light .edit-section {
-  background-color: #ffffff;
-  color: #212529;
-}
-
-/* 다크 모드 스타일 */
-body.dark .mypage-container {
-  background-color: #2b2a2a;
-  color: #f8f9fa;
-}
-
-body.dark .password-input-container input {
-  background-color: #343a40;
-  color: #f8f9fa;
-  border: 1px solid #495057;
-}
-
-body.dark .name-section .form-control-plaintext,
-body.dark .password-section .form-control-plaintext {
-  color: #f8f9fa;
-}
-
-body.dark .center-box {
-  background-color: #343a40;
-  color: #f8f9fa;
-}
-
-body.dark .edit-section {
-  background-color: #495057;
-  color: #f8f9fa;
 }

@@ -1,7 +1,7 @@
 :root {
-  --my-chat-bubble-color: #DCF8C6;
+  --my-chat-bubble-color: gainsboro;
   --my-chat-text-color: #000000;
-  --other-chat-bubble-color: #F0F0F0;
+  --other-chat-bubble-color: #FFFFFF;
   --other-chat-text-color: #000000;
   --chat-bubble-bold: normal;
   --chat-bubble-shadow: none;
@@ -82,18 +82,9 @@
   margin-left: 5px;
 }
 
-/* 미디어 쿼리 추가 */
-@media (min-width: 900px) {
-  .bubble-container {
-    max-width: 70%; /* 큰 화면에서는 최대 너비를 70%로 설정 */
-  }
-}
-
 /* 새로운 채팅을 시작해 보세요! 알림 스타일 */
 .alert-info {
-  background-color: #cce5ff;
-  border-color: #b8daff;
-  color: #004085;
+  background-color: lightgrey;
 }
 
 .alert-info.text-center {

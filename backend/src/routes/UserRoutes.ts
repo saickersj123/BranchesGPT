@@ -6,13 +6,13 @@ import {
 	userLogin,
 	verifyUserStatus,
     logoutUser,
-	checkpassword,
-	changename,
-	changepassword,
-	deleteuser,
 	getChatboxes,
 	saveChatbox,
 	resetChatbox,
+	checkPassword,
+	changeName,
+	changePassword,
+	deleteUser,
 } from "../controllers/UserController.js";
 
 import {
@@ -36,13 +36,13 @@ userRoutes.get("/auth-status", verifyToken, verifyUserStatus); // check if user 
 
 userRoutes.get("/logout", verifyToken, logoutUser);
 
-userRoutes.post("/mypage", verifyToken, checkpassword);
+userRoutes.post("/mypage", verifyToken, checkPassword);
 
-userRoutes.put("/update-name", verifyToken, changename);
+userRoutes.put("/update-name", verifyToken, changeName);
 
-userRoutes.put("/update-password", verifyToken, changepassword);
+userRoutes.put("/update-password", verifyToken, changePassword);
 
-userRoutes.delete("/delete", verifyToken, deleteuser );
+userRoutes.delete("/delete", verifyToken, deleteUser);
 
 userRoutes.get("/cbox", verifyToken, getChatboxes);
 

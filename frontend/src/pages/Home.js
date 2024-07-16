@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { FaBars, FaCog } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FaBars } from 'react-icons/fa';
-
 import ChatBox from '../components/ChatBox';
 import ChatList from '../components/ChatList';
 import Sidebar from '../components/sidebar/Sidebar';
 import GridLayout from 'react-grid-layout';
-import Select from 'react-select';
+import {  logout, sendMessagetoModel,
+          } from '../api/axiosInstance';
+import { Dropdown } from 'react-bootstrap';
 import {  fetchMessages,
           startNewConversation, 
           startNewModelConversation, 
@@ -15,9 +16,9 @@ import {  fetchMessages,
           getChatboxes, 
           saveChatbox, 
           resetChatbox, 
-          getCustomModels, 
-          getModelConversation } from '../api/axiosInstance';
+           } from '../api/axiosInstance';
 import '../css/Home.css';
+import LoginModal from '../components/LoginModal';
 
 const MAX_Y_H_SUM = 9;
 
@@ -29,16 +30,10 @@ const Home = ({
   isLoggedIn,
   setIsLoggedIn,
   user,
-  isEditMode,
-  loadMessages,
   messages,
   setMessages,
-  toggleEditMode,
-  darkMode,
-  toggleDarkMode
+  showTime
 }) => {
-  const [models, setModels] = useState([]);
-  const [selectedModel, setSelectedModel] = useState(null);  // 선택된 모델 저장
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
@@ -46,15 +41,14 @@ const Home = ({
   const [username, setUsername] = useState('');
   const [currentLayout, setCurrentLayout] = useState(INITIAL_LAYOUT);
   const [selectedConversationId, setSelectedConversationId] = useState(null);
-  const [isNewChat, setIsNewChat] = useState(false);
+  const [isNewChat, setIsNewChat] = useState(true);
   const [conversations, setConversations] = useState([]);
-  const [showTime, setShowTime] = useState(true);
-  const [isPanelOpen, setIsPanelOpen] = useState(false);
   const originalLayoutRef = useRef(INITIAL_LAYOUT);
-
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const navigate = useNavigate();
   const { conversationId: urlConversationId } = useParams();
-
+  const [isLayoutEditing, setIsLayoutEditing] = useState(false);
+  
   useEffect(() => {
     if (user) {
       setUsername(user.name);
@@ -76,12 +70,7 @@ const Home = ({
     const loadConversationMessages = async () => {
       if (urlConversationId) {
         try {
-          let fetchedMessages;
-          if (selectedModel) {
-            fetchedMessages = await getModelConversation(selectedModel.value, urlConversationId);
-          } else {
-            fetchedMessages = await fetchMessages(urlConversationId);
-          }
+          let fetchedMessages = await fetchMessages(urlConversationId);
           setMessages(fetchedMessages);
           setSelectedConversationId(urlConversationId);
           setIsNewChat(false);
@@ -92,7 +81,7 @@ const Home = ({
     };
 
     loadConversationMessages();
-  }, [urlConversationId, setMessages, selectedModel]);
+  }, [urlConversationId, setMessages]);
 
   useEffect(() => {
     if (conversations.length > 0 && !urlConversationId) {
@@ -158,35 +147,58 @@ const Home = ({
     }
   }, [isLoggedIn]);
 
+const handleLoginClick = () => {
+    navigate('/login');
+  };
+
+  // Load the sidebar state from localStorage when the component mounts
+  useEffect(() => {
+    const initialSidebarState = loadSidebarState();
+    setIsSidebarOpen(initialSidebarState);
+  }, []);
+
+  const saveSidebarState = (isOpen) => {
+    localStorage.setItem('sidebarState', isOpen ? 'open' : 'closed');
+  };
+
+  const loadSidebarState = () => {
+    const state = localStorage.getItem('sidebarState');
+    return state === 'open';
+  };
+
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+    const newState = !isSidebarOpen;
+    setIsSidebarOpen(newState);
+    saveSidebarState(newState);
   };
 
   const closeSidebar = () => {
     setIsSidebarOpen(false);
+    saveSidebarState(false);
   };
 
-  // 모델 정보 불러오기
-  useEffect(() => {
-    const fetchAvailableModels = async () => {
-      try {
-        const modelsData = await getCustomModels(); // API 호출
-        setModels(modelsData.map(model => ({
-          value: model.modelId,
-          label: model.modelName
-        })));
-      } catch (error) {
-        console.error('Failed to fetch models:', error);
+  const handleProfileClick = async () => {
+      navigate("/mypage")
+  };
+
+  const handleLogoutClick = async () => {
+    try {
+      const logoutSuccess = await logout();
+      if (logoutSuccess) {
+        setIsLoggedIn(false);
+        navigate('/');
+      } else {
+        alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
       }
-    };
+    } catch (error) {
+      alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
+    } 
+  };
 
-    fetchAvailableModels();
-  }, []);
-
-  // 모델 선택 핸들러
-  const handleModelChange = (selectedOption) => {
-    setSelectedModel(selectedOption);
-    setIsNewChat(true); // 새로운 대화를 시작하도록 설정
+  const handleChatInputAttempt = () => {
+    if (!isLoggedIn) {
+      setShowLoginModal(true);
+    }
   };
 
   const handleNewMessage = useCallback((newMessage) => {
@@ -207,16 +219,10 @@ const Home = ({
 
   const startNewConversationWithMessage = async (messageContent) => {
     try {
-      let newConversationId;
-      if (selectedModel) {
-        const newConversationResponse = await startNewModelConversation(selectedModel.value, messageContent);
-        newConversationId = newConversationResponse.conversationId; // 새로운 대화 ID를 응답에서 추출
-      } else {
         const newConversationResponse = await startNewConversation(messageContent);
-        newConversationId = newConversationResponse.conversations[newConversationResponse.conversations.length - 1]._id;
-      }
-
-      if (!newConversationId) {
+        let newConversationId = newConversationResponse.conversations[newConversationResponse.conversations.length - 1]._id;
+      
+        if (!newConversationId) {
         console.warn('No new conversation started.');
         return;
       }
@@ -245,14 +251,14 @@ const Home = ({
     }
   };
 
-  const startNewModelConversationWithMessage = async (messageContent, modelName) => {
+  const startNewModelConversationWithMessage = async (messageContent, modelId) => {
     try {
-      if (!modelName) {
+      if (!modelId) {
         console.error('모델이 선택되지 않았습니다.');
         return;
       }
 
-      const newConversationResponse = await startNewModelConversation(modelName, messageContent);
+      const newConversationResponse = await startNewModelConversation(modelId, messageContent);
       const newConversationId = newConversationResponse.conversationId; // 새로운 대화 ID를 응답에서 추출
 
       if (!newConversationId) {
@@ -260,7 +266,7 @@ const Home = ({
         return;
       }
 
-      const response = await sendMessage(newConversationId, messageContent);
+      const response = await sendMessagetoModel(modelId, newConversationId, messageContent);
 
       if (response && response.length > 0) {
         const aiMessage = {
@@ -351,12 +357,13 @@ const Home = ({
     try {
       await resetChatbox();
       setCurrentLayout(INITIAL_LAYOUT);
+      originalLayoutRef.current = INITIAL_LAYOUT;
     } catch (error) {
       console.error('Chatbox layout 초기화 실패:', error);
     }
   };
 
-  const handleSaveClick = async () => {
+  const handleSaveLayout = async () => {
     try {
       const chatbox = {
         cbox_x: currentLayout[0].x,
@@ -366,16 +373,21 @@ const Home = ({
       };
       await saveChatbox(chatbox);
       originalLayoutRef.current = currentLayout;
-      toggleEditMode();
+      setIsLayoutEditing(false);
     } catch (error) {
       console.error('Chatbox layout 저장 실패:', error);
     }
   };
 
-  const handleCancelClick = () => {
+  const handleCancelLayout = () => {
     setCurrentLayout(originalLayoutRef.current);
-    toggleEditMode();
+    setIsLayoutEditing(false);
   };
+
+  const handleSettingsClick = () => {
+    setIsLayoutEditing(true);
+  };
+
 
   useEffect(() => {
     if (conversations.length === 0) {
@@ -395,29 +407,18 @@ const Home = ({
     }
   };
 
-  const handleOpenPanel = () => {
-    setIsPanelOpen(true);
-  };
-
-  const handleClosePanel = () => {
-    setIsPanelOpen(false);
-  };
-
-  useEffect(() => {
-    if (darkMode === 'dark') {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
-  }, [darkMode]);
-
   return (
-    <main className={`main-section ${darkMode === 'dark' ? 'dark' : ''}`}>
-      {isLoggedIn && (
-        <>
+    <main className={`main-section`}>
+      <div className={`header-container ${isSidebarOpen ? 'shifted-header' : ''}`}>
+        {isLoggedIn && (
           <button className="toggle-sidebar-button" onClick={toggleSidebar}>
             <FaBars size={20} />
           </button>
+        )}
+        <span className="brand-text">BranchGPT</span>
+      </div>
+      {isLoggedIn ? (
+        <>
           <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={toggleSidebar}></div>
           <Sidebar
             isOpen={isSidebarOpen}
@@ -431,11 +432,34 @@ const Home = ({
               setIsNewChat(true);
             }}
             onConversationDelete={handleConversationDelete}
-            darkMode={darkMode}
           />
+          {isLayoutEditing ? (
+            <div className="settings-container">
+              <button className="save-button" onClick={handleSaveLayout}>저장</button>
+              <button className="cancel-button" onClick={handleCancelLayout}>취소</button>
+              <button className="reset-button" onClick={handleResetLayout}>초기화</button>
+            </div>
+          ) : (
+            <div className="settings-container">
+              <Dropdown>
+                <Dropdown.Toggle variant="light" id="dropdown-basic">
+                  <FaCog size={20} />
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={handleProfileClick}>프로필</Dropdown.Item>
+                  <Dropdown.Item onClick={handleSettingsClick}>UI 설정</Dropdown.Item>
+                  <Dropdown.Item onClick={handleLogoutClick}>로그아웃</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
+          )}
         </>
+      ) : (
+        <div className="login-container">
+          <button className="login-button" onClick={handleLoginClick}>로그인</button>
+        </div>
       )}
-      <div className={`main-content ${isSidebarOpen ? 'shifted-right' : ''} ${isPanelOpen ? 'shifted-left' : ''}`}>
+      <div className={`main-content ${isSidebarOpen ? 'shifted-right' : ''}`}>
         <div className="grid-container">
           <GridLayout
             className="layout"
@@ -443,8 +467,8 @@ const Home = ({
             cols={12}
             rowHeight={(viewportHeight - 56) / 9}
             width={viewportWidth}
-            isResizable={isEditMode}
-            isDraggable={isEditMode}
+            isResizable={isLayoutEditing}
+            isDraggable={isLayoutEditing}
             onLayoutChange={handleLayoutChange}
             onResizeStop={handleResizeStop}
             onDragStop={handleDragStop}
@@ -456,29 +480,20 @@ const Home = ({
           >
             <div
               key="chatContainer"
-              className={`grid-item chat-container ${isEditMode ? 'edit-mode' : ''} ${!isEditMode ? 'no-border' : ''}`}
-              data-grid={{ ...currentLayout.find(item => item.i === 'chatContainer'), resizeHandles: isEditMode ? ['s', 'e', 'w', 'n'] : [] }}
+              className={`grid-item chat-container ${isLayoutEditing ? 'edit-mode' : ''} ${!isLayoutEditing ? 'no-border' : ''}`}
+              data-grid={{ ...currentLayout.find(item => item.i === 'chatContainer'), resizeHandles: isLayoutEditing ? ['s', 'e', 'w', 'n'] : [] }}
             >
               <div className="chat-list-container" style={{ flexGrow: 1 }}>
                 {isNewChat ? (
-                  <>
-                    <div className="alert alert-info text-center">
-                      새로운 채팅을 시작해 보세요!
-                    </div>
-                    <Select
-                      options={models}
-                      value={selectedModel}
-                      onChange={handleModelChange}
-                      placeholder="모델 선택"
-                    />
-                  </>
+                  <div className="alert alert-info text-center">
+                    새로운 채팅을 시작해 보세요!
+                  </div>
                 ) : (
                   <ChatList
                     messages={messages}
                     username={username}
                     conversationId={selectedConversationId}
-                    showTime={showTime}
-                    darkMode={darkMode}
+                    showTime={true}
                   />
                 )}
               </div>
@@ -486,21 +501,26 @@ const Home = ({
                 <ChatBox
                   onNewMessage={handleNewMessage}
                   onUpdateMessage={handleUpdateMessage}
-                  isEditMode={isEditMode}
+                  isLayoutEditing={setIsLayoutEditing}
                   conversationId={selectedConversationId}
                   isNewChat={isNewChat}
                   startNewConversationWithMessage={startNewConversationWithMessage}
                   startNewModelConversationWithMessage={startNewModelConversationWithMessage}
-                  selectedModel={selectedModel}
-                  darkMode={darkMode}
+                  onChatInputAttempt={handleChatInputAttempt}
+                  isLoggedIn={isLoggedIn}
                 />
               </div>
             </div>
           </GridLayout>
         </div>
       </div>
+      <LoginModal
+        show={showLoginModal}
+        handleClose={() => setShowLoginModal(false)}
+        handleLogin={handleLoginClick}
+      />
     </main>
-  );
+  );  
 };
 
 export default Home;

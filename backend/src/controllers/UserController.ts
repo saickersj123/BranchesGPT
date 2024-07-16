@@ -35,7 +35,6 @@ export const userSignUp = async (
 			});
 
 		const hashedPassword = await hash(password, 10);
-
 		const user = new User({ name, email, password: hashedPassword });
 		await user.save();
 
@@ -209,7 +208,7 @@ export const logoutUser = async (
 	}
 };
 
-export const changename = async (
+export const changeName = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -244,7 +243,7 @@ export const changename = async (
 	}
 };
 
-export const changepassword = async (
+export const changePassword = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -280,7 +279,7 @@ export const changepassword = async (
 	}
 };
 
-export const checkpassword = async (
+export const checkPassword = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -318,7 +317,7 @@ export const checkpassword = async (
 	}
 };
 
-export const deleteuser = async (
+export const deleteUser = async (
 	req: Request,
 	res: Response,
 	next: NextFunction

@@ -1,29 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './css/App.css';
 import Login from './pages/Login';
 import MyPage from './pages/MyPage';
 import Home from './pages/Home';
-import Pretrain from './pages/Pretrain';
-import {  checkAuthStatus,
-          fetchMessages, 
-          getModelConversation, } from './api/axiosInstance';
+import FineTune from './pages/FineTune';
+import { checkAuthStatus, fetchMessages, getModelConversation,} from './api/axiosInstance';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [isLayoutEditing, setIsLayoutEditing] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [mode, setMode] = useState(() => {
-    const savedMode = localStorage.getItem('mode');
-    if (savedMode) {
-      return savedMode;
-    } else {
-      localStorage.setItem('mode', 'system');
-      return 'system';
-    }
-  });
-
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -41,8 +29,8 @@ const App = () => {
     checkAuth();
   }, []);
 
-  const toggleEditMode = () => {
-    setIsEditMode((prevEditMode) => !prevEditMode);
+  const toggleLayoutEditing = () => {
+    setIsLayoutEditing((prevLayoutEditing) => !prevLayoutEditing);
   };
 
   const loadMessages = useCallback(async (conversationId) => {
@@ -54,7 +42,7 @@ const App = () => {
     }
   }, []);
 
-  const loadModelMessages = useCallback(async (modelId, conversationId) => {
+  const loadModelMessages = async (modelId, conversationId) => {
     try {
       const data = await getModelConversation(modelId, conversationId);
       console.log(data);
@@ -62,12 +50,8 @@ const App = () => {
     } catch (error) {
       console.error('Error loading messages:', error);
     }
-  }, []);
-  
-  const startNewChat = () => {
-    
   };
-
+  
   return (
     <Router>
       <div>
@@ -76,7 +60,7 @@ const App = () => {
           <Route
             path="*"
             element={
-              <div  className={`app-container`}>
+              <div className={`app-container`}>
                 <Routes>
                   <Route
                     path="/"
@@ -85,14 +69,10 @@ const App = () => {
                         isLoggedIn={isLoggedIn}
                         setIsLoggedIn={setIsLoggedIn}
                         user={user}
-                        isEditMode={isEditMode}
-                        loadMessages={loadMessages}
-                        loadModelMessages={loadModelMessages}
+                        isLayoutEditing={setIsLayoutEditing}
                         messages={messages}
                         setMessages={setMessages}
-                        toggleEditMode={toggleEditMode}
-                        startNewChat={startNewChat}
-
+                        toggleLayoutEditing={toggleLayoutEditing}
                       />
                     }
                   />
@@ -103,13 +83,12 @@ const App = () => {
                         isLoggedIn={isLoggedIn}
                         setIsLoggedIn={setIsLoggedIn}
                         user={user}
-                        isEditMode={isEditMode}
+                        isLayoutEditing={setIsLayoutEditing}
                         loadMessages={loadMessages}
                         loadModelMessages={loadModelMessages}
                         messages={messages}
                         setMessages={setMessages}
-                        toggleEditMode={toggleEditMode}
-                        startNewChat={startNewChat}
+                        toggleLayoutEditing={toggleLayoutEditing}
                       />
                     }
                   />
@@ -120,20 +99,25 @@ const App = () => {
                         isLoggedIn={isLoggedIn}
                         setIsLoggedIn={setIsLoggedIn}
                         user={user}
-                        isEditMode={isEditMode}
+                        isLayoutEditing={isLayoutEditing}
                         loadMessages={loadMessages}
                         loadModelMessages={loadModelMessages}
                         messages={messages}
                         setMessages={setMessages}
-                        toggleEditMode={toggleEditMode}
-                        startNewChat={startNewChat}
+                        toggleLayoutEditing={toggleLayoutEditing}
                       />
                     }
                   />
                   <Route
-                    path="/mypage"
+                    path="/mypage" element={
+                      <MyPage 
+                        user={user} 
+                        setUser={setUser} 
+                        setIsLoggedIn={setIsLoggedIn}
+                      />
+                    }
                   />  
-                  <Route path="/pretrain" />
+                  <Route path="/g/new" element={<FineTune />} />
                 </Routes>
               </div>
             }

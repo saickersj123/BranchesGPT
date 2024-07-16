@@ -10,7 +10,7 @@ import { Container, Row, Col, Form, Button, Alert, ListGroup } from 'react-boots
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/Pretrain.css';
 
-const Pretrain = () => {
+const FineTune = () => {
   const [modelName, setModelName] = useState('');
   const [systemContent, setSystemContent] = useState('You are a happy assistant that puts a positive spin on everything.');
   const [userContent, setUserContent] = useState('');
@@ -243,4 +243,4 @@ const Pretrain = () => {
   );
 };
 
-export default Pretrain;
+export default FineTune;

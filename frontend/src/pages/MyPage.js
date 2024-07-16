@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Button, Form, Container, Row, Col, Card } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faPen } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faPen, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/MyPage.css';
 import { updatename, updatePassword, mypage } from '../api/axiosInstance';
 
-const MyPage = ({ darkMode }) => { 
+const MyPage = () => { 
   const [password, setPassword] = useState('');
   const [isPasswordVerified, setIsPasswordVerified] = useState(false);
   const [name, setname] = useState('');
@@ -14,6 +15,7 @@ const MyPage = ({ darkMode }) => {
   const [newPassword, setNewPassword] = useState('');
   const [isEditingname, setIsEditingname] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
@@ -91,9 +93,19 @@ const MyPage = ({ darkMode }) => {
     setNewPassword('');
   };
 
+  const handleBackClick = () => {
+    navigate(-1); // Navigate to the previous page
+  };
 
   return (
-    <Container className={`mypage-container ${darkMode ? 'dark' : ''}`} style={{ marginTop: '100px' }}>
+    <Container className={`mypage-container`} style={{ marginTop: '100px' }}>
+      <Button
+        variant="secondary"
+        style={{ position: 'absolute', top: '30px', right: '30px' }}
+        onClick={handleBackClick}
+      >
+        <FontAwesomeIcon icon={faArrowLeft} /> 돌아가기
+      </Button>
       <Row className="justify-content-center">
         <Col xs={12} md={6}>
           <Card className="center-box">
@@ -109,7 +121,7 @@ const MyPage = ({ darkMode }) => {
                         value={password}
                         onChange={handlePasswordChange}
                       />
-                      <Button type="submit" variant="primary">
+                      <Button type="submit" variant="secondary">
                         <FontAwesomeIcon icon={faArrowRight} />
                       </Button>
                     </Form.Group>
@@ -117,10 +129,10 @@ const MyPage = ({ darkMode }) => {
                 </>
               ) : (
                 <>
-                  <Card.Title>마이페이지</Card.Title>
+                  <Card.Title>프로필 수정</Card.Title>
                   <Form>
                     <Form.Group as={Row} className="name-section">
-                      <Form.Label column sm={4}>현재 이름 :</Form.Label>
+                      <Form.Label column sm={4}>사용자명 :</Form.Label>
                       <Col sm={6}>
                         <Form.Control plaintext readOnly value={name} />
                       </Col>
@@ -133,7 +145,7 @@ const MyPage = ({ darkMode }) => {
                     {isEditingname && (
                       <div className="edit-section">
                         <Form.Group>
-                          <Form.Label>새 이름 :</Form.Label>
+                          <Form.Label>새 사용자명 :</Form.Label>
                           <Form.Control
                             type="text"
                             value={newname}
@@ -145,7 +157,7 @@ const MyPage = ({ darkMode }) => {
                       </div>
                     )}
                     <Form.Group as={Row} className="password-section mt-4">
-                      <Form.Label column sm={4}>비 밀 번 호 :</Form.Label>
+                      <Form.Label column sm={4}>비밀번호 :</Form.Label>
                       <Col sm={6}>
                         <Form.Control plaintext readOnly value="********" />
                       </Col>
