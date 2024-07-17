@@ -247,11 +247,11 @@ export const getCustomModels = async () => {
 };
 
 // 모델로 새로운 대화 시작 함수
-export const startNewModelConversation = async (modelId, messageContent) => {
+export const startNewModelConversation = async (modelId) => {
   try {
-    const response = await axiosInstance.post(`/chat/g/${modelId}/new`, { message: messageContent });
+    const response = await axiosInstance.post(`/chat/g/${modelId}/new`);
     console.log(response);
-    return response.data;
+    return response.data.conversation.id;
   } catch (error) {
     throw error;
   }

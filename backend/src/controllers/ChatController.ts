@@ -374,7 +374,8 @@ export const startModelConversation = async (
 		model.conversations.push({ chats: [] });
 		await user.save();
 
-		return res.status(200).json({ message: "New conversation started", conversations: model.conversations });
+		return res.status(200).json({	message: "New conversation started",
+										conversations: model.conversations[model.conversations.length - 1] });
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({ message: "ERROR", cause: err.message });

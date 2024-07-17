@@ -86,12 +86,10 @@ chatRoutes.delete(
 );
 
 //new model conversation
-chatRoutes.post(
+chatRoutes.get(
     "/g/:modelId/new",
-	validate(chatCompletionValidator),
     verifyToken,
 	startModelConversation,
-    generateModelChatCompletion,
 );
 
 //resume conversation with custom model
