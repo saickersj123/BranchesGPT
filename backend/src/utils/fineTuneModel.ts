@@ -1,4 +1,4 @@
-import { configureOpenAI, Model } from "../config/openai.js";
+import { configureOpenAI, ModelName } from "../config/openai.js";
 import OpenAI from "openai";
 import fs from "fs";
 import path from "path";
@@ -11,7 +11,7 @@ export const fineTuneModel = async (trainingFileId: string) => {
     try{
     const response = await openai.fineTuning.jobs.create({
         training_file: trainingFileId,
-        model: Model,
+        model: ModelName,
     });
     return response;
     } catch (error) {

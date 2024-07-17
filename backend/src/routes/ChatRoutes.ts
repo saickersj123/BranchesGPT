@@ -10,12 +10,7 @@ import { deleteConversation,
 		 createCustomModel,
 		 deleteCustomModel,
 		 getCustomModels,
-		 generateModelChatCompletion,
-		 startModelConversation,
-		 getModel,
-		 getModelConversation,
-		 getModelConversations,
-		 deleteModelConversations,
+		 getModelbyId,
 		 } from "../controllers/ChatController.js";
  
 const chatRoutes = express.Router();
@@ -94,37 +89,6 @@ chatRoutes.delete(
     deleteCustomModel,
 );
 
-//new model conversation
-chatRoutes.get(
-    "/g/:modelId/new",
-    verifyToken,
-	startModelConversation,
-);
-
-//new model conversation with msg
-chatRoutes.post(
-    "/g/:modelId/new",
-    verifyToken,
-	startModelConversation,
-	generateModelChatCompletion
-);
-
-
-//resume conversation with custom model
-chatRoutes.post(
-	"/g/:modelId/:conversationId",
-	validate(chatCompletionValidator),
-	verifyToken,
-	generateModelChatCompletion,
-);
-
-//get a model converstation
-chatRoutes.get(
-    "/g/:modelId/:conversationId",
-    verifyToken,
-	getModelConversation,
-);
-
 //get all custom models
 chatRoutes.get(
     "/all-g",
@@ -136,21 +100,8 @@ chatRoutes.get(
 chatRoutes.get(
     "/g/:modelId/",
     verifyToken,
-	getModel,
+	getModelbyId,
 );
 
-//get all model conversations
-chatRoutes.get(
-    "/g/:modelId/all-c",
-    verifyToken,
-	getModelConversations,
-);
-
-//delete all model conversations
-chatRoutes.delete(
-    "/g/:modelId/all-c",
-    verifyToken,
-    deleteModelConversations,
-)
 
 export default chatRoutes;

@@ -9,12 +9,12 @@ import Sidebar from '../components/sidebar/Sidebar';
 import GridLayout from 'react-grid-layout';
 import { logout } from '../api/axiosInstance';
 import { Dropdown } from 'react-bootstrap';
-import { fetchMessages, fetchConversations, getChatboxes, saveChatbox, resetChatbox, fetchModelConversations, getModelConversation } from '../api/axiosInstance';
+import { fetchMessages, fetchConversations, getChatboxes, saveChatbox, resetChatbox } from '../api/axiosInstance';
 import '../css/Home.css';
 import LoginModal from '../components/LoginModal';
 
 const MAX_Y_H_SUM = 9;
-
+const DEFAULT_MODEL = "gpt-3.5-turbo";
 const INITIAL_LAYOUT = [
   { i: 'chatContainer', x: 2, y: 0.5, w: 8, h: 8, minH: 4, minW: 3, maxW: 12, maxH: 9 }
 ];
@@ -25,10 +25,6 @@ const Home = ({
   user,
   messages,
   setMessages,
-  showTime,
-  toggleLayoutEditing,
-  loadModelMessages,
-  loadModelConversations,
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
@@ -39,12 +35,12 @@ const Home = ({
   const [selectedConversationId, setSelectedConversationId] = useState(null);
   const [isNewChat, setIsNewChat] = useState(true);
   const [conversations, setConversations] = useState([]);
+  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);  // Add state for selected model
   const originalLayoutRef = useRef(INITIAL_LAYOUT);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const navigate = useNavigate();
   const { conversationId: urlConversationId } = useParams();
   const [isLayoutEditing, setIsLayoutEditing] = useState(false);
-  const [selectedModelId, setSelectedModelId] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -90,7 +86,7 @@ const Home = ({
           setIsNewChat(true);
         } else if (fetchedConversations.length > 0 && !urlConversationId) {
           setSelectedConversationId(fetchedConversations[0]._id);
-          navigate(`/chat/${fetchedConversations[fetchedConversations.length-1]._id}`);
+          navigate(`/chat/${fetchedConversations[0]._id}`);
         }
       } catch (error) {
         console.error('Failed to fetch conversations:', error);
@@ -214,24 +210,8 @@ const Home = ({
     }
   };
 
-  const handleModelConversationSelect = async (modelId) => {
-    setSelectedModelId(modelId);
-    try {
-      const fetchedConversations = await fetchModelConversations(modelId);
-      setConversations(fetchedConversations);
-      if (fetchedConversations.length > 0) {
-        const mostRecentConversation = fetchedConversations[fetchedConversations.length-1].id;
-        await loadModelMessages(modelId, mostRecentConversation);
-        setSelectedConversationId(mostRecentConversation);
-        navigate(`/chat/${mostRecentConversation}`);
-      } else {
-        setMessages([]);
-        setSelectedConversationId(null);
-        setIsNewChat(true); // Allow starting a new conversation
-      }
-    } catch (error) {
-      console.error('Failed to load model conversations:', error);
-    }
+  const handleModelSelect = (modelId) => {
+    setSelectedModel(modelId);  // Set the selected model
   };
 
   const updateConversations = async () => {
@@ -313,7 +293,7 @@ const Home = ({
         cbox_x: currentLayout[0].x,
         cbox_y: currentLayout[0].y,
         cbox_w: currentLayout[0].w,
-        cbox_h: currentLayout[0].h
+        cbox_h: currentLayout[0].h,
       };
       await saveChatbox(chatbox);
       originalLayoutRef.current = currentLayout;
@@ -369,11 +349,7 @@ const Home = ({
             <FaBars size={20} />
           </button>
         )}
-        <span className="brand-text">
-          <button className="home-button" onClick={() => navigate('/')}>
-          BranchGPT
-          </button>
-          </span>
+        <span className="brand-text">BranchGPT</span>
       </div>
       {isLoggedIn ? (
         <>
@@ -387,7 +363,7 @@ const Home = ({
             onConversationSelect={handleConversationSelect}
             onNewConversation={handleNewConversation}
             onConversationDelete={handleConversationDelete}
-            onModelConversationSelect={handleModelConversationSelect} // New handler for model conversations
+            onModelSelect={handleModelSelect}  // Pass the handleModelSelect function
           />
           {isLayoutEditing ? (
             <div className="settings-container">
@@ -410,7 +386,7 @@ const Home = ({
             </div>
           )}
         </>
-      ) : ( 
+      ) : (
         <div className="login-container">
           <button className="login-button" onClick={handleLoginClick}>로그인</button>
         </div>
@@ -462,8 +438,7 @@ const Home = ({
                   isNewChat={isNewChat}
                   onChatInputAttempt={handleChatInputAttempt}
                   isLoggedIn={isLoggedIn}
-                  selectedModel={selectedModelId} // Pass the selected model ID to ChatBox
-                  onNewConversation={handleNewConversation} // Pass the handler for new conversation
+                  selectedModel={selectedModel}  // Pass the selected model to ChatBox
                 />
               </div>
             </div>
@@ -476,7 +451,7 @@ const Home = ({
         handleLogin={handleLoginClick}
       />
     </main>
-  );  
+  );
 };
 
 export default Home;

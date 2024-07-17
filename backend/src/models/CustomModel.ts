@@ -14,7 +14,6 @@ const modelSchema = new mongoose.Schema({
         type: Schema.Types.Mixed,
         required: true,
     },
-    conversations: [conversationSchema],
     createdAt: {
         type: Date,
         default: Date.now,

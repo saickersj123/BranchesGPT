@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { FaTrashAlt, FaPlus, FaRobot, FaMinus, FaList } from 'react-icons/fa';
 import { Modal, Button } from 'react-bootstrap';
-import { startNewModelConversation, deleteConversation, deleteAllChats, startNewConversation, getCustomModels, createModel, deleteModel, fetchModelConversations } from '../../api/axiosInstance';
+import { deleteConversation, deleteAllChats, startNewConversation, getCustomModels, createModel, deleteModel } from '../../api/axiosInstance';
 import '../../css/Sidebar.css';
 
 const Sidebar = ({ 
@@ -13,7 +13,8 @@ const Sidebar = ({
   onNewModel, 
   onNewConversation, 
   onConversationSelect,
-  onModelConversationSelect
+  onModelConversationSelect,
+  onModelSelect // New prop to handle model selection
 }) => {
   const sidebarRef = useRef(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -137,13 +138,11 @@ const Sidebar = ({
     }
   };
 
-  const handleModelConversationSelect = async (modelId) => {
-    try {
-      setShowModelModal(false);
-      onModelConversationSelect(modelId); // Pass the selected model ID to Home
-    } catch (error) {
-      console.error('Failed to load model conversations:', error);
-    }
+
+
+  const handleModelSelect = (modelId) => {
+    onModelSelect(modelId); // Pass the selected model ID to the parent component
+    setShowModelModal(false);
   };
 
   const handleTrainModelClick = () => {
@@ -329,7 +328,7 @@ const Sidebar = ({
           <ul className="model-list">
             {models.map((model, index) => (
               <div key={index} className="model-item">
-                <div className="model-item-content" onClick={() => handleModelConversationSelect(model.modelId)}>
+                <div className="model-item-content" onClick={() => handleModelSelect(model.modelId)}>
                   <div className="model-name">{model.modelName}</div>
                   <div className="model-date">{formatDate(model.createdAt)}</div>
                   <div className="model-id">{model.modelId}</div>

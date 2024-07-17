@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import User from "../models/User.js";
-import { configureOpenAI, Model } from "../config/openai.js";
+import { configureOpenAI, ModelName } from "../config/openai.js";
 import OpenAI from "openai";
 import { saveModel, loadModel, deleteModel } from "../utils/modelStorage.js";
 import { fineTuneModel, saveTrainingDataToFile, uploadTrainingData } from "../utils/fineTuneModel.js"
@@ -37,7 +37,7 @@ export const generateChatCompletion = async (
 		// make request to openAi
 		// get latest response
 		const chatResponse = await openai.chat.completions.create({
-			model: Model,
+			model: ModelName,
 			messages: chats as OpenAI.Chat.ChatCompletionMessageParam[],
 		});
 
@@ -242,52 +242,6 @@ export const deleteCustomModel = async (
 	}
   };
 
-export const generateModelChatCompletion = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-  ) => {
-	try {
-	  	const userId = res.locals.jwtData.id;
-	  	const { message } = req.body;
-		const { modelId } = req.params;
-		
-		const user = await User.findById(userId);
-	  	//Load custom model
-	  	const model = await loadModel(userId, modelId);
-  
-		// Prepare messages for OpenAI API
-		const conversation = model.conversations[model.conversations.length - 1];
-	  	const chats = conversation.chats.map(({ role, content }) => ({
-			role,
-			content,
-		}));
-	  	chats.push({ content: message, role: "user" });
-  
-	  	conversation.chats.push({ content: message, role: "user" });
-  
-	  	//configure OpenAI
-	  	const configuration = configureOpenAI();
-	  	const openai = new OpenAI(configuration);
-  
-	  	//Chat complietion from custom model
-	  	const response = await openai.chat.completions.create({
-			model: model.modelData.id,
-			messages: chats as OpenAI.Chat.ChatCompletionMessageParam[],
-			max_tokens: 150,
-	  	});
-  
-		// push latest response to db
-	  	conversation.chats.push(response.choices[0].message);
-	  	await user.save();
-  
-	  	return res.status(200).json({ chats: conversation.chats });
-	} catch (error) {
-	  	console.log(error);
-	  	return res.status(500).json({ message: error.message });
-	}
-  };
-
 export const getCustomModels = async (
 	req: Request,
 	res: Response,
@@ -314,92 +268,7 @@ export const getCustomModels = async (
 	}
 };
 
-export const getModelConversation = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	try {
-		const userId = res.locals.jwtData.id;
-		const { conversationId, modelId } = req.params;
-		const model = await loadModel(userId, modelId);
-
-		const conversation = model.conversations.id(conversationId);
-		if (!conversation) {
-			return res.status(404).json({
-				message: "ERROR",
-				cause: "Conversation not found",
-			});
-		}
-
-		return res.status(200).json({ message: "OK", conversation });
-	} catch (err) {
-		console.log(err);
-		return res.status(500).json({ message: "ERROR", cause: err.message });
-	}
-};
-
-export const deleteModelConversation = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	try {
-		const userId = res.locals.jwtData.id;
-		const user = await User.findById(userId);
-		const { modelId, conversationId } = req.params;
-		const model = await loadModel(userId, modelId);
-
-		const conversation = model.conversations.id(conversationId);
-		if (!conversation) {
-			return res.status(404).json({
-				message: "ERROR",
-				cause: "Conversation not found",
-			});
-		}
-
-		// Remove the conversation
-		model.conversations.pull(conversationId);
-		await user.save();
-
-		return res.status(200).json({ message: "OK", conversations: model.conversations });
-	} catch (err) {
-		console.log(err);
-		return res.status(500).json({ message: "ERROR", cause: err.message });
-	}
-};
-
-export const startModelConversation = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	try {
-		const userId = res.locals.jwtData.id;
-		const user = await User.findById(userId);
-
-		const { modelId } = req.params;
-		const model = await loadModel(userId, modelId);
-		// Validate if the last conversation is empty
-		const lastConversation = model.conversations[model.conversations.length - 1];
-		if (lastConversation && lastConversation.chats.length === 0) {
-			return res.status(400).json({
-				message: "ERROR",
-				cause: "The last conversation is still empty. Please add messages before creating a new conversation.",
-			});
-		}
-		model.conversations.push({ chats: [] });
-		await user.save();
-
-		return res.status(200).json({	message: "New conversation started",
-										conversation: model.conversations[model.conversations.length - 1] });
-	} catch (err) {
-		console.log(err);
-		return res.status(500).json({ message: "ERROR", cause: err.message });
-	}
-};
-
-export const getModel = async (
+export const getModelbyId = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -413,47 +282,5 @@ export const getModel = async (
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({ message: "ERROR", cause: err.message });
-	}
-};
-
-export const getModelConversations = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	try {
-		const { modelId } = req.params;
-		const userId = res.locals.jwtData.id; // get variable stored in previous middleware
-        const model = await loadModel(userId, modelId);
-		const conversations = model.conversations;
-		if(!conversations){
-			return res.status(404).json({ message: "ERROR", cause: "Conversations not found" });
-		}
-
-		return res.status(200).json({ message: "OK", conversations });
-	} catch (err) {
-		console.log(err);
-		return res.status(200).json({ message: "ERROR", cause: err.message });
-	}
-};
-
-export const deleteModelConversations = async (
-	req: Request,
-	res: Response,
-	next: NextFunction
-) => {
-	try {
-		const { modelId } = req.params;
-		const userId = res.locals.jwtData.id; // get variable stored in previous middleware
-		const user = await User.findById(userId);
-		const model = await loadModel(userId, modelId);
-
-        //@ts-ignore
-        model.conversations = [];
-        await user.save()
-		return res.status(200).json({ message: "OK", conversations: model.conversations });
-	} catch (err) {
-		console.log(err);
-		return res.status(200).json({ message: "ERROR", cause: err.message });
 	}
 };

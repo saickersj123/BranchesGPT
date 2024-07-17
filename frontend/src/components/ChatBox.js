@@ -1,23 +1,24 @@
+// ChatBox.js
+
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import '../css/ChatBox.css';
-import {  sendMessage,
-          sendMessagetoModel,
-          startNewConversation,
-          startNewModelConversation  } from '../api/axiosInstance';
+import { useNavigate } from 'react-router-dom';
+import { sendMessage, startNewConversation } from '../api/axiosInstance';
 
-const ChatBox = ({  conversationId,
-                    onNewMessage, 
-                    onUpdateMessage, 
-                    isEditMode, 
-                    isNewChat, 
-                    startNewConversationWithMessage, 
-                    startNewModelConversationWithMessage, 
-                    selectedModel,
-                    onChatInputAttempt,
-                    isLoggedIn,
-                    onNewConversation }) => {
+const ChatBox = ({
+  conversationId,
+  onNewMessage,
+  onUpdateMessage,
+  isEditMode,
+  isNewChat,
+  selectedModel,  // Added prop
+  onChatInputAttempt,
+  isLoggedIn,
+  onNewConversation,
+}) => {
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleMessageChange = (event) => {
     if (!isLoggedIn) {
@@ -27,57 +28,40 @@ const ChatBox = ({  conversationId,
     }
   };
 
-  // ChatBox.js
+  const sendMessageToServer = async () => {
+    if (message.trim() === '') return;
 
-const sendMessageToServer = async () => {
-  if (message.trim() === '') return;
+    const newMessage = {
+      content: message,
+      role: 'user',
+      createdAt: new Date().toISOString(),
+    };
 
-  const newMessage = {
-    content: message,
-    role: 'user',
-    createdAt: new Date().toISOString()
-  };
+    onNewMessage(newMessage);
 
-  onNewMessage(newMessage);
-
-  try {
-    if (isNewChat) {
-      if (selectedModel) {
-        console.log('Starting new model conversation with model:', selectedModel);
-        const newConversationId = await startNewModelConversation(selectedModel);
+    try {
+      if (isNewChat) {
+        let newConversationId;
+        newConversationId = await startNewConversation();
         onNewConversation(newConversationId);
-        await sendMessagetoModel(selectedModel, newConversationId, message);
+        navigate(`/chat/${newConversationId}`);
+        await sendMessage(newConversationId, message, selectedModel);
       } else {
-        await startNewConversationWithMessage(message);
-      }
-    } else {
-      if (selectedModel) {
-        const response = await sendMessagetoModel(selectedModel, conversationId, message);
+        const response = await sendMessage(conversationId, message, selectedModel);
         if (response && response.length > 0) {
           const aiMessage = {
             content: response[response.length - 1].content,
             role: 'assistant',
-            createdAt: new Date().toISOString()
-          };
-          onUpdateMessage(aiMessage);
-        }
-      } else {
-        const response = await sendMessage(conversationId, message);
-        if (response && response.length > 0) {
-          const aiMessage = {
-            content: response[response.length - 1].content,
-            role: 'assistant',
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
           };
           onUpdateMessage(aiMessage);
         }
       }
+      setMessage('');
+    } catch (error) {
+      console.error('Error sending message:', error);
     }
-    setMessage('');
-  } catch (error) {
-    console.error('Error sending message:', error);
-  }
-};
+  };
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
