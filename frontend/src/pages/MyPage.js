@@ -94,7 +94,7 @@ const MyPage = () => {
   };
 
   const handleBackClick = () => {
-    navigate(-1); // Navigate to the previous page
+    navigate('/'); // Navigate to the previous page
   };
 
   return (

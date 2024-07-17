@@ -1,3 +1,5 @@
+// Home.js
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FaBars, FaCog } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -5,14 +7,14 @@ import ChatBox from '../components/ChatBox';
 import ChatList from '../components/ChatList';
 import Sidebar from '../components/sidebar/Sidebar';
 import GridLayout from 'react-grid-layout';
-import { logout, sendMessagetoModel } from '../api/axiosInstance';
+import { logout } from '../api/axiosInstance';
 import { Dropdown } from 'react-bootstrap';
-import { fetchMessages, startNewModelConversation, fetchConversations, getChatboxes, saveChatbox, resetChatbox } from '../api/axiosInstance';
+import { fetchMessages, fetchConversations, getChatboxes, saveChatbox, resetChatbox } from '../api/axiosInstance';
 import '../css/Home.css';
 import LoginModal from '../components/LoginModal';
 
 const MAX_Y_H_SUM = 9;
-
+const DEFAULT_MODEL = "gpt-3.5-turbo";
 const INITIAL_LAYOUT = [
   { i: 'chatContainer', x: 2, y: 0.5, w: 8, h: 8, minH: 4, minW: 3, maxW: 12, maxH: 9 }
 ];
@@ -23,9 +25,6 @@ const Home = ({
   user,
   messages,
   setMessages,
-  showTime,
-  toggleLayoutEditing,
-  startNewConversationWithMessage
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
@@ -36,6 +35,7 @@ const Home = ({
   const [selectedConversationId, setSelectedConversationId] = useState(null);
   const [isNewChat, setIsNewChat] = useState(true);
   const [conversations, setConversations] = useState([]);
+  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);  // Add state for selected model
   const originalLayoutRef = useRef(INITIAL_LAYOUT);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const navigate = useNavigate();
@@ -138,9 +138,10 @@ const Home = ({
   };
 
   useEffect(() => {
+    if(isLoggedIn){
     const initialSidebarState = loadSidebarState();
-    setIsSidebarOpen(initialSidebarState);
-  }, []);
+    setIsSidebarOpen(initialSidebarState);}
+  }, [isLoggedIn]);
 
   const saveSidebarState = (isOpen) => {
     localStorage.setItem('sidebarState', isOpen ? 'open' : 'closed');
@@ -162,13 +163,6 @@ const Home = ({
     saveSidebarState(false);
   };
 
-  useState(() => {
-    if(!isLoggedIn){
-      setIsSidebarOpen(false);
-      saveSidebarState(false);
-    }
-  }, [])
-  
   const handleProfileClick = async () => {
     navigate("/mypage");
   };
@@ -179,7 +173,6 @@ const Home = ({
       if (logoutSuccess) {
         setIsLoggedIn(false);
         setIsSidebarOpen(false);
-        saveSidebarState(false);
         navigate('/');
       } else {
         alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
@@ -217,43 +210,8 @@ const Home = ({
     }
   };
 
-  const startNewModelConversationWithMessage = async (messageContent, modelName) => {
-    try {
-      if (!modelName) {
-        console.error('No model selected.');
-        return;
-      }
-
-      const newConversationResponse = await startNewModelConversation(modelName, messageContent);
-      const newConversationId = newConversationResponse.conversationId;
-
-      if (!newConversationId) {
-        console.warn('No new conversation started.');
-        return;
-      }
-
-      const response = await sendMessagetoModel(modelName, newConversationId, messageContent);
-
-      if (response && response.length > 0) {
-        const aiMessage = {
-          content: response[response.length - 1].content,
-          role: 'assistant',
-          createdAt: new Date().toISOString()
-        };
-        handleUpdateMessage(aiMessage);
-      }
-
-      setSelectedConversationId(newConversationId);
-      navigate(`/chat/${newConversationId}`);
-      setIsNewChat(false);
-      return newConversationId;
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.error('Unauthorized (401):', error.response.data);
-      } else {
-        console.error('Failed to start new conversation:', error);
-      }
-    }
+  const handleModelSelect = (modelId) => {
+    setSelectedModel(modelId);  // Set the selected model
   };
 
   const updateConversations = async () => {
@@ -335,7 +293,7 @@ const Home = ({
         cbox_x: currentLayout[0].x,
         cbox_y: currentLayout[0].y,
         cbox_w: currentLayout[0].w,
-        cbox_h: currentLayout[0].h
+        cbox_h: currentLayout[0].h,
       };
       await saveChatbox(chatbox);
       originalLayoutRef.current = currentLayout;
@@ -405,6 +363,7 @@ const Home = ({
             onConversationSelect={handleConversationSelect}
             onNewConversation={handleNewConversation}
             onConversationDelete={handleConversationDelete}
+            onModelSelect={handleModelSelect}  // Pass the handleModelSelect function
           />
           {isLayoutEditing ? (
             <div className="settings-container">
@@ -427,7 +386,7 @@ const Home = ({
             </div>
           )}
         </>
-      ) : ( 
+      ) : (
         <div className="login-container">
           <button className="login-button" onClick={handleLoginClick}>로그인</button>
         </div>
@@ -477,10 +436,9 @@ const Home = ({
                   isLayoutEditing={setIsLayoutEditing}
                   conversationId={selectedConversationId}
                   isNewChat={isNewChat}
-                  startNewConversationWithMessage={startNewConversationWithMessage}
-                  startNewModelConversationWithMessage={startNewModelConversationWithMessage}
                   onChatInputAttempt={handleChatInputAttempt}
                   isLoggedIn={isLoggedIn}
+                  selectedModel={selectedModel}  // Pass the selected model to ChatBox
                 />
               </div>
             </div>
@@ -493,7 +451,7 @@ const Home = ({
         handleLogin={handleLoginClick}
       />
     </main>
-  );  
+  );
 };
 
 export default Home;

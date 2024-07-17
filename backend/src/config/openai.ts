@@ -5,4 +5,4 @@ export const configureOpenAI = () => {
     };
     return config;
 };
-export const Model = "gpt-3.5-turbo";
+export const ModelName = "gpt-3.5-turbo";

@@ -4,17 +4,16 @@ import './css/App.css';
 import Login from './pages/Login';
 import MyPage from './pages/MyPage';
 import Home from './pages/Home';
-import FineTune from './pages/FineTune';
 import {  checkAuthStatus, 
           fetchMessages, 
-          getModelConversation, 
           } from './api/axiosInstance';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
-  const [isLayoutEditing, setIsLayoutEditing] = useState(false);
+  const [, setIsLayoutEditing] = useState(false);
   const [messages, setMessages] = useState([]);
+
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -45,15 +44,6 @@ const App = () => {
     }
   }, []);
 
-  const loadModelMessages = async (modelId, conversationId) => {
-    try {
-      const data = await getModelConversation(modelId, conversationId);
-      console.log(data);
-      setMessages(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error('Error loading messages:', error);
-    }
-  };
 
   return (
     <Router>
@@ -69,13 +59,14 @@ const App = () => {
                     path="/"
                     element={
                       <Home
-                        isLoggedIn={isLoggedIn}
-                        setIsLoggedIn={setIsLoggedIn}
-                        user={user}
-                        isLayoutEditing={setIsLayoutEditing}
-                        messages={messages}
-                        setMessages={setMessages}
-                        toggleLayoutEditing={toggleLayoutEditing}
+                      isLoggedIn={isLoggedIn}
+                      setIsLoggedIn={setIsLoggedIn}
+                      user={user}
+                      isLayoutEditing={setIsLayoutEditing}
+                      loadMessages={loadMessages}
+                      messages={messages}
+                      setMessages={setMessages}
+                      toggleLayoutEditing={toggleLayoutEditing}
                       />
                     }
                   />
@@ -88,26 +79,10 @@ const App = () => {
                         user={user}
                         isLayoutEditing={setIsLayoutEditing}
                         loadMessages={loadMessages}
-                        loadModelMessages={loadModelMessages}
                         messages={messages}
                         setMessages={setMessages}
                         toggleLayoutEditing={toggleLayoutEditing}
-                      />
-                    }
-                  />
-                  <Route       
-                    path="/chat/:modelId/:conversationId"
-                    element={
-                      <Home
-                        isLoggedIn={isLoggedIn}
-                        setIsLoggedIn={setIsLoggedIn}
-                        user={user}
-                        isLayoutEditing={isLayoutEditing}
-                        loadMessages={loadMessages}
-                        loadModelMessages={loadModelMessages}
-                        messages={messages}
-                        setMessages={setMessages}
-                        toggleLayoutEditing={toggleLayoutEditing}
+                        
                       />
                     }
                   />
@@ -120,7 +95,7 @@ const App = () => {
                       />
                     }
                   />  
-                  <Route path="/g/new" element={<FineTune />} />
+                  
                 </Routes>
               </div>
             }
