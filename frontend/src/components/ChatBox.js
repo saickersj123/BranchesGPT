@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import '../css/ChatBox.css';
 import {  sendMessage,
-          sendMessagetoModel, } from '../api/axiosInstance';
+          sendMessagetoModel,
+          startNewConversation,
+          startNewModelConversation  } from '../api/axiosInstance';
 
 const ChatBox = ({  conversationId,
                     onNewMessage, 
@@ -13,7 +15,8 @@ const ChatBox = ({  conversationId,
                     startNewModelConversationWithMessage, 
                     selectedModel,
                     onChatInputAttempt,
-                    isLoggedIn, }) => {
+                    isLoggedIn,
+                    onNewConversation }) => {
   const [message, setMessage] = useState('');
 
   const handleMessageChange = (event) => {
@@ -24,52 +27,57 @@ const ChatBox = ({  conversationId,
     }
   };
 
-  const sendMessageToServer = async () => {
-    if (message.trim() === '') return; // 빈 메시지일 경우 리턴
+  // ChatBox.js
 
-    const newMessage = {
-      content: message,
-      role: 'user',
-      createdAt: new Date().toISOString()
-    };
+const sendMessageToServer = async () => {
+  if (message.trim() === '') return;
 
-    onNewMessage(newMessage); // 사용자 메시지를 추가하여 상태 업데이트
+  const newMessage = {
+    content: message,
+    role: 'user',
+    createdAt: new Date().toISOString()
+  };
 
-    try {
-      if (isNewChat) {
-        if (selectedModel) {
-          await startNewModelConversationWithMessage(message, selectedModel.value); // 모델이 선택된 경우 새로운 모델 대화 시작
-        } else {
-          await startNewConversationWithMessage(message); // 일반 새로운 대화 시작
+  onNewMessage(newMessage);
+
+  try {
+    if (isNewChat) {
+      if (selectedModel) {
+        console.log('Starting new model conversation with model:', selectedModel);
+        const newConversationId = await startNewModelConversation(selectedModel);
+        onNewConversation(newConversationId);
+        await sendMessagetoModel(selectedModel, newConversationId, message);
+      } else {
+        await startNewConversationWithMessage(message);
+      }
+    } else {
+      if (selectedModel) {
+        const response = await sendMessagetoModel(selectedModel, conversationId, message);
+        if (response && response.length > 0) {
+          const aiMessage = {
+            content: response[response.length - 1].content,
+            role: 'assistant',
+            createdAt: new Date().toISOString()
+          };
+          onUpdateMessage(aiMessage);
         }
       } else {
-        if (selectedModel) {
-          const response = await sendMessagetoModel(selectedModel.value, conversationId, message);
-          if (response && response.length > 0) {
-            const aiMessage = {
-              content: response[response.length - 1].content,
-              role: 'assistant',
-              createdAt: new Date().toISOString()
-            };
-            onUpdateMessage(aiMessage); // AI 응답 메시지를 추가하여 상태 업데이트
-          }
-        } else {
-          const response = await sendMessage(conversationId, message);
-          if (response && response.length > 0) {
-            const aiMessage = {
-              content: response[response.length - 1].content,
-              role: 'assistant',
-              createdAt: new Date().toISOString()
-            };
-            onUpdateMessage(aiMessage); // AI 응답 메시지를 추가하여 상태 업데이트
-          }
+        const response = await sendMessage(conversationId, message);
+        if (response && response.length > 0) {
+          const aiMessage = {
+            content: response[response.length - 1].content,
+            role: 'assistant',
+            createdAt: new Date().toISOString()
+          };
+          onUpdateMessage(aiMessage);
         }
       }
-      setMessage(''); // 입력 필드 초기화
-    } catch (error) {
-      console.error('Error sending message:', error);
     }
-  };
+    setMessage('');
+  } catch (error) {
+    console.error('Error sending message:', error);
+  }
+};
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {

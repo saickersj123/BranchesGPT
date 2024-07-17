@@ -1,3 +1,5 @@
+// Home.js
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FaBars, FaCog } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -5,9 +7,9 @@ import ChatBox from '../components/ChatBox';
 import ChatList from '../components/ChatList';
 import Sidebar from '../components/sidebar/Sidebar';
 import GridLayout from 'react-grid-layout';
-import { logout, sendMessagetoModel } from '../api/axiosInstance';
+import { logout } from '../api/axiosInstance';
 import { Dropdown } from 'react-bootstrap';
-import { fetchMessages, startNewModelConversation, fetchConversations, getChatboxes, saveChatbox, resetChatbox } from '../api/axiosInstance';
+import { fetchMessages, fetchConversations, getChatboxes, saveChatbox, resetChatbox, fetchModelConversations, getModelConversation } from '../api/axiosInstance';
 import '../css/Home.css';
 import LoginModal from '../components/LoginModal';
 
@@ -25,7 +27,8 @@ const Home = ({
   setMessages,
   showTime,
   toggleLayoutEditing,
-  startNewConversationWithMessage
+  loadModelMessages,
+  loadModelConversations,
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
@@ -41,6 +44,7 @@ const Home = ({
   const navigate = useNavigate();
   const { conversationId: urlConversationId } = useParams();
   const [isLayoutEditing, setIsLayoutEditing] = useState(false);
+  const [selectedModelId, setSelectedModelId] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -86,7 +90,7 @@ const Home = ({
           setIsNewChat(true);
         } else if (fetchedConversations.length > 0 && !urlConversationId) {
           setSelectedConversationId(fetchedConversations[0]._id);
-          navigate(`/chat/${fetchedConversations[0]._id}`);
+          navigate(`/chat/${fetchedConversations[fetchedConversations.length-1]._id}`);
         }
       } catch (error) {
         console.error('Failed to fetch conversations:', error);
@@ -138,9 +142,10 @@ const Home = ({
   };
 
   useEffect(() => {
+    if(isLoggedIn){
     const initialSidebarState = loadSidebarState();
-    setIsSidebarOpen(initialSidebarState);
-  }, []);
+    setIsSidebarOpen(initialSidebarState);}
+  }, [isLoggedIn]);
 
   const saveSidebarState = (isOpen) => {
     localStorage.setItem('sidebarState', isOpen ? 'open' : 'closed');
@@ -162,13 +167,6 @@ const Home = ({
     saveSidebarState(false);
   };
 
-  useState(() => {
-    if(!isLoggedIn){
-      setIsSidebarOpen(false);
-      saveSidebarState(false);
-    }
-  }, [])
-  
   const handleProfileClick = async () => {
     navigate("/mypage");
   };
@@ -179,7 +177,6 @@ const Home = ({
       if (logoutSuccess) {
         setIsLoggedIn(false);
         setIsSidebarOpen(false);
-        saveSidebarState(false);
         navigate('/');
       } else {
         alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
@@ -217,42 +214,23 @@ const Home = ({
     }
   };
 
-  const startNewModelConversationWithMessage = async (messageContent, modelName) => {
+  const handleModelConversationSelect = async (modelId) => {
+    setSelectedModelId(modelId);
     try {
-      if (!modelName) {
-        console.error('No model selected.');
-        return;
-      }
-
-      const newConversationResponse = await startNewModelConversation(modelName, messageContent);
-      const newConversationId = newConversationResponse.conversationId;
-
-      if (!newConversationId) {
-        console.warn('No new conversation started.');
-        return;
-      }
-
-      const response = await sendMessagetoModel(modelName, newConversationId, messageContent);
-
-      if (response && response.length > 0) {
-        const aiMessage = {
-          content: response[response.length - 1].content,
-          role: 'assistant',
-          createdAt: new Date().toISOString()
-        };
-        handleUpdateMessage(aiMessage);
-      }
-
-      setSelectedConversationId(newConversationId);
-      navigate(`/chat/${newConversationId}`);
-      setIsNewChat(false);
-      return newConversationId;
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.error('Unauthorized (401):', error.response.data);
+      const fetchedConversations = await fetchModelConversations(modelId);
+      setConversations(fetchedConversations);
+      if (fetchedConversations.length > 0) {
+        const mostRecentConversation = fetchedConversations[fetchedConversations.length-1].id;
+        await loadModelMessages(modelId, mostRecentConversation);
+        setSelectedConversationId(mostRecentConversation);
+        navigate(`/chat/${mostRecentConversation}`);
       } else {
-        console.error('Failed to start new conversation:', error);
+        setMessages([]);
+        setSelectedConversationId(null);
+        setIsNewChat(true); // Allow starting a new conversation
       }
+    } catch (error) {
+      console.error('Failed to load model conversations:', error);
     }
   };
 
@@ -391,7 +369,11 @@ const Home = ({
             <FaBars size={20} />
           </button>
         )}
-        <span className="brand-text">BranchGPT</span>
+        <span className="brand-text">
+          <button className="home-button" onClick={() => navigate('/')}>
+          BranchGPT
+          </button>
+          </span>
       </div>
       {isLoggedIn ? (
         <>
@@ -405,6 +387,7 @@ const Home = ({
             onConversationSelect={handleConversationSelect}
             onNewConversation={handleNewConversation}
             onConversationDelete={handleConversationDelete}
+            onModelConversationSelect={handleModelConversationSelect} // New handler for model conversations
           />
           {isLayoutEditing ? (
             <div className="settings-container">
@@ -477,10 +460,10 @@ const Home = ({
                   isLayoutEditing={setIsLayoutEditing}
                   conversationId={selectedConversationId}
                   isNewChat={isNewChat}
-                  startNewConversationWithMessage={startNewConversationWithMessage}
-                  startNewModelConversationWithMessage={startNewModelConversationWithMessage}
                   onChatInputAttempt={handleChatInputAttempt}
                   isLoggedIn={isLoggedIn}
+                  selectedModel={selectedModelId} // Pass the selected model ID to ChatBox
+                  onNewConversation={handleNewConversation} // Pass the handler for new conversation
                 />
               </div>
             </div>

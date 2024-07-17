@@ -9,14 +9,15 @@ import Spinner from 'react-bootstrap/Spinner';
 import backgroundImage from '../img/login_background_image.png';
 import Signup from '../components/NewSignup';
 import { loginUser } from '../api/axiosInstance';
-import '../css/Login.css'; // 로그인 페이지의 CSS 파일
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 const BackgroundContainer = styled.div`
   background-image: url(${backgroundImage});
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  background-position: center;
+  background-position: cente;
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -129,8 +130,19 @@ const Login = ({ setIsLoggedIn, setUser }) => {
     }
   };
 
+  const handleBackClick = () => {
+    navigate('/'); // Navigate to the previous page
+  };
+
   return (
     <BackgroundContainer>
+      <Button
+        variant="secondary"
+        style={{ position: 'absolute', top: '15px', right: '20px', fontSize: '14px' }}
+        onClick={handleBackClick}
+      >
+        <FontAwesomeIcon icon={faArrowLeft} /> 돌아가기
+      </Button>
       <StyledContainer>
         <h1>로그인</h1>
         {error && <Alert variant="danger">{error}</Alert>}

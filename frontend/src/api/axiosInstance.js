@@ -93,8 +93,14 @@ export const startNewConversation = async ( ) => {
     const response = await axiosInstance.get('/chat/c/new');
     return response.data.conversation.id;
   } catch (error) {
-    console.error('새로운 대화 시작 실패:', error.response ? error.response.data : error.message);
-    throw error;
+    if (error.response) {
+      // Log detailed error
+      console.error('새로운 대화 시작 실패:', error.response.data);
+      throw new Error(error.response.data.cause || '새로운 대화 시작에 실패했습니다.');
+    } else {
+      console.error('새로운 대화 시작 실패:', error.message);
+      throw error;
+    }
   }
 };
 
@@ -249,7 +255,7 @@ export const getCustomModels = async () => {
 // 모델로 새로운 대화 시작 함수
 export const startNewModelConversation = async (modelId) => {
   try {
-    const response = await axiosInstance.post(`/chat/g/${modelId}/new`);
+    const response = await axiosInstance.get(`/chat/g/${modelId}/new`);
     console.log(response);
     return response.data.conversation.id;
   } catch (error) {
@@ -275,7 +281,7 @@ export const sendMessagetoModel = async (modelId, conversationId, messageContent
 
 
 // 모델 대화 가져오기 함수
-export const getModelConversation = async (modelId, conversationId) => {
+export const fetchModelConversation = async (modelId, conversationId) => {
   try {
     const response = await axiosInstance.get(`/chat/g/${modelId}/${conversationId}`);
     return response.data.conversation.chats || [];;
@@ -285,7 +291,7 @@ export const getModelConversation = async (modelId, conversationId) => {
 };
 
 //get all model conversations
-export const getAllModelConversations = async (modelId) => {
+export const fetchModelConversations = async (modelId) => {
   try {
     const response = await axiosInstance.get(`/chat/g/${modelId}/all-c`);
     const conversations = response.data.conversations || [];

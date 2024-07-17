@@ -4,10 +4,10 @@ import './css/App.css';
 import Login from './pages/Login';
 import MyPage from './pages/MyPage';
 import Home from './pages/Home';
-import FineTune from './pages/FineTune';
 import {  checkAuthStatus, 
           fetchMessages, 
-          getModelConversation, 
+          fetchModelConversation,
+          fetchModelConversations 
           } from './api/axiosInstance';
 
 const App = () => {
@@ -15,6 +15,8 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [isLayoutEditing, setIsLayoutEditing] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [conversations, setConversations] = useState([]);
+
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -47,11 +49,24 @@ const App = () => {
 
   const loadModelMessages = async (modelId, conversationId) => {
     try {
-      const data = await getModelConversation(modelId, conversationId);
+      const data = await fetchModelConversation(modelId, conversationId);
       console.log(data);
       setMessages(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading messages:', error);
+    }
+  };
+
+  const loadModelConversations = async (modelId) => {
+    try {
+      const data = await fetchModelConversations(modelId);
+      setConversations(Array.isArray(data) ? data : []);
+      if (data.length > 0) {
+        const mostRecentConversation = data[data.length-1]._id; // Assuming the most recent conversation is at index 0
+        await loadModelMessages(modelId, mostRecentConversation); // Load messages for the most recent conversation
+      }
+    } catch (error) {
+      console.error('Error fetching model conversations:', error);
     }
   };
 
@@ -76,6 +91,8 @@ const App = () => {
                         messages={messages}
                         setMessages={setMessages}
                         toggleLayoutEditing={toggleLayoutEditing}
+                        loadModelMessages={loadModelMessages}
+                        loadModelConversations={loadModelConversations}
                       />
                     }
                   />
@@ -92,22 +109,24 @@ const App = () => {
                         messages={messages}
                         setMessages={setMessages}
                         toggleLayoutEditing={toggleLayoutEditing}
+                        
                       />
                     }
                   />
-                  <Route       
+                  <Route
                     path="/chat/:modelId/:conversationId"
                     element={
                       <Home
                         isLoggedIn={isLoggedIn}
                         setIsLoggedIn={setIsLoggedIn}
                         user={user}
-                        isLayoutEditing={isLayoutEditing}
+                        isLayoutEditing={setIsLayoutEditing}
                         loadMessages={loadMessages}
                         loadModelMessages={loadModelMessages}
                         messages={messages}
                         setMessages={setMessages}
                         toggleLayoutEditing={toggleLayoutEditing}
+                        loadModelConversations={loadModelConversations}
                       />
                     }
                   />
@@ -120,7 +139,7 @@ const App = () => {
                       />
                     }
                   />  
-                  <Route path="/g/new" element={<FineTune />} />
+                  
                 </Routes>
               </div>
             }

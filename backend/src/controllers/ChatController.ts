@@ -121,6 +121,15 @@ export const startNewConversation = async (
 				message: "ERROR",
 				cause: "User doesn't exist or token malfunctioned",
 			});
+		
+		// Validate if the last conversation is empty
+		const lastConversation = user.conversations[user.conversations.length - 1];
+		if (lastConversation && lastConversation.chats.length === 0) {
+			return res.status(400).json({
+				message: "ERROR",
+				cause: "The last conversation is still empty. Please add messages before creating a new conversation.",
+			});
+		}
 
 		user.conversations.push({ chats: [] });
 		await user.save();
@@ -371,11 +380,19 @@ export const startModelConversation = async (
 
 		const { modelId } = req.params;
 		const model = await loadModel(userId, modelId);
+		// Validate if the last conversation is empty
+		const lastConversation = model.conversations[model.conversations.length - 1];
+		if (lastConversation && lastConversation.chats.length === 0) {
+			return res.status(400).json({
+				message: "ERROR",
+				cause: "The last conversation is still empty. Please add messages before creating a new conversation.",
+			});
+		}
 		model.conversations.push({ chats: [] });
 		await user.save();
 
 		return res.status(200).json({	message: "New conversation started",
-										conversations: model.conversations[model.conversations.length - 1] });
+										conversation: model.conversations[model.conversations.length - 1] });
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({ message: "ERROR", cause: err.message });

@@ -34,6 +34,15 @@ chatRoutes.get(
 	startNewConversation,
 );
 
+//new conversation with msg
+chatRoutes.post(
+	"/c/new",
+	validate(chatCompletionValidator),
+	verifyToken,
+	startNewConversation,
+	generateChatCompletion
+);
+
 //resume conversation
 chatRoutes.post(
 	"/c/:conversationId",
@@ -91,6 +100,15 @@ chatRoutes.get(
     verifyToken,
 	startModelConversation,
 );
+
+//new model conversation with msg
+chatRoutes.post(
+    "/g/:modelId/new",
+    verifyToken,
+	startModelConversation,
+	generateModelChatCompletion
+);
+
 
 //resume conversation with custom model
 chatRoutes.post(

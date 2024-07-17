@@ -188,6 +188,11 @@
   cursor: pointer;
   z-index: 1100;
 }
+
+.new-conversation-button:hover {
+  color: green;
+}
+
 .new-model-button {
   position: fixed;
   top: 9px;
@@ -203,7 +208,89 @@
   z-index: 1100;
 }
 
+.new-model-button:hover {
+  color: blue;
+}
+
 .room-title {
   margin-left: 3%;
   font-size: 16px;
+}
+
+.model-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.model-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.model-item:hover .model-name {
+  color: blue; /* 원하는 색상으로 변경 */
+}
+
+.model-item-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.model-name {
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.model-id {
+  font-size: 0.8em;
+  color: #aaa;
+}
+
+.model-item .delete-button {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.model-item .delete-button: hover {
+  color: red;
+}
+
+.model-add {
+  text-align: center;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.input-group input,
+.input-group textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.input-group-pair-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-prompt-button {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
 }
