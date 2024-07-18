@@ -24,6 +24,12 @@
    OPEN_AI_SECRET_KEY=
    OPEN_AI_ORG=
    ```
+5. (OPTIONAL) Change baseURL in '/frontend/api/axiosinstance.js'
+   For LOCAL environment
+   ```sh
+   "http://localhost:5000 or <YOUR PORT>"
+   ```
+   
 ### How to Run
 
 1. Run the server
