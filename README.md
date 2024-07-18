@@ -25,9 +25,12 @@
    OPEN_AI_ORG=
    ```
 ### How to Run
+
+1. Run the server
    ```sh
    npm run start-server
    ```
+2. Run the client
    ```sh
    npm run start-client
    ```
