@@ -132,7 +132,7 @@ const Home = ({
         if (fetchedConversations.length === 0) {
           setIsNewChat(true);
         } else if (fetchedConversations.length > 0 && !urlConversationId) {
-          setSelectedConversationId(fetchedConversations[0]._id);
+          setSelectedConversationId(fetchedConversations[fetchedConversations.length-1]._id);
           navigate(`/chat/${fetchedConversations[0]._id}`);
         }
       } catch (error) {
