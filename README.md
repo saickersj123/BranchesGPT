@@ -15,7 +15,7 @@
    ```sh
    npm run install-client
    ```
-4. Enter your environment in `/backend/.env`
+4. Enter your environnments in `/backend/.env`
    ```
    PORT=
    MONGO_USER=
@@ -23,9 +23,6 @@
    MONGO_URL=
    OPEN_AI_SECRET_KEY=
    OPEN_AI_ORG=
-   JWT_SECRET=
-   COOKIE_SECRET=
-   DOMAIN:
    ```
 ### How to Run
    ```sh
