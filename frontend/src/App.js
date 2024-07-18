@@ -14,7 +14,6 @@ const App = () => {
   const [, setIsLayoutEditing] = useState(false);
   const [messages, setMessages] = useState([]);
 
-
   useEffect(() => {
     const checkAuth = async () => {
       try {

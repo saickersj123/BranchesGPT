@@ -56,18 +56,16 @@ const Navigation = ({
   }, []);
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--navbar-text-color', navbarTextColor);
     document.documentElement.style.setProperty('--button-color', navbarTextColor);
     document.documentElement.style.setProperty('--my-chat-bubble-color', myChatBubbleColor);
     document.documentElement.style.setProperty('--my-chat-text-color', myChatTextColor);
     document.documentElement.style.setProperty('--other-chat-bubble-color', otherChatBubbleColor);
     document.documentElement.style.setProperty('--other-chat-text-color', otherChatTextColor);
-    document.documentElement.style.setProperty('--navbar-bold', navbarBold ? 'bold' : 'normal');
     document.documentElement.style.setProperty('--chat-bubble-bold', chatBubbleBold ? 'bold' : 'normal');
     document.documentElement.style.setProperty('--chat-bubble-shadow', chatBubbleShadow ? '0 4px 8px rgba(0, 0, 0, 0.1)' : 'none');
     document.documentElement.style.setProperty('--chat-container-bg-color', chatContainerBgColor);
     document.documentElement.style.setProperty('--time-bold', timeBold ? 'bold' : 'normal');
-  }, [navbarTextColor, navbarBold, myChatBubbleColor, myChatTextColor, otherChatBubbleColor, otherChatTextColor, chatBubbleBold, chatBubbleShadow, chatContainerBgColor, timeBold]);
+  }, [ myChatBubbleColor, myChatTextColor, otherChatBubbleColor, otherChatTextColor, chatBubbleBold, chatBubbleShadow, chatContainerBgColor, timeBold]);
 
   const getSystemMode = () => {
     const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -301,10 +299,6 @@ const Navigation = ({
       </Navbar>
       {isColorPickerPanelOpen && (
         <ColorPickerPanel
-          navbarTextColor={navbarTextColor}
-          setNavbarTextColor={setNavbarTextColor}
-          navbarBold={navbarBold}
-          setNavbarBold={setNavbarBold}
           myChatBubbleColor={myChatBubbleColor}
           setMyChatBubbleColor={setMyChatBubbleColor}
           myChatTextColor={myChatTextColor}
@@ -324,8 +318,6 @@ const Navigation = ({
           timeBold={timeBold}
           setTimeBold={setTimeBold}
           closePanel={closeColorPickerPanel}
-          darkMode={darkMode} // 다크 모드 상태 전달
-          toggleDarkMode={handleToggleDarkMode} // 다크 모드 토글 함수 전달
         />
       )}
     </div>

@@ -1,9 +1,25 @@
+@keyframes slideIn {
+  from {
+    right: -15%;
+  }
+  to {
+    right: 0;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    right: 0;
+  }
+  to {
+    right: -15%;
+  }
+}
+
 .panel-container {
   position: fixed;
-  right: 0;
-  top: 70px;
-  width: 25%;
-  height: calc(100% - 70px);
+  right: -15%;
+  width: 15%;
   background-color: #f4f4f4;
   border-left: 1px solid #ccc;
   padding: 20px;
@@ -15,9 +31,12 @@
   font-family: Arial, sans-serif;
 }
 
-.panel-container.dark {
-  background-color: #1a1a1a;
-  color: #fff;
+.panel-container.open {
+  animation: slideIn 0.3s forwards;
+}
+
+.panel-container.close {
+  animation: slideOut 0.3s forwards;
 }
 
 .panel-header {
@@ -54,9 +73,6 @@
   font-size: 18px;
 }
 
-.panel-container.dark .panel-section h3 {
-  color: #fff;
-}
 
 .form-group {
   margin-bottom: 15px;
@@ -123,16 +139,23 @@
   left: 0;
 }
 
-input[type="checkbox"] {
-  transform: scale(1.2);
+.icon-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.icon-button {
+  background: none;
+  border: none;
   cursor: pointer;
+  font-size: 20px;
+  transition: transform 0.2s;
 }
 
-body.dark-mode {
-  background-color: #212121;
-  color: #fff;
+.icon-button:hover {
+  transform: scale(1.1);
 }
 
-input[type="checkbox"]:focus {
-  outline: none;
+.icon-button.active {
+  color: #007bff;
 }

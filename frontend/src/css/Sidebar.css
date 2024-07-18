@@ -258,7 +258,7 @@
   cursor: pointer;
 }
 
-.model-item .delete-button: hover {
+.model-item .delete-button:hover {
   color: red;
 }
 

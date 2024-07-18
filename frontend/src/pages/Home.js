@@ -1,7 +1,6 @@
-// Home.js
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FaBars, FaCog } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate, useParams } from 'react-router-dom';
 import ChatBox from '../components/ChatBox';
 import ChatList from '../components/ChatList';
@@ -12,6 +11,8 @@ import { Dropdown } from 'react-bootstrap';
 import { fetchMessages, fetchConversations, getChatboxes, saveChatbox, resetChatbox } from '../api/axiosInstance';
 import '../css/Home.css';
 import LoginModal from '../components/LoginModal';
+import ColorPickerPanel from '../components/ColorPickerPanel';
+import { faPalette, faRightFromBracket, faSquareMinus, faUser } from '@fortawesome/free-solid-svg-icons';
 
 const MAX_Y_H_SUM = 9;
 const DEFAULT_MODEL = "gpt-3.5-turbo";
@@ -33,7 +34,7 @@ const Home = ({
   const [username, setUsername] = useState('');
   const [currentLayout, setCurrentLayout] = useState(INITIAL_LAYOUT);
   const [selectedConversationId, setSelectedConversationId] = useState(null);
-  const [isNewChat, setIsNewChat] = useState(true);
+  const [isNewChat, setIsNewChat] = useState(false);
   const [conversations, setConversations] = useState([]);
   const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);  // Add state for selected model
   const originalLayoutRef = useRef(INITIAL_LAYOUT);
@@ -41,11 +42,46 @@ const Home = ({
   const navigate = useNavigate();
   const { conversationId: urlConversationId } = useParams();
   const [isLayoutEditing, setIsLayoutEditing] = useState(false);
+  const [isColorPickerPanelOpen, setIsColorPickerPanelOpen] = useState(false);
+  const [myChatBubbleColor, setMyChatBubbleColor] = useState('#DCF8C6');
+  const [myChatTextColor, setMyChatTextColor] = useState('#000000');
+  const [otherChatBubbleColor, setOtherChatBubbleColor] = useState('#F0F0F0');
+  const [otherChatTextColor, setOtherChatTextColor] = useState('#000000');
+  const [chatBubbleBold, setChatBubbleBold] = useState(false);
+  const [chatBubbleShadow, setChatBubbleShadow] = useState(false);
+  const [chatContainerBgColor, setChatContainerBgColor] = useState('#FFFFFF');
+  const [timeBold, setTimeBold] = useState(false);
+  const [showTime, setShowTime] = useState(true);
+  const [previousSidebarState, setPreviousSidebarState] = useState(false); // New state to track previous sidebar state
 
   useEffect(() => {
+    const loadStyleSettings = () => {
+      const settings = {
+        myChatBubbleColor: localStorage.getItem('myChatBubbleColor'),
+        myChatTextColor: localStorage.getItem('myChatTextColor'),
+        otherChatBubbleColor: localStorage.getItem('otherChatBubbleColor'),
+        otherChatTextColor: localStorage.getItem('otherChatTextColor'),
+        chatContainerBgColor: localStorage.getItem('chatContainerBgColor'),
+        chatBubbleBold: JSON.parse(localStorage.getItem('chatBubbleBold')),
+        chatBubbleShadow: JSON.parse(localStorage.getItem('chatBubbleShadow')),
+        timeBold: JSON.parse(localStorage.getItem('timeBold')),
+      };
+
+      if (settings.myChatBubbleColor) setMyChatBubbleColor(settings.myChatBubbleColor);
+      if (settings.myChatTextColor) setMyChatTextColor(settings.myChatTextColor);
+      if (settings.otherChatBubbleColor) setOtherChatBubbleColor(settings.otherChatBubbleColor);
+      if (settings.otherChatTextColor) setOtherChatTextColor(settings.otherChatTextColor);
+      if (settings.chatContainerBgColor) setChatContainerBgColor(settings.chatContainerBgColor);
+      if (settings.chatBubbleBold !== null) setChatBubbleBold(settings.chatBubbleBold);
+      if (settings.chatBubbleShadow !== null) setChatBubbleShadow(settings.chatBubbleShadow);
+      if (settings.timeBold !== null) setTimeBold(settings.timeBold);
+    };
+
     if (user) {
       setUsername(user.name);
     }
+
+    loadStyleSettings();
   }, [user]);
 
   useEffect(() => {
@@ -75,6 +111,17 @@ const Home = ({
 
     loadConversationMessages();
   }, [urlConversationId, setMessages]);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--my-chat-bubble-color', myChatBubbleColor);
+    document.documentElement.style.setProperty('--my-chat-text-color', myChatTextColor);
+    document.documentElement.style.setProperty('--other-chat-bubble-color', otherChatBubbleColor);
+    document.documentElement.style.setProperty('--other-chat-text-color', otherChatTextColor);
+    document.documentElement.style.setProperty('--chat-bubble-bold', chatBubbleBold ? 'bold' : 'normal');
+    document.documentElement.style.setProperty('--chat-bubble-shadow', chatBubbleShadow ? '0 4px 8px rgba(0, 0, 0, 0.1)' : 'none');
+    document.documentElement.style.setProperty('--chat-container-bg-color', chatContainerBgColor);
+    document.documentElement.style.setProperty('--time-bold', timeBold ? 'bold' : 'normal');
+  }, [ myChatBubbleColor, myChatTextColor, otherChatBubbleColor, otherChatTextColor, chatBubbleBold, chatBubbleShadow, chatContainerBgColor, timeBold]);
 
   useEffect(() => {
     const loadConversations = async () => {
@@ -139,8 +186,9 @@ const Home = ({
 
   useEffect(() => {
     if(isLoggedIn){
-    const initialSidebarState = loadSidebarState();
-    setIsSidebarOpen(initialSidebarState);}
+      const initialSidebarState = loadSidebarState();
+      setIsSidebarOpen(initialSidebarState);
+    }
   }, [isLoggedIn]);
 
   const saveSidebarState = (isOpen) => {
@@ -298,6 +346,7 @@ const Home = ({
       await saveChatbox(chatbox);
       originalLayoutRef.current = currentLayout;
       setIsLayoutEditing(false);
+      setIsSidebarOpen(previousSidebarState); // Restore sidebar state after saving layout
     } catch (error) {
       console.error('Failed to save chatbox layout:', error);
     }
@@ -306,10 +355,24 @@ const Home = ({
   const handleCancelLayout = () => {
     setCurrentLayout(originalLayoutRef.current);
     setIsLayoutEditing(false);
+    setIsSidebarOpen(previousSidebarState); // Restore sidebar state after canceling layout editing
   };
 
   const handleSettingsClick = () => {
+    setPreviousSidebarState(isSidebarOpen); // Save the current sidebar state
+    setIsSidebarOpen(false); // Close the sidebar
     setIsLayoutEditing(true);
+  };
+
+  const handleColorClick = () => {
+    setPreviousSidebarState(isSidebarOpen); // Save the current sidebar state
+    setIsSidebarOpen(false); // Close the sidebar
+    setIsColorPickerPanelOpen(true); // Open the color picker panel
+  };
+
+  const handleClosePanel = () => {
+    setIsColorPickerPanelOpen(false);
+    setIsSidebarOpen(previousSidebarState); // Restore the previous sidebar state
   };
 
   const handleNewConversation = async (newConversationId) => {
@@ -349,7 +412,7 @@ const Home = ({
             <FaBars size={20} />
           </button>
         )}
-        <span className="brand-text">BranchGPT</span>
+         <span className="brand-text" onClick={() => navigate('/')}>BranchGPT</span>
       </div>
       {isLoggedIn ? (
         <>
@@ -378,12 +441,36 @@ const Home = ({
                   <FaCog size={20} />
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item onClick={handleProfileClick}>프로필</Dropdown.Item>
-                  <Dropdown.Item onClick={handleSettingsClick}>UI 설정</Dropdown.Item>
-                  <Dropdown.Item onClick={handleLogoutClick}>로그아웃</Dropdown.Item>
+                  <Dropdown.Item onClick={handleProfileClick}> <FontAwesomeIcon icon={faUser} /> 프로필</Dropdown.Item>
+                  <Dropdown.Item onClick={handleSettingsClick}><FontAwesomeIcon icon={faSquareMinus} /> Chatbox 변경</Dropdown.Item>
+                  <Dropdown.Item onClick={handleColorClick}><FontAwesomeIcon icon={faPalette} /> 스타일 변경</Dropdown.Item>
+                  <Dropdown.Item onClick={handleLogoutClick}><FontAwesomeIcon icon={faRightFromBracket} /> 로그아웃</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </div>
+          )}
+          {isColorPickerPanelOpen && (
+            <ColorPickerPanel
+              myChatBubbleColor={myChatBubbleColor}
+              setMyChatBubbleColor={setMyChatBubbleColor}
+              myChatTextColor={myChatTextColor}
+              setMyChatTextColor={setMyChatTextColor}
+              otherChatBubbleColor={otherChatBubbleColor}
+              setOtherChatBubbleColor={setOtherChatBubbleColor}
+              otherChatTextColor={otherChatTextColor}
+              setOtherChatTextColor={setOtherChatTextColor}
+              chatBubbleBold={chatBubbleBold}
+              setChatBubbleBold={setChatBubbleBold}
+              chatBubbleShadow={chatBubbleShadow}
+              setChatBubbleShadow={setChatBubbleShadow}
+              chatContainerBgColor={chatContainerBgColor}
+              setChatContainerBgColor={setChatContainerBgColor}
+              showTime={showTime}
+              setShowTime={setShowTime}
+              timeBold={timeBold}
+              setTimeBold={setTimeBold}
+              closePanel={handleClosePanel} // Use handleClosePanel to close the color picker
+            />
           )}
         </>
       ) : (
