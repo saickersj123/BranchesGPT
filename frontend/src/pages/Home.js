@@ -133,7 +133,7 @@ const Home = ({
           setIsNewChat(true);
         } else if (fetchedConversations.length > 0 && !urlConversationId) {
           setSelectedConversationId(fetchedConversations[fetchedConversations.length-1]._id);
-          navigate(`/chat/${fetchedConversations[0]._id}`);
+          navigate(`/chat/${fetchedConversations[fetchedConversations.length-1]._id}`);
         }
       } catch (error) {
         console.error('Failed to fetch conversations:', error);
@@ -380,15 +380,6 @@ const Home = ({
     setIsNewChat(false);
     navigate(`/chat/${newConversationId}`);
   };
-
-  useEffect(() => {
-    if (conversations.length === 0) {
-      setIsNewChat(true);
-    } else if (conversations.length > 0 && !urlConversationId) {
-      setSelectedConversationId(conversations[0]._id);
-      navigate(`/chat/${conversations[0]._id}`);
-    }
-  }, [conversations, urlConversationId, navigate]);
 
   const handleConversationDelete = async (resetChat = false) => {
     try {

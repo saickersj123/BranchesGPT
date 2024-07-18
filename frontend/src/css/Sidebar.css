@@ -51,6 +51,7 @@
 }
 .chat-room:hover {
   background-color: gainsboro;
+  cursor: pointer;
 }
 
 .last-message {
