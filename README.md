@@ -6,7 +6,7 @@
 1. Get an API Key at [https://openai.com](https://openai.com/index/openai-api/))
 2. Clone the repo
    ```sh
-   git clone https://github.com/saickersj123/Branches-GPT.git
+   git clone https://github.com/saickersj123/BranchGPT.git
    ```
 3. Install NPM packages
    ```sh
