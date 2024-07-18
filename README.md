@@ -24,8 +24,7 @@
    OPEN_AI_SECRET_KEY=
    OPEN_AI_ORG=
    ```
-5. (OPTIONAL) Change baseURL in '/frontend/api/axiosinstance.js'
-   For LOCAL environment
+5. (FOR LOCAL) Change baseURL in '/frontend/api/axiosinstance.js'
    ```sh
    "http://localhost:5000 or <YOUR PORT>"
    ```
