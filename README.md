@@ -1,4 +1,4 @@
-# Branches GPT
+# BranchGPT
  2024 Branches Chatbot Web App Project
 
 ### Installation
