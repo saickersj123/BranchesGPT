@@ -10,8 +10,6 @@
   --other-chat-bubble-color: #DCF8C6;
   --other-chat-text-color: #000000;
   --chat-container-bg-color: #FFFFFF;
-  --navbar-bg-color: #FFFFFF;
-  --navbar-bold: normal;
   --chat-bubble-bold: normal;
   --chat-bubble-shadow: none;
   --time-bold: normal;
@@ -226,7 +224,10 @@ body, html {
 .brand-text {
   font-weight: bold;
   font-size: 1.2em;
+  cursor: pointer;
 }
+
+
 
 .login-container {
   position: fixed;

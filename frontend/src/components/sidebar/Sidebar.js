@@ -182,8 +182,7 @@ const Sidebar = ({
       setResponseMessage('Model created successfully');
       const updatedModels = await getCustomModels();
       setModels(updatedModels);
-      setShowTrainingModal(false);  // Close the training modal
-      setShowModelModal(true);  // Reopen the model list modal
+      await handleBacktoModels();
     } catch (error) {
       setResponseMessage(`Error creating model: ${error.response ? error.response.data.error : error.message}`);
     } finally {
@@ -199,12 +198,14 @@ const Sidebar = ({
     setResponseMessage('');
   };
 
-  const handleBacktoModels = () => {
+  const handleBacktoModels = async () => {
     setShowTrainingModal(false);
     setModelName('');
     setSystemContent('');
     setUserAssistantPairs([{ user: '', assistant: '' }]);
     setResponseMessage('');
+    const updatedModels = await getCustomModels();
+    setModels(updatedModels);
     setShowModelModal(true);
   };
 
@@ -217,10 +218,7 @@ const Sidebar = ({
   const confirmDeleteModel = async () => {
     try {
       await deleteModel(deleteModelId);
-      const updatedModels = await getCustomModels();
-      setModels(updatedModels);
       setShowDeleteModelModal(false);
-      setShowModelModal(true);
       console.log('모델이 성공적으로 삭제되었습니다.');
     } catch (error) {
       console.log('모델 삭제에 실패했습니다. 다시 시도해주세요.');

@@ -45,9 +45,9 @@ const ChatBox = ({
         newConversationId = await startNewConversation();
         onNewConversation(newConversationId);
         navigate(`/chat/${newConversationId}`);
-        await sendMessage(newConversationId, message, selectedModel);
+        await sendMessage(newConversationId, message);
       } else {
-        const response = await sendMessage(conversationId, message, selectedModel);
+        const response = await sendMessage(conversationId, message);
         if (response && response.length > 0) {
           const aiMessage = {
             content: response[response.length - 1].content,
