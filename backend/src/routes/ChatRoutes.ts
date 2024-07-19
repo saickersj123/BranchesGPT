@@ -11,6 +11,7 @@ import { deleteConversation,
 		 deleteCustomModel,
 		 getCustomModels,
 		 getModelbyId,
+		 startNewConversationwith,
 		 } from "../controllers/ChatController.js";
  
 const chatRoutes = express.Router();
@@ -34,8 +35,7 @@ chatRoutes.post(
 	"/c/new",
 	validate(chatCompletionValidator),
 	verifyToken,
-	startNewConversation,
-	generateChatCompletion
+	startNewConversationwith,
 );
 
 //resume conversation

@@ -142,6 +142,60 @@ export const startNewConversation = async (
 	}
 };
 
+export const startNewConversationwith = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const { message } = req.body;
+
+		const user = await User.findById(res.locals.jwtData.id);
+		if (!user) {
+			return res.status(401).json("User not registered / token malfunctioned");
+		}
+		// Validate if the last conversation is empty
+			const lastConversation = user.conversations[user.conversations.length - 1];
+			if (lastConversation && lastConversation.chats.length === 0) {
+				return res.status(400).json({
+					message: "ERROR",
+					cause: "The last conversation is still empty. Please add messages before creating a new conversation.",
+				});
+			}
+		user.conversations.push({ chats: [] });
+		// Add the user's message to the conversation
+		const conversation = user.conversations[user.conversations.length - 1];
+
+		// Prepare messages for OpenAI API
+		const chats = conversation.chats.map(({ role, content }) => ({
+			role,
+			content,
+		})) ;
+		chats.push({ content: message, role: "user" });
+
+		conversation.chats.push({ content: message, role: "user" });
+		// send all chats with new ones to OpenAI API
+		const config = configureOpenAI();
+		const openai = new OpenAI(config);
+
+		// make request to openAi
+		// get latest response
+		const chatResponse = await openai.chat.completions.create({
+			model: ModelName,
+			messages: chats as OpenAI.Chat.ChatCompletionMessageParam[],
+		});
+
+		// push latest response to db
+		conversation.chats.push(chatResponse.choices[0].message);
+		await user.save();
+
+		return res.status(200).json({ conversation: conversation });
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json({ message: error.message });
+	}
+};
+
 export const getConversation = async (
 	req: Request,
 	res: Response,

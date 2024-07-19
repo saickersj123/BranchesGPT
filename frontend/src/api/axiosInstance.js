@@ -9,7 +9,7 @@ axios.defaults.withCredentials = true;
 
 // axios 인스턴스 생성. 모든 요청에 사용됩니다.
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost/api', // API 요청의 기본 URL 설정
+  baseURL: 'http://localhost:5001/api', // API 요청의 기본 URL 설정
   headers: {
     'Content-Type': 'application/json', // 요청 헤더에 Content-Type을 application/json으로 설정
   },
@@ -91,6 +91,27 @@ export const startNewConversation = async ( ) => {
   try {
     const response = await axiosInstance.get('/chat/c/new');
     return response.data.conversation.id;
+  } catch (error) {
+    if (error.response) {
+      // Log detailed error
+      console.error('새로운 대화 시작 실패:', error.response.data);
+      throw new Error(error.response.data.cause || '새로운 대화 시작에 실패했습니다.');
+    } else {
+      console.error('새로운 대화 시작 실패:', error.message);
+      throw error;
+    }
+  }
+};
+
+// 새로운 대화 시작
+export const startNewConversationwithmsg = async ( messageContent, role = 'user' ) => {
+  const message = {
+    role: role,
+    content: messageContent,
+  };
+  try {
+    const response = await axiosInstance.post('/chat/c/new', {message: message.content});
+    return response.data.conversation;
   } catch (error) {
     if (error.response) {
       // Log detailed error
