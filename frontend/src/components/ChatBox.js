@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import '../css/ChatBox.css';
 import { useNavigate } from 'react-router-dom';
-import { sendMessage, startNewConversation } from '../api/axiosInstance';
+import { sendMessage, startNewConversationwithmsg } from '../api/axiosInstance';
 
 const ChatBox = ({
   conversationId,
@@ -16,6 +16,7 @@ const ChatBox = ({
   onChatInputAttempt,
   isLoggedIn,
   onNewConversation,
+  setSelectedConversationId
 }) => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
@@ -41,11 +42,18 @@ const ChatBox = ({
 
     try {
       if (isNewChat) {
-        let newConversationId;
-        newConversationId = await startNewConversation();
+        const response = await startNewConversationwithmsg(message);
+        const newConversationId = response.id;
         onNewConversation(newConversationId);
-        navigate(`/chat/${newConversationId}`);
-        await sendMessage(newConversationId, message);
+        navigate(`/`);
+        if (response && response.length > 0) {
+          const aiMessage = {
+            content: response[response.length - 1].content,
+            role: 'assistant',
+            createdAt: new Date().toISOString(),
+          };
+          onUpdateMessage(aiMessage);
+        }
       } else {
         const response = await sendMessage(conversationId, message);
         if (response && response.length > 0) {

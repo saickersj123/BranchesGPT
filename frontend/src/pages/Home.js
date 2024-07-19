@@ -496,7 +496,7 @@ const Home = ({
               <div className="chat-list-container" style={{ flexGrow: 1 }}>
                 {isNewChat ? (
                   <div className="alert alert-info text-center">
-                    새로운 채팅을 시작해 보세요!
+                    새로운 대화를 시작해 보세요!
                   </div>
                 ) : (
                   <ChatList
@@ -517,6 +517,7 @@ const Home = ({
                   onChatInputAttempt={handleChatInputAttempt}
                   isLoggedIn={isLoggedIn}
                   selectedModel={selectedModel}  // Pass the selected model to ChatBox
+                  onNewConversation={handleNewConversation}  // Add this prop to handle new conversations
                 />
               </div>
             </div>
