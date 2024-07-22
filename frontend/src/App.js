@@ -1,57 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './css/App.css';
-import Navigation from './components/navbar/Navigation';
 import Login from './pages/Login';
 import MyPage from './pages/MyPage';
 import Home from './pages/Home';
-import Pretrain from './pages/Pretrain';
-import { checkAuthStatus, fetchMessages, resumeConversation } from './api/axiosInstance';
+import MainPage from './pages/MainPage';
+import {  checkAuthStatus, 
+          fetchMessages, 
+          } from './api/axiosInstance';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [, setIsLayoutEditing] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [mode, setMode] = useState(() => {
-    const savedMode = localStorage.getItem('mode');
-    if (savedMode) {
-      return savedMode;
-    } else {
-      localStorage.setItem('mode', 'system');
-      return 'system';
-    }
-  });
-
-  const getSystemMode = () => {
-    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return isDarkMode ? 'dark' : 'light';
-  };
-
-  const getCurrentMode = () => {
-    return mode === 'system' ? getSystemMode() : mode;
-  };
-
-  const currentMode = getCurrentMode();
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (currentMode === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.add('light');
-    }
-
-    return () => {
-      root.classList.remove('dark');
-      root.classList.remove('light');
-    };
-  }, [currentMode]);
-
-  const toggleDarkMode = (newMode) => {
-    setMode(newMode);
-    localStorage.setItem('mode', newMode);
-  };
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -69,8 +31,8 @@ const App = () => {
     checkAuth();
   }, []);
 
-  const toggleEditMode = () => {
-    setIsEditMode((prevEditMode) => !prevEditMode);
+  const toggleLayoutEditing = () => {
+    setIsLayoutEditing((prevLayoutEditing) => !prevLayoutEditing);
   };
 
   const loadMessages = useCallback(async (conversationId) => {
@@ -82,61 +44,30 @@ const App = () => {
     }
   }, []);
 
-  const loadModelMessages = useCallback(async (conversationId) => {
-    try {
-      const data = await resumeConversation(conversationId);
-      console.log(data);
-      setMessages(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error('Error loading messages:', error);
-    }
-  }, []);
-  
-  useEffect(() => {
-    if (isLoggedIn) {
-      loadMessages();
-    }
-  }, [isLoggedIn, loadMessages]);
-
-  const startNewChat = () => {
-  };
 
   return (
     <Router>
       <div>
-        <Navigation
-          isLoggedIn={isLoggedIn}
-          setIsLoggedIn={setIsLoggedIn}
-          toggleEditMode={toggleEditMode}
-          isEditMode={isEditMode}
-          loadMessages={loadMessages}
-          startNewConversationWithMessage={startNewChat}
-          darkMode={currentMode}
-          toggleDarkMode={toggleDarkMode}
-        />
         <Routes>
-          <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} darkMode={currentMode} toggleDarkMode={toggleDarkMode} />} />
+          <Route path="/" element={<MainPage />} />
+          <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
           <Route
             path="*"
             element={
-              <div  className={`app-container ${currentMode}`}>
+              <div className={`app-container`}>
                 <Routes>
                   <Route
-                    path="/"
+                    path="/chat"
                     element={
                       <Home
-                        isLoggedIn={isLoggedIn}
-                        setIsLoggedIn={setIsLoggedIn}
-                        user={user}
-                        isEditMode={isEditMode}
-                        loadMessages={loadMessages}
-                        loadModelMessages={loadModelMessages}
-                        messages={messages}
-                        setMessages={setMessages}
-                        toggleEditMode={toggleEditMode}
-                        startNewChat={startNewChat}
-                        darkMode={currentMode}
-                        toggleDarkMode={toggleDarkMode}
+                      isLoggedIn={isLoggedIn}
+                      setIsLoggedIn={setIsLoggedIn}
+                      user={user}
+                      isLayoutEditing={setIsLayoutEditing}
+                      loadMessages={loadMessages}
+                      messages={messages}
+                      setMessages={setMessages}
+                      toggleLayoutEditing={toggleLayoutEditing}
                       />
                     }
                   />
@@ -147,42 +78,25 @@ const App = () => {
                         isLoggedIn={isLoggedIn}
                         setIsLoggedIn={setIsLoggedIn}
                         user={user}
-                        isEditMode={isEditMode}
+                        isLayoutEditing={setIsLayoutEditing}
                         loadMessages={loadMessages}
-                        loadModelMessages={loadModelMessages}
                         messages={messages}
                         setMessages={setMessages}
-                        toggleEditMode={toggleEditMode}
-                        startNewChat={startNewChat}
-                        darkMode={currentMode}
-                        toggleDarkMode={toggleDarkMode}
-                      />
-                    }
-                  />
-                  <Route       
-                    path="/chat/:modelId/:conversationId"
-                    element={
-                      <Home
-                        isLoggedIn={isLoggedIn}
-                        setIsLoggedIn={setIsLoggedIn}
-                        user={user}
-                        isEditMode={isEditMode}
-                        loadMessages={loadMessages}
-                        loadModelMessages={loadModelMessages}
-                        messages={messages}
-                        setMessages={setMessages}
-                        toggleEditMode={toggleEditMode}
-                        startNewChat={startNewChat}
-                        darkMode={currentMode}
-                        toggleDarkMode={toggleDarkMode}
+                        toggleLayoutEditing={toggleLayoutEditing}
+                        
                       />
                     }
                   />
                   <Route
-                    path="/mypage"
-                    element={isLoggedIn ? <MyPage darkMode={currentMode} toggleDarkMode={toggleDarkMode} /> : <Navigate to="/" />}
+                    path="/mypage" element={
+                      <MyPage 
+                        user={user} 
+                        setUser={setUser} 
+                        setIsLoggedIn={setIsLoggedIn}
+                      />
+                    }
                   />  
-                  <Route path="/pretrain" element={<Pretrain darkMode={currentMode} toggleDarkMode={toggleDarkMode} />} />
+                  
                 </Routes>
               </div>
             }

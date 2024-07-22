@@ -1,73 +1,109 @@
-.background-container {
-  background-image: url('../img/login_background_image.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center;
-  min-height: 100vh;
+/* Login.css */
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@800&display=swap');
+
+.loginPage {
+  width: 100%;
+  height: 100vh;
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  align-items: flex-start;
-}
-
-.styled-container {
-  max-width: 500px;
-  padding: 20px;
-  margin-top: 20vh;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   background-color: #fff;
-  transition: margin-top 0.5s ease;
+  font-family: Pretendard;
 }
 
-.styled-form {
+.prlogo2-1-icon { 
+  position: relative;
+  width: 20.8vw;
+  overflow: hidden; 
+  object-fit: cover;
+  margin-bottom: 10vh ;
+}
+
+.form { 
+  align-items: center;
+  justify-content: center;
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.styled-button {
+.inputGroup {
   width: 100%;
-  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
 }
 
-.password-group {
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height 0.5s ease;
+
+.inputGroup input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
 }
 
-.password-group.show {
-  max-height: 550px; /* Adjusted to fit the content including the button */
+.error {
+  color: red;
+  margin-bottom: 10px;
 }
 
-.middle-login-button {
-  display: none;
+.LoginButton, .SignupButton {
+  width: 20.8vw;
+  position: relative;
+  box-shadow: 0px 4px 30px rgba(38, 58, 67, 0.15);
+  border-radius: 12px;
+  background-color: #b5b5b6;
+  height: 66px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 165px;
+  box-sizing: border-box;
+  text-align: left;
+  font-size: 1.4375rem;
+  color: #fff;
+  white-space: nowrap;
+  font-weight: 600;
+  font-family: Pretendard;
 }
 
-@media (max-width: 1000px) {
-  .middle-login-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 20px auto;
-    padding: 10px 15px;
-    background-color: transparent;
-    color: blueviolet;
-    text-align: center;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: bold;
-  }
+.LoginButton{
+  margin-top: 2rem; 
+} 
 
-  .middle-login-button {
-    background-color: transparent;
-  }
+.or {
+  margin: 20px 0; 
+  width: 28px;
+  position: relative;
+  font-size: 30px;
+  font-family: Pretendard;
+  color: #000;
+  text-align: left;
+  display: inline-block;
+}
+ 
 
-  .middle-login-button .icon {
-    margin-right: 10px;
-  }
+.inputField { 
+  height: 4.375rem;
+  position: relative;
+  padding: 10px;
+  border: 0.6px solid #b1b1b1;
+  box-sizing: border-box;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.label {
+  width: 100%;
+  position: relative;
+  font-size: 1.6rem;
+  line-height: 156.5%;
+  font-weight: 600;
+  font-family: Pretendard;
+  color: #263a43;
+  text-align: left;
+  display: block; 
+  margin-bottom: 10px; 
 }

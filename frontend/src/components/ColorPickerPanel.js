@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faBold, faClock, faSun, faUndo } from '@fortawesome/free-solid-svg-icons';
 import { ChromePicker } from 'react-color';
 import '../css/ColorPickerPanel.css';
 
@@ -28,13 +28,39 @@ const ColorPickerPanel = ({
   timeBold,
   setTimeBold,
   closePanel,
-  darkMode
 }) => {
   const textColors = ['#000000', '#FFFFFF', '#87CEEB'];
   const bubbleColors = ['#FFFFE0', '#87CEFA', '#98FB98', '#FFC0CB', '#333333'];
   const bgColors = ['#D3D3D3', '#FFFFFF', '#B0E0E6', '#2F4F4F', '#121212', '#212121'];
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
   const [colorType, setColorType] = useState('navbarText');
+  const [isClosing, setIsClosing] = useState(false);
+  const panelRef = useRef(null);
+  const colorPickerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (panelRef.current && !panelRef.current.contains(event.target)) {
+        closePanel();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [closePanel]);
+
+  useEffect(() => {
+    const handleClickOutsideColor = (event) => {
+      if (colorPickerRef.current && !colorPickerRef.current.contains(event.target)) {
+        setDisplayColorPicker(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutsideColor);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutsideColor);
+    };
+  }, []);
 
   useEffect(() => {
     const colorPicker = document.querySelector('.color-picker-popover');
@@ -56,79 +82,97 @@ const ColorPickerPanel = ({
   };
 
   const handleColorChange = (color) => {
+    const colorHex = color.hex;
     switch (colorType) {
       case 'navbarText':
-        setNavbarTextColor(color.hex);
+        setNavbarTextColor(colorHex);
+        localStorage.setItem('navbarTextColor', colorHex);
         break;
       case 'myChatBubble':
-        setMyChatBubbleColor(color.hex);
+        setMyChatBubbleColor(colorHex);
+        localStorage.setItem('myChatBubbleColor', colorHex);
         break;
       case 'myChatText':
-        setMyChatTextColor(color.hex);
+        setMyChatTextColor(colorHex);
+        localStorage.setItem('myChatTextColor', colorHex);
         break;
       case 'otherChatBubble':
-        setOtherChatBubbleColor(color.hex);
+        setOtherChatBubbleColor(colorHex);
+        localStorage.setItem('otherChatBubbleColor', colorHex);
         break;
       case 'otherChatText':
-        setOtherChatTextColor(color.hex);
+        setOtherChatTextColor(colorHex);
+        localStorage.setItem('otherChatTextColor', colorHex);
         break;
       case 'chatContainerBg':
-        setChatContainerBgColor(color.hex);
+        setChatContainerBgColor(colorHex);
+        localStorage.setItem('chatContainerBgColor', colorHex);
         break;
       default:
         break;
     }
   };
-console.log(darkMode);
+
+  const handleToggleSetting = (settingName, setter, currentValue) => {
+    const newValue = !currentValue;
+    setter(newValue);
+    localStorage.setItem(settingName, JSON.stringify(newValue));
+  };
+
+  const handleCloseClick = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      closePanel();
+      setIsClosing(false);
+    }, 300); // Match the duration of the slideOut animation
+  };
+
+  const handleResetSettings = () => {
+    setMyChatBubbleColor('#DCF8C6');
+    setMyChatTextColor('#000000');
+    setOtherChatBubbleColor('#F0F0F0');
+    setOtherChatTextColor('#000000');
+    setChatBubbleBold(false);
+    setChatBubbleShadow(false);
+    setChatContainerBgColor('#FFFFFF');
+    setShowTime(true);
+    setTimeBold(false);
+    localStorage.removeItem('myChatBubbleColor');
+    localStorage.removeItem('myChatTextColor');
+    localStorage.removeItem('otherChatBubbleColor');
+    localStorage.removeItem('otherChatTextColor');
+    localStorage.removeItem('chatBubbleBold');
+    localStorage.removeItem('chatBubbleShadow');
+    localStorage.removeItem('chatContainerBgColor');
+    localStorage.removeItem('showTime');
+    localStorage.removeItem('timeBold');
+  };
+
   return (
-    <div className={`panel-container ${darkMode === 'dark' ? 'dark' : ''}`}>
+    <div className={`panel-container ${isClosing ? 'close' : 'open'}`} ref={panelRef}>
       <div className="panel-header">
-        <FontAwesomeIcon icon={faTimes} onClick={closePanel} />
+        <FontAwesomeIcon icon={faTimes} onClick={handleCloseClick} />
       </div>
       <div className="panel-content">
         <div className="panel-section">
-          <h3>상단 설정</h3>
-          <div className="form-group">
-            <label className="form-label">상단 텍스트 색상</label>
-            <div className="color-buttons">
-              {textColors.map(color => (
-                <button
-                  key={color}
-                  className="color-button"
-                  style={{ backgroundColor: color }}
-                  onClick={() => setNavbarTextColor(color)}
-                />
-              ))}
-              <button className="color-picker-button" onClick={() => handleColorClick('navbarText')} />
-              {displayColorPicker && colorType === 'navbarText' && (
-                <div className="color-picker-popover">
-                  <div className="color-picker-cover" onClick={handleColorClose} />
-                  <ChromePicker color={navbarTextColor} onChange={handleColorChange} />
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="form-group">
-            <label className="form-label">상단 텍스트 볼드체</label>
-            <input type="checkbox" checked={navbarBold} onChange={(e) => setNavbarBold(e.target.checked)} />
-          </div>
-        </div>
-        <div className="panel-section">
           <h3>채팅 설정</h3>
           <div className="form-group">
-            <label className="form-label">내가 보낸 말풍선 색상</label>
+            <label className="form-label">말풍선(사용자)</label>
             <div className="color-buttons">
               {bubbleColors.map(color => (
                 <button
                   key={color}
                   className="color-button"
                   style={{ backgroundColor: color }}
-                  onClick={() => setMyChatBubbleColor(color)}
+                  onClick={() => {
+                    setMyChatBubbleColor(color);
+                    localStorage.setItem('myChatBubbleColor', color);
+                  }}
                 />
               ))}
               <button className="color-picker-button" onClick={() => handleColorClick('myChatBubble')} />
               {displayColorPicker && colorType === 'myChatBubble' && (
-                <div className="color-picker-popover">
+                <div className="color-picker-popover" ref={colorPickerRef}>
                   <div className="color-picker-cover" onClick={handleColorClose} />
                   <ChromePicker color={myChatBubbleColor} onChange={handleColorChange} />
                 </div>
@@ -136,19 +180,22 @@ console.log(darkMode);
             </div>
           </div>
           <div className="form-group">
-            <label className="form-label">내가 보낸 말풍선 텍스트 색상</label>
+            <label className="form-label">텍스트(나)</label>
             <div className="color-buttons">
               {textColors.map(color => (
                 <button
                   key={color}
                   className="color-button"
                   style={{ backgroundColor: color }}
-                  onClick={() => setMyChatTextColor(color)}
+                  onClick={() => {
+                    setMyChatTextColor(color);
+                    localStorage.setItem('myChatTextColor', color);
+                  }}
                 />
               ))}
               <button className="color-picker-button" onClick={() => handleColorClick('myChatText')} />
               {displayColorPicker && colorType === 'myChatText' && (
-                <div className="color-picker-popover">
+                <div className="color-picker-popover" ref={colorPickerRef}>
                   <div className="color-picker-cover" onClick={handleColorClose} />
                   <ChromePicker color={myChatTextColor} onChange={handleColorChange} />
                 </div>
@@ -156,19 +203,22 @@ console.log(darkMode);
             </div>
           </div>
           <div className="form-group">
-            <label className="form-label">상대방이 보낸 말풍선 색상</label>
+            <label className="form-label">말풍선(Bot)</label>
             <div className="color-buttons">
               {bubbleColors.map(color => (
                 <button
                   key={color}
                   className="color-button"
                   style={{ backgroundColor: color }}
-                  onClick={() => setOtherChatBubbleColor(color)}
+                  onClick={() => {
+                    setOtherChatBubbleColor(color);
+                    localStorage.setItem('otherChatBubbleColor', color);
+                  }}
                 />
               ))}
               <button className="color-picker-button" onClick={() => handleColorClick('otherChatBubble')} />
               {displayColorPicker && colorType === 'otherChatBubble' && (
-                <div className="color-picker-popover">
+                <div className="color-picker-popover" ref={colorPickerRef}>
                   <div className="color-picker-cover" onClick={handleColorClose} />
                   <ChromePicker color={otherChatBubbleColor} onChange={handleColorChange} />
                 </div>
@@ -176,19 +226,22 @@ console.log(darkMode);
             </div>
           </div>
           <div className="form-group">
-            <label className="form-label">상대방이 보낸 말풍선 텍스트 색상</label>
+            <label className="form-label">텍스트(Bot)</label>
             <div className="color-buttons">
               {textColors.map(color => (
                 <button
                   key={color}
                   className="color-button"
                   style={{ backgroundColor: color }}
-                  onClick={() => setOtherChatTextColor(color)}
+                  onClick={() => {
+                    setOtherChatTextColor(color);
+                    localStorage.setItem('otherChatTextColor', color);
+                  }}
                 />
               ))}
               <button className="color-picker-button" onClick={() => handleColorClick('otherChatText')} />
               {displayColorPicker && colorType === 'otherChatText' && (
-                <div className="color-picker-popover">
+                <div className="color-picker-popover" ref={colorPickerRef}>
                   <div className="color-picker-cover" onClick={handleColorClose} />
                   <ChromePicker color={otherChatTextColor} onChange={handleColorChange} />
                 </div>
@@ -196,30 +249,39 @@ console.log(darkMode);
             </div>
           </div>
           <div className="form-group">
-            <label className="form-label">말풍선 볼드체</label>
-            <input type="checkbox" checked={chatBubbleBold} onChange={(e) => setChatBubbleBold(e.target.checked)} />
-          </div>
-          <div className="form-group">
-            <label className="form-label">말풍선 그림자</label>
-            <input type="checkbox" checked={chatBubbleShadow} onChange={(e) => setChatBubbleShadow(e.target.checked)} />
+            <label className="form-label"></label>
+            <div className="icon-buttons">
+              <button className={`icon-button ${chatBubbleBold ? 'active' : ''}`} onClick={() => handleToggleSetting('chatBubbleBold', setChatBubbleBold, chatBubbleBold)}>
+                <FontAwesomeIcon icon={faBold} />
+              </button>
+              <button className={`icon-button ${chatBubbleShadow ? 'active' : ''}`} onClick={() => handleToggleSetting('chatBubbleShadow', setChatBubbleShadow, chatBubbleShadow)}>
+                <FontAwesomeIcon icon={faSun} />
+              </button>
+              <button className={`icon-button ${timeBold ? 'active' : ''}`} onClick={() => handleToggleSetting('timeBold', setTimeBold, timeBold)}>
+                <FontAwesomeIcon icon={faClock} />
+              </button>
+            </div>
           </div>
         </div>
         <div className="panel-section">
           <h3>배경 설정</h3>
           <div className="form-group">
-            <label className="form-label">채팅 컨테이너 배경 색상</label>
+            <label className="form-label">배경 색상</label>
             <div className="color-buttons">
               {bgColors.map(color => (
                 <button
                   key={color}
                   className="color-button"
                   style={{ backgroundColor: color }}
-                  onClick={() => setChatContainerBgColor(color)}
+                  onClick={() => {
+                    setChatContainerBgColor(color);
+                    localStorage.setItem('chatContainerBgColor', color);
+                  }}
                 />
               ))}
               <button className="color-picker-button" onClick={() => handleColorClick('chatContainerBg')} />
               {displayColorPicker && colorType === 'chatContainerBg' && (
-                <div className="color-picker-popover">
+                <div className="color-picker-popover" ref={colorPickerRef}>
                   <div className="color-picker-cover" onClick={handleColorClose} />
                   <ChromePicker color={chatContainerBgColor} onChange={handleColorChange} />
                 </div>
@@ -227,17 +289,11 @@ console.log(darkMode);
             </div>
           </div>
         </div>
-        <div className="panel-section">
-          <h3>기타 설정</h3>
-          <div className="form-group">
-            <label className="form-label">시간 정보 표시</label>
-            <input type="checkbox" checked={showTime} onChange={(e) => setShowTime(e.target.checked)} />
+        <div className="form-group">
+            <button className="reset-button" onClick={handleResetSettings}>
+              <FontAwesomeIcon icon={faUndo} /> 초기화
+            </button>
           </div>
-          <div className="form-group">
-            <label className="form-label">시간 볼드체</label>
-            <input type="checkbox" checked={timeBold} onChange={(e) => setTimeBold(e.target.checked)} />
-          </div>
-        </div>
       </div>
     </div>
   );

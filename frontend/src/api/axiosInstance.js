@@ -16,15 +16,14 @@ const axiosInstance = axios.create({
   withCredentials: true, // 인스턴스 레벨에서 withCredentials 설정
 });
  
-// 메시지 전송
 export const sendMessage = async (conversationId, messageContent, role = 'user') => {
   const message = {
     role: role,
-    content: messageContent
+    content: messageContent,
   };
 
   try {
-    const response = await axiosInstance.post(`/chat/c/${conversationId}`, { message: message.content });
+    const response = await axiosInstance.post(`/chat/c/${conversationId}`, { message : message.content });
     return response.data.chats;
   } catch (error) {
     console.error('메시지 보내기 실패:', error.response ? error.response.data : error.message);
@@ -88,13 +87,40 @@ export const mypage = async (password) => {
 };
 
 // 새로운 대화 시작
-export const startNewConversation = async (messageContent) => {
+export const startNewConversation = async ( ) => {
   try {
-    const response = await axiosInstance.post('/chat/c/new', { message: messageContent || 'Hi' });
-    return response.data;
+    const response = await axiosInstance.get('/chat/c/new');
+    return response.data.conversation.id;
   } catch (error) {
-    console.error('새로운 대화 시작 실패:', error.response ? error.response.data : error.message);
-    throw error;
+    if (error.response) {
+      // Log detailed error
+      console.error('새로운 대화 시작 실패:', error.response.data);
+      throw new Error(error.response.data.cause || '새로운 대화 시작에 실패했습니다.');
+    } else {
+      console.error('새로운 대화 시작 실패:', error.message);
+      throw error;
+    }
+  }
+};
+
+// 새로운 대화 시작
+export const startNewConversationwithmsg = async ( messageContent, role = 'user' ) => {
+  const message = {
+    role: role,
+    content: messageContent,
+  };
+  try {
+    const response = await axiosInstance.post('/chat/c/new', {message: message.content});
+    return response.data.conversation;
+  } catch (error) {
+    if (error.response) {
+      // Log detailed error
+      console.error('새로운 대화 시작 실패:', error.response.data);
+      throw new Error(error.response.data.cause || '새로운 대화 시작에 실패했습니다.');
+    } else {
+      console.error('새로운 대화 시작 실패:', error.message);
+      throw error;
+    }
   }
 };
 
@@ -212,7 +238,7 @@ export const updatePassword = async (password) => {
 };
 
 // 사전학습 모델 생성
-export const createCustomModel = async (modelName, trainingData) => {
+export const createModel = async (modelName, trainingData) => {
   try {
     
     const response = await axiosInstance.post('/chat/g/create', {
@@ -227,7 +253,7 @@ export const createCustomModel = async (modelName, trainingData) => {
 };
 
 // Custom Model 삭제 함수
-export const deleteCustomModel = async (modelId) => {
+export const deleteModel = async (modelId) => {
   try {
     const response = await axiosInstance.delete(`/chat/g/${modelId}`);
     return response.data;
@@ -237,7 +263,7 @@ export const deleteCustomModel = async (modelId) => {
 };
 
 // 모든 커스텀 모델의 정보를 가지고 오는 것
-export const getAllCustomModels = async () => {
+export const getCustomModels = async () => {
   try {
     const response = await axiosInstance.get('/chat/all-g');  
     return response.data.CustomModels;
@@ -246,46 +272,6 @@ export const getAllCustomModels = async () => {
   }
 };
 
-// 모델로 새로운 대화 시작 함수
-export const startNewModelConversation = async (modelName, message) => {
-  try {
-    const response = await axiosInstance.post(`/chat/g/new/${modelName}`, { message });
-    console.log(response);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-// 모델로 기존 대화 재개 함수
-export const resumeConversation = async (modelName, conversationId, message) => {
-  try {
-    const response = await axiosInstance.post(`/chat/g/${modelName}/${conversationId}`, { message });
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-// 커스텀 모델 응답 가져오기 함수
-export const getCustomModelResponse = async (modelName, message) => {
-  try {
-    const response = await axiosInstance.post(`/chat/g/${modelName}`, { message });
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-// 모델 이름과 대화 가져오기 함수
-export const getModelNameAndConversation = async (modelName, conversationId) => {
-  try {
-    const response = await axiosInstance.get(`/chat/g/${modelName}/${conversationId}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
 
 // 좌표값 가져오기
 export const getChatboxes = async () => {

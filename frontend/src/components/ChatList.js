@@ -45,7 +45,7 @@ const ChatList = ({ messages, username, showTime }) => {
     <Container className="chat-list-container mt-3">
       {messages.length === 0 ? (
         <div className="alert alert-info text-center">
-          새로운 채팅을 시작해 보세요!
+          새로운 대화를 시작해 보세요!
         </div>
       ) : (
         messages.map((message, index) => (

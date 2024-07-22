@@ -1,57 +1,71 @@
+// ChatBox.js
+
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import '../css/ChatBox.css';
-import { sendMessage, resumeConversation } from '../api/axiosInstance';
+import { useNavigate } from 'react-router-dom';
+import { sendMessage, startNewConversationwithmsg } from '../api/axiosInstance';
 
-const ChatBox = ({ conversationId, onNewMessage, onUpdateMessage, isEditMode, isNewChat, startNewConversationWithMessage, startNewModelConversationWithMessage, darkMode, selectedModel }) => {
+const ChatBox = ({
+  conversationId,
+  onNewMessage,
+  onUpdateMessage,
+  isEditMode,
+  isNewChat,
+  selectedModel,  // Added prop
+  onChatInputAttempt,
+  isLoggedIn,
+  onNewConversation,
+  setSelectedConversationId
+}) => {
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleMessageChange = (event) => {
-    setMessage(event.target.value);
+    if (!isLoggedIn) {
+      onChatInputAttempt();
+    } else {
+      setMessage(event.target.value);
+    }
   };
 
   const sendMessageToServer = async () => {
-    if (message.trim() === '') return; // 빈 메시지일 경우 리턴
+    if (message.trim() === '') return;
 
     const newMessage = {
       content: message,
       role: 'user',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
-    onNewMessage(newMessage); // 사용자 메시지를 추가하여 상태 업데이트
+    onNewMessage(newMessage);
 
     try {
       if (isNewChat) {
-        if (selectedModel) {
-          await startNewModelConversationWithMessage(message, selectedModel.value); // 모델이 선택된 경우 새로운 모델 대화 시작
-        } else {
-          await startNewConversationWithMessage(message); // 일반 새로운 대화 시작
+        const response = await startNewConversationwithmsg(message);
+        const newConversationId = response.id;
+        onNewConversation(newConversationId);
+        navigate(`/`);
+        if (response && response.length > 0) {
+          const aiMessage = {
+            content: response[response.length - 1].content,
+            role: 'assistant',
+            createdAt: new Date().toISOString(),
+          };
+          onUpdateMessage(aiMessage);
         }
       } else {
-        if (selectedModel) {
-          const response = await resumeConversation(selectedModel.value, conversationId, message);
-          if (response && response.length > 0) {
-            const aiMessage = {
-              content: response[response.length - 1].content,
-              role: 'assistant',
-              createdAt: new Date().toISOString()
-            };
-            onUpdateMessage(aiMessage); // AI 응답 메시지를 추가하여 상태 업데이트
-          }
-        } else {
-          const response = await sendMessage(conversationId, message);
-          if (response && response.length > 0) {
-            const aiMessage = {
-              content: response[response.length - 1].content,
-              role: 'assistant',
-              createdAt: new Date().toISOString()
-            };
-            onUpdateMessage(aiMessage); // AI 응답 메시지를 추가하여 상태 업데이트
-          }
+        const response = await sendMessage(conversationId, message);
+        if (response && response.length > 0) {
+          const aiMessage = {
+            content: response[response.length - 1].content,
+            role: 'assistant',
+            createdAt: new Date().toISOString(),
+          };
+          onUpdateMessage(aiMessage);
         }
       }
-      setMessage(''); // 입력 필드 초기화
+      setMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
     }
@@ -65,22 +79,22 @@ const ChatBox = ({ conversationId, onNewMessage, onUpdateMessage, isEditMode, is
   };
 
   return (
-    <Form className={`chat-input-container ${darkMode === 'dark' ? 'dark' : ''}`} onSubmit={(e) => e.preventDefault()}>
+    <Form className={`chat-input-container`} onSubmit={(e) => e.preventDefault()}>
       <Form.Group controlId="messageInput" className="textarea-wrapper">
         <Form.Control
           as="textarea"
           rows={1}
           value={message}
           onChange={handleMessageChange}
-          onKeyPress={handleKeyPress}
-          placeholder="메시지를 입력하세요..."
-          className={`chat-container ${darkMode === 'dark' ? 'dark' : ''}`}
+          onKeyDown={handleKeyPress}
+          placeholder="메시지를 입력하세요."
+          className={`chat-container`}
           disabled={isEditMode}
         />
         <Button
           type="submit"
           onClick={sendMessageToServer}
-          className={`chat-box-button ${darkMode === 'dark' ? 'dark' : ''}`}
+          className={`chat-box-button`}
           disabled={isEditMode}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-right" viewBox="0 0 16 16">
