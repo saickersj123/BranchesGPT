@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import MyPage from './pages/MyPage';
 import Home from './pages/Home';
 import MainPage from './pages/MainPage';
+import Signup from './pages/Signup';
 import {  checkAuthStatus, 
           fetchMessages, 
           } from './api/axiosInstance';
@@ -12,7 +13,7 @@ import {  checkAuthStatus,
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
-  const [, setIsLayoutEditing] = useState(false);
+  const [setIsLayoutEditing] = useState(false);
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
@@ -50,6 +51,7 @@ const App = () => {
       <div>
         <Routes>
           <Route path="/" element={<MainPage />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
           <Route
             path="*"

@@ -49,7 +49,7 @@ const Login = ({ setIsLoggedIn, setUser }) => {
 
   return (
     <div className='loginPage'>
-      <img className='prlogo2-1-icon' src={branchImage} alt="logo" />
+      <img className='prlogo2-1-icon' src={branchImage} alt="logo" onClick={() => navigate(`/`)}/>
       <form onSubmit={handleSubmit} className='form'>
  
 

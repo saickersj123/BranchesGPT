@@ -45,7 +45,7 @@ const ChatBox = ({
         const response = await startNewConversationwithmsg(message);
         const newConversationId = response.id;
         onNewConversation(newConversationId);
-        navigate(`/`);
+        navigate(`/chat`);
         if (response && response.length > 0) {
           const aiMessage = {
             content: response[response.length - 1].content,

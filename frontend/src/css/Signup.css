@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@800&display=swap');
+
+.SignupPage {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  font-family: Pretendard;
+}
+
+.prlogo2-1-icon { 
+  position: relative;
+  width: 20.8vw;
+  overflow: hidden; 
+  object-fit: cover;
+  margin-bottom: 10vh;
+}
+
+.form { 
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+ 
+.inputGroup {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.passwordIcon {
+  position: absolute;
+  right: 10px;
+  top: 64%;
+}
+
+
+.inputField { 
+  height: 4.375rem;
+  padding: 10px;
+  border: 0.6px solid #b1b1b1;
+  box-sizing: border-box;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none; /* 기본 outline 제거 */
+  position: relative; 
+}
+
+.inputField:focus {
+  border-color: #007f3a; /* 선택된 상태에서의 테두리 색상 변경 */
+  box-shadow: 0 0 0 2px rgba(0, 127, 58, 0.2); /* 선택된 상태에서의 그림자 효과 */
+}
+
+.inputField:focus, .inputField:not(:placeholder-shown) {
+  outline: none;
+}
+
+.underline {
+  height: 5.71%;
+  width: 100%;
+  position: absolute;
+  top: calc(100% - 3px); /* 위치 조정 */
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 0px 0px 5px 5px;
+  background-color: transparent; /* 기본 상태에서는 투명 */
+}
+
+.inputField:focus + .underline, .inputField:not(:placeholder-shown) + .underline {
+  background-color: #007f3a; /* 포커스되거나 값이 있을 때만 색상 변경 */
+}
+
+.inputField:placeholder-shown + .underline {
+  background-color: transparent; /* placeholder가 보일 때 투명하게 설정 */
+}
+
+.error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+.SignupButton {
+  width: 20.8vw;
+  position: relative;
+  box-shadow: 0px 4px 30px rgba(38, 58, 67, 0.15);
+  border-radius: 12px;
+  border : none;
+  background-color: #b5b5b6;
+  height: 66px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 165px;
+  box-sizing: border-box;
+  text-align: left;
+  font-size: 1.4375rem;
+  color: #fff;
+  white-space: nowrap;
+  font-weight: 600;
+  font-family: Pretendard;
+}
+
+.SignupButton:hover, .SignupButton:active {
+  background-color: #111111 !important; 
+} 
+
+.label {
+  width: 100%;
+  position: relative;
+  font-size: 1.6rem;
+  line-height: 156.5%;
+  font-weight: 600;
+  font-family: Pretendard;
+  color: #263a43;
+  text-align: left;
+  display: block; 
+  margin-bottom: 10px; 
+}
+.custom-alert {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  padding: 10px;
+}
