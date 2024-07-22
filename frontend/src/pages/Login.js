@@ -53,7 +53,7 @@ const Login = ({ setIsLoggedIn, setUser }) => {
       <form onSubmit={handleSubmit} className='form'>
  
 
-        <div className='inputGroup'>
+      <div className='inputGroup'>
           <label htmlFor='email' className='label'>이메일 주소</label>
           <input
             type='email'
@@ -63,6 +63,7 @@ const Login = ({ setIsLoggedIn, setUser }) => {
             onChange={(e) => setEmail(e.target.value)}
             className='inputField'
           />
+          <div className='underline'></div>
         </div>
         <div className='inputGroup'>
           <label htmlFor='password' className='label'>비밀번호</label>
@@ -74,8 +75,8 @@ const Login = ({ setIsLoggedIn, setUser }) => {
             onChange={(e) => setPassword(e.target.value)}
             className='inputField'
           />
+          <div className='underline'></div>
         </div>
-
         {error && <div className='error'>{error}</div>}
         <button className='LoginButton'>
           로그인

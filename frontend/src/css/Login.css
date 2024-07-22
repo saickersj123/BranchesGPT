@@ -28,20 +28,38 @@
   gap: 15px;
 }
 
+/* styles.css */
 .inputGroup {
   width: 100%;
   display: flex;
   flex-direction: column;
   margin-bottom: 10px;
+  position: relative;  
 }
 
-
-.inputGroup input {
+.inputField {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 16px;
 }
+
+.inputField:focus, .inputField:not(:placeholder-shown) {
+  outline: none;
+}
+
+.inputField:focus + .underline, .inputField:not(:placeholder-shown) + .underline {
+  height: 5.71%;
+  width: 100%;
+  position: absolute;
+  top: 94.29%;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 0px 0px 5px 5px;
+  background-color: #007f3a;
+}
+
 
 .error {
   color: red;
@@ -68,7 +86,9 @@
   font-weight: 600;
   font-family: Pretendard;
 }
-
+.LoginButton:hover, .SignupButton:hover {
+  background-color: #111111;
+}
 .LoginButton{
   margin-top: 2rem; 
 } 
