@@ -1,11 +1,14 @@
+// MyPage.js
+
 import React, { useState } from 'react';
-import { Button, Form, Container, Row, Col, Card } from 'react-bootstrap';
+import { Button, Form, Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faPen, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/MyPage.css';
 import { updatename, updatePassword, mypage } from '../api/axiosInstance';
+import branchImage from '../img/PRlogo2.png'; // import the image
 
 const MyPage = () => { 
   const [password, setPassword] = useState('');
@@ -15,6 +18,9 @@ const MyPage = () => {
   const [newPassword, setNewPassword] = useState('');
   const [isEditingname, setIsEditingname] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+  const [isNewnameFocused, setIsNewnameFocused] = useState(false);
+  const [isNewPasswordFocused, setIsNewPasswordFocused] = useState(false);
   const navigate = useNavigate();
 
   const handlePasswordChange = (event) => {
@@ -46,10 +52,12 @@ const MyPage = () => {
   };
 
   const handleEditname = () => {
+    setIsEditingPassword(false);
     setIsEditingname(true);
   };
 
   const handleEditPassword = () => {
+    setIsEditingname(false);
     setIsEditingPassword(true);
   };
 
@@ -98,96 +106,100 @@ const MyPage = () => {
   };
 
   return (
-    <Container className={`mypage-container`} style={{ marginTop: '100px' }}>
-      <Button
-        variant="secondary"
-        style={{ position: 'absolute', top: '30px', right: '30px' }}
+    <Container className="mypage-container">
+      <img src={branchImage} alt="Logo" className="prlogo2-1-icon" onClick={handleBackClick}/>
+      {!isPasswordVerified ? (
+        <div className="my-center-box">
+          <Form onSubmit={handleVerifyPassword}>
+            <Form.Group className="MainInputGroup">
+              <Form.Label className="label">비밀번호를 입력하세요.</Form.Label>
+              <Form.Control
+                type="password"
+                value={password}
+                onChange={handlePasswordChange}
+                onFocus={() => setIsPasswordFocused(true)}
+                onBlur={() => setIsPasswordFocused(false)}
+                className="My-inputField"
+              />
+              <div className={`MainUnderline ${isPasswordFocused ? 'focused' : ''}`}></div>
+            </Form.Group>
+            <Button type="submit" variant="secondary" className="MypageButton">
+              <FontAwesomeIcon icon={faArrowRight} /> 확인
+            </Button>
+          </Form>
+        </div>
+      ) : (
+        <div className="my-center-box">
+          <Form>
+            <Form.Group className="MainInputGroup">
+              <Form.Label className="label">사용자명</Form.Label>
+              <Form.Control plaintext readOnly value={name} className="My-inputField" />
+              <div className="MainUnderline"></div>
+              <Button onClick={handleEditname} variant="link" className="edit-button">
+                <FontAwesomeIcon icon={faPen} />
+              </Button>
+            </Form.Group>
+            {isEditingname && (
+              <div className="edit-section">
+                <Form.Group className="MainInputGroup">
+                  <Form.Label className="label">새 사용자명</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={newname}
+                    onChange={handleNewnameChange}
+                    onFocus={() => setIsNewnameFocused(true)}
+                    onBlur={() => setIsNewnameFocused(false)}
+                    className="My-inputField"
+                  />
+                  <div className={`MainUnderline ${isNewnameFocused ? 'focused' : ''}`}></div>
+                </Form.Group>
+                <Button onClick={handleSaveNewname} variant="primary" className="my-save-button">
+                  저장
+                </Button>
+                <Button onClick={handleCancelEditname} variant="secondary" className="my-cancel-button">
+                  닫기
+                </Button>
+              </div>
+            )}
+            <Form.Group className="MainInputGroup">
+              <Form.Label className="label">비밀번호</Form.Label>
+              <Form.Control plaintext readOnly value="********" className="My-inputField" />
+              <div className="MainUnderline"></div>
+              <Button onClick={handleEditPassword} variant="link" className="edit-button">
+                <FontAwesomeIcon icon={faPen} />
+              </Button>
+            </Form.Group>
+            {isEditingPassword && (
+              <div className="edit-section">
+                <Form.Group className="MainInputGroup">
+                  <Form.Label className="label">새 비밀번호</Form.Label>
+                  <Form.Control
+                    type="password"
+                    value={newPassword}
+                    onChange={handleNewPasswordChange}
+                    onFocus={() => setIsNewPasswordFocused(true)}
+                    onBlur={() => setIsNewPasswordFocused(false)}
+                    className="My-inputField"
+                  />
+                  <div className={`MainUnderline ${isNewPasswordFocused ? 'focused' : ''}`}></div>
+                </Form.Group>
+                <Button onClick={handleSaveNewPassword} variant="primary" className="my-save-button">
+                  저장
+                </Button>
+                <Button onClick={handleCancelEditPassword} variant="secondary" className="my-cancel-button">
+                  닫기
+                </Button>
+              </div>
+            )}
+          </Form>
+        </div>
+      )}
+      <Button 
+        className="my-back-button"
         onClick={handleBackClick}
       >
-        <FontAwesomeIcon icon={faArrowLeft} /> 돌아가기
+        <FontAwesomeIcon icon={faArrowLeft} />
       </Button>
-      <Row className="justify-content-center">
-        <Col xs={12} md={6}>
-          <Card className="center-box">
-            <Card.Body>
-              {!isPasswordVerified ? (
-                <>
-                  <Card.Title>비밀번호를 입력하세요</Card.Title>
-                  <Form onSubmit={handleVerifyPassword}>
-                    <Form.Group className="password-input-container">
-                      <Form.Label className="password-label">비밀번호: </Form.Label>
-                      <Form.Control
-                        type="password"
-                        value={password}
-                        onChange={handlePasswordChange}
-                      />
-                      <Button type="submit" variant="secondary">
-                        <FontAwesomeIcon icon={faArrowRight} />
-                      </Button>
-                    </Form.Group>
-                  </Form>
-                </>
-              ) : (
-                <>
-                  <Card.Title>프로필 수정</Card.Title>
-                  <Form>
-                    <Form.Group as={Row} className="name-section">
-                      <Form.Label column sm={4}>사용자명 :</Form.Label>
-                      <Col sm={6}>
-                        <Form.Control plaintext readOnly value={name} />
-                      </Col>
-                      <Col sm={2} className="text-right">
-                        <Button onClick={handleEditname} variant="link">
-                          <FontAwesomeIcon icon={faPen} />
-                        </Button>
-                      </Col>
-                    </Form.Group>
-                    {isEditingname && (
-                      <div className="edit-section">
-                        <Form.Group>
-                          <Form.Label>새 사용자명 :</Form.Label>
-                          <Form.Control
-                            type="text"
-                            value={newname}
-                            onChange={handleNewnameChange}
-                          />
-                        </Form.Group>
-                        <Button onClick={handleSaveNewname} variant="primary" className="mt-3">저장</Button>
-                        <Button onClick={handleCancelEditname} variant="secondary" className="mt-3 ml-2">닫기</Button>
-                      </div>
-                    )}
-                    <Form.Group as={Row} className="password-section mt-4">
-                      <Form.Label column sm={4}>비밀번호 :</Form.Label>
-                      <Col sm={6}>
-                        <Form.Control plaintext readOnly value="********" />
-                      </Col>
-                      <Col sm={2} className="text-right">
-                        <Button onClick={handleEditPassword} variant="link">
-                          <FontAwesomeIcon icon={faPen} />
-                        </Button>
-                      </Col>
-                    </Form.Group>
-                    {isEditingPassword && (
-                      <div className="edit-section">
-                        <Form.Group>
-                          <Form.Label>새 비밀번호:</Form.Label>
-                          <Form.Control
-                            type="password"
-                            value={newPassword}
-                            onChange={handleNewPasswordChange}
-                          />
-                        </Form.Group>
-                        <Button onClick={handleSaveNewPassword} variant="primary" className="mt-3">저장</Button>
-                        <Button onClick={handleCancelEditPassword} variant="secondary" className="mt-3 ml-2">닫기</Button>
-                      </div>
-                    )}
-                  </Form>
-                </>
-              )}
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
     </Container>
   );
 };

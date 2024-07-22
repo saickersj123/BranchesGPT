@@ -49,13 +49,13 @@
   box-sizing: border-box;
   border-radius: 6px;
   font-size: 1rem;
-  outline: none; /* 기본 outline 제거 */
+  outline: none;
   position: relative; 
 }
 
 .inputField:focus {
-  border-color: #007f3a; /* 선택된 상태에서의 테두리 색상 변경 */
-  box-shadow: 0 0 0 2px rgba(0, 127, 58, 0.2); /* 선택된 상태에서의 그림자 효과 */
+  border-color: #007f3a; 
+  box-shadow: 0 0 0 2px rgba(0, 127, 58, 0.2);
 }
 
 .inputField:focus, .inputField:not(:placeholder-shown) {
@@ -66,20 +66,20 @@
   height: 5.71%;
   width: 100%;
   position: absolute;
-  top: calc(100% - 3px); /* 위치 조정 */
+  top: calc(100% - 3px); 
   right: 0;
   bottom: 0;
   left: 0;
   border-radius: 0px 0px 5px 5px;
-  background-color: transparent; /* 기본 상태에서는 투명 */
+  background-color: transparent;
 }
 
 .inputField:focus + .underline, .inputField:not(:placeholder-shown) + .underline {
-  background-color: #007f3a; /* 포커스되거나 값이 있을 때만 색상 변경 */
+  background-color: #007f3a; 
 }
 
 .inputField:placeholder-shown + .underline {
-  background-color: transparent; /* placeholder가 보일 때 투명하게 설정 */
+  background-color: transparent; 
 }
 
 .error {
