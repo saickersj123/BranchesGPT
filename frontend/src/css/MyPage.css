@@ -1,5 +1,3 @@
-/* MyPage.css */
-
 @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@800&display=swap');
 
 .mypage-container {
@@ -20,6 +18,32 @@
   margin-bottom: 5vh; 
 }
 
+@media (max-width: 800px) {
+  .prlogo2-1-icon {
+    width: 100%;
+  }
+  .My-inputField {
+    width: 100%;
+  }
+  .my-back-button {
+    height: 3rem;
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 801px) {
+  .prlogo2-1-icon {
+    width: 20.8vw;
+  }
+  .My-inputField {
+    width: 20.8vw;
+  }
+  .my-back-button {
+    height: 2.5rem;
+    font-size: 1rem;
+  }
+}
+
 .my-center-box {
   width: 100%;
   max-width: 400px;
@@ -37,7 +61,6 @@
 }
 
 .My-inputField {
-  width: 20.8vw; 
   height: 4.375rem; 
   padding: 10px;
   padding-right: 2.5rem;
@@ -158,13 +181,13 @@
 } 
 
 .my-back-button {
-  position: absolute;
-  top: 30px;
-  right: 30px;
+  position: fixed;
+  top: 2em; 
+  right: 2em; 
   background-color: #b5b5b6;
   border: none;
   border-radius: 6px;
-  color: #fff;
+  color: #fff; 
 }
 
 .my-back-button:hover {
