@@ -253,7 +253,7 @@ body, html {
 
 .settings-container .save-button,
 .settings-container .cancel-button,
-.settings-container .reset-button {
+.settings-container .reset-button { 
   background-color: #f0f0f0;
   border: 1px solid #ccc;
   padding: 10px 15px;
