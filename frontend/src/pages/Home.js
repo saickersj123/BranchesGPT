@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { FaBars, FaCog } from 'react-icons/fa';
+import { FaCog } from 'react-icons/fa';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate, useParams } from 'react-router-dom';
 import ChatBox from '../components/ChatBox';
@@ -13,6 +13,7 @@ import '../css/Home.css';
 import LoginModal from '../components/LoginModal';
 import ColorPickerPanel from '../components/ColorPickerPanel';
 import { faPalette, faRightFromBracket, faSquareMinus, faUser } from '@fortawesome/free-solid-svg-icons';
+import sidebar_icon from '../img/sidebar_icon.png';
 
 const MAX_Y_H_SUM = 9;
 const DEFAULT_MODEL = "gpt-3.5-turbo";
@@ -400,7 +401,7 @@ const Home = ({
       <div className={`header-container ${isSidebarOpen ? 'shifted-header' : ''}`}>
         {isLoggedIn && (
           <button className="toggle-sidebar-button" onClick={toggleSidebar}>
-            <FaBars size={20} />
+            <img src={sidebar_icon} alt="Sidebar Icon" width={20} height={20} />
           </button>
         )}
          <span className="brand-text" onClick={() => navigate('/chat')}>BranchGPT</span>
@@ -428,7 +429,7 @@ const Home = ({
           ) : (
             <div className="settings-container">
               <Dropdown>
-                <Dropdown.Toggle variant="light" id="dropdown-basic">
+                <Dropdown.Toggle variant="light" id="dropdown-basic" className="FaCog-dropdown-toggle">
                   <FaCog size={20} />
                 </Dropdown.Toggle>
                 <Dropdown.Menu>

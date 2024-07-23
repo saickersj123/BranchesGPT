@@ -266,3 +266,11 @@ body, html {
 .settings-container .reset-button:hover {
   background-color: #e0e0e0;
 }
+  
+.FaCog-dropdown-toggle{ 
+  background-color: transparent !important;
+  border: none !important;    
+}
+.FaCog-dropdown-toggle::after {
+  display: none !important;
+}

@@ -275,7 +275,7 @@ const Sidebar = ({
         )}
       </div>
       {/* Modal for single conversation delete */}
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} className="Sidebar-Delete-Modal">
         <Modal.Header closeButton>
           <Modal.Title>대화 삭제 확인</Modal.Title>
         </Modal.Header>

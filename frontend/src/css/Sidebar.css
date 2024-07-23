@@ -1,16 +1,22 @@
 /* src/css/Sidebar.css */
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@800&display=swap');
+
+body, .sidebar, .sidebar * {
+  font-family: 'Pretendard', sans-serif;
+}
+
 .sidebar {
   position: fixed;
   left: 0;
   top: 0;
   width: 20%;
   height: 100%;
-  background-color: #f4f4f4;
-  padding: 10px 0; /* Remove top padding */
+  background-color: #E4E4E4;
+  padding: 10px 0; 
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
   z-index: 1050;
-  transform: translateX(-100%);
+  transform: translateX(-100%); 
 }
 
 .sidebar.open {
@@ -140,10 +146,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: transparent;
+  background-color: transparent !important;
   border: none;
   cursor: pointer;
-  z-index: 1100;
+  z-index: 1100; 
 }
 
 .sidebar-overlay {
@@ -294,4 +300,10 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
+} 
+
+.Sidebar-Delete-Modal .modal-dialog {
+  display: flex;
+  align-items: center; 
+  height: 100vh; 
 }
