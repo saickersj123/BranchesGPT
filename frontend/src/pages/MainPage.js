@@ -1,13 +1,30 @@
 // MainPage.js
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/MainPage.css'; 
 import branchImage from '../img/branch_BL.png';
+import { checkAuthStatus } from '../api/axiosInstance';
 
 const MainPage = () => {
     const navigate = useNavigate();
     const [isClicked, setIsClicked] = useState(false);
+
+     // Check authentication status
+     useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const response = await checkAuthStatus();
+                if (response.valid) {
+                    navigate('/chat');
+                }
+            } catch (error) {
+                console.error('Error checking auth status:', error);
+            }
+        };
+
+        checkAuth();
+    }, [navigate]);
 
     const LoginClick = useCallback(() => {
         navigate('/login');
