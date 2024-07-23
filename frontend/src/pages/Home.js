@@ -401,7 +401,7 @@ const Home = ({
       <div className={`header-container ${isSidebarOpen ? 'shifted-header' : ''}`}>
         {isLoggedIn && (
           <button className="toggle-sidebar-button" onClick={toggleSidebar}>
-            <img src={sidebar_icon} alt="Sidebar Icon" width={20} height={20} />
+            <img src={sidebar_icon} alt="Sidebar Icon" width={35} height={35} />
           </button>
         )}
          <span className="brand-text" onClick={() => navigate('/chat')}>BranchGPT</span>
