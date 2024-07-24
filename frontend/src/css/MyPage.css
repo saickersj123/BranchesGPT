@@ -37,7 +37,7 @@
     width: 20.8vw;
   }
   .My-inputField {
-    width: 20.8vw;
+    width: 100%;
   }
   .my-back-button {
     height: 2.5rem;
@@ -50,7 +50,7 @@
   max-width: 400px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: left;
 }
 
 .MainInputGroup {
@@ -116,7 +116,7 @@
 }
 
 .my-save-button {
-  width: 10vw; 
+  width: 49%; 
   background-color: #007f3a; 
   border: none;
   border-radius: 6px;
@@ -134,8 +134,8 @@
 }
 
 .my-cancel-button {
-  margin-left: 0.8vw;
-  width: 10vw;
+  margin-left: 2%;
+  width: 49%;
   background-color: #6c757d; 
   border: none;
   border-radius: 6px;
@@ -160,7 +160,7 @@
 }
 
 .MypageButton {
-  width: 20.8vw;
+  width: 100%;
   box-shadow: 0px 4px 30px rgba(38, 58, 67, 0.15);
   border-radius: 12px;
   border: none;
