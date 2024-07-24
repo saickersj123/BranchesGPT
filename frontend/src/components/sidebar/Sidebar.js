@@ -1,22 +1,18 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { FaTrashAlt, FaRobot ,FaPlus, FaList, FaMinus } from 'react-icons/fa';
+import {  FaRobot ,FaPlus, FaList, FaMinus } from 'react-icons/fa';
+import { Trash3 } from 'react-bootstrap-icons';
+import  { HighlightOff, }  from '@mui/icons-material'; 
 import { Modal, Button } from 'react-bootstrap';
 import { deleteConversation, deleteAllChats, startNewConversation, getCustomModels, createModel, deleteModel } from '../../api/axiosInstance';
-import '../../css/Sidebar.css';
-import delete_all_icon from '../../img/delete_icon.png';
-import delete_one_icon from '../../img/delete_icon.png';
+import '../../css/Sidebar.css'; 
 import Nlogo_icon from '../../img/Nlogo3.png'; 
-
+ 
 const Sidebar = ({ 
-  isOpen, 
-  toggleSidebar, 
-  closeSidebar, 
+  isOpen,   
   conversations, 
-  onConversationDelete,
-  onNewModel, 
+  onConversationDelete, 
   onNewConversation, 
-  onConversationSelect,
-  onModelConversationSelect,
+  onConversationSelect, 
   onModelSelect // New prop to handle model selection
 }) => {
   const sidebarRef = useRef(null);
@@ -243,7 +239,7 @@ const Sidebar = ({
       <div className="sidebar-content">
           <button className="model-info" onClick={startConversation} >
             <img src={Nlogo_icon} alt="Nlogo" />
-            <span>Branches-GPT</span>
+            <span>Branch-GPT</span>
           </button>
           <button className="new-model-icon" onClick={handleModelClick}>
             <FaRobot/>
@@ -268,7 +264,7 @@ const Sidebar = ({
                       {room.chats.length > 0 ? truncateMessage(room.chats[room.chats.length - 1].content, 40) : "새 대화를 시작하세요."}
                     </span>
                     <button className="one-delete-button" onClick={(e) => {e.stopPropagation(); handleDeleteClick(room._id); }}>
-                      <img src={delete_one_icon} alt="Delete" />
+                      <HighlightOff  />
                     </button>
                   </div>
                 ))}
@@ -278,7 +274,7 @@ const Sidebar = ({
         </div>
         {conversations.length > 0 && (
           <button className="delete-all-button" onClick={handleDeleteAllChats}> 
-              <img src={delete_all_icon} alt="delete"/> 
+              < Trash3 /> 
           </button>
         )}
       </div>

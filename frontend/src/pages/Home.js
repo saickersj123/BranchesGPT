@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FaCog } from 'react-icons/fa';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
+import { TbLayoutSidebar } from "react-icons/tb";
+import { faPalette, faRightFromBracket, faSquareMinus, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import ChatBox from '../components/ChatBox';
 import ChatList from '../components/ChatList';
@@ -12,9 +14,7 @@ import { fetchMessages, fetchConversations, getChatboxes, saveChatbox, resetChat
 import '../css/Home.css';
 import LoginModal from '../components/LoginModal';
 import ColorPickerPanel from '../components/ColorPickerPanel';
-import { faPalette, faRightFromBracket, faSquareMinus, faUser } from '@fortawesome/free-solid-svg-icons';
-import sidebar_icon from '../img/sidebar_icon.png';
-
+ 
 const MAX_Y_H_SUM = 9;
 const DEFAULT_MODEL = "gpt-3.5-turbo";
 const INITIAL_LAYOUT = [
@@ -207,11 +207,6 @@ const Home = ({
     saveSidebarState(newState);
   };
 
-  const closeSidebar = () => {
-    setIsSidebarOpen(false);
-    saveSidebarState(false);
-  };
-
   const handleProfileClick = async () => {
     navigate("/mypage");
   };
@@ -401,7 +396,7 @@ const Home = ({
       <div className={`header-container ${isSidebarOpen ? 'shifted-header' : ''}`}>
         {isLoggedIn && (
           <button className="toggle-sidebar-button" onClick={toggleSidebar}>
-            <img src={sidebar_icon} alt="Sidebar Icon" width={35} height={35} />
+            <TbLayoutSidebar size={35}/>
           </button>
         )}
          <span className="brand-text" onClick={() => navigate('/chat')}>BranchGPT</span>
@@ -410,10 +405,7 @@ const Home = ({
         <>
           <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={toggleSidebar}></div>
           <Sidebar
-            isOpen={isSidebarOpen}
-            toggleSidebar={toggleSidebar}
-            isLoggedIn={isLoggedIn}
-            closeSidebar={closeSidebar}
+            isOpen={isSidebarOpen}  closeSidebar
             conversations={conversations}
             onConversationSelect={handleConversationSelect}
             onNewConversation={handleNewConversation}

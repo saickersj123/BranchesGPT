@@ -37,17 +37,17 @@ body, .sidebar, .sidebar *, .new-model-icon span, .chat-date, .room-title, .last
 .sidebar-menu p:hover {
   color: #007bff;
 }
-
+d
 
 .chat-date-group {
-  margin-bottom: 0.1em;
+  margin-top: 0;
 }
 
 .chat-date {
   font-size: 1.2rem;
   font-weight: bold; 
   color: #555;
-  margin-bottom: 0.5em;
+  margin-top: 1em;
 }
 
 .chat-room {
@@ -97,12 +97,13 @@ body, .sidebar, .sidebar *, .new-model-icon span, .chat-date, .room-title, .last
   align-items: center;
   width : 1.5rem; 
 }
+
 .one-delete-button:hover {
   background-color: transparent;
   color: red;
 }
 
-.delete-all-button img {
+.delete-all-button  {
   background-color: transparent;
   position: absolute;
   bottom: 0.5em;
@@ -117,7 +118,11 @@ body, .sidebar, .sidebar *, .new-model-icon span, .chat-date, .room-title, .last
   height: 1.4em; 
   outline: none;
 }
- 
+
+.delete-all-button:hover {
+  background-color: transparent;
+  color: red;
+}
 
 .confirmation-tab {
   position: fixed;
@@ -143,8 +148,7 @@ body, .sidebar, .sidebar *, .new-model-icon span, .chat-date, .room-title, .last
 }
 
 .toggle-sidebar-button {
-  position: fixed;
-  top: 1.5rem;
+  position: fixed;  
   left: 1.1em;  
   display: flex;
   align-items: center;
@@ -154,6 +158,10 @@ body, .sidebar, .sidebar *, .new-model-icon span, .chat-date, .room-title, .last
   cursor: pointer;
   z-index: 1100; 
   outline: none;
+}
+
+.toggle-sidebar-button:hover{
+  color :  #87ceeb;
 }
 
 .sidebar-overlay {
@@ -218,8 +226,8 @@ body, .sidebar, .sidebar *, .new-model-icon span, .chat-date, .room-title, .last
 }
 
 .model-info{
-  margin-bottom: 0.5em;
-  margin-top: 1em;
+  margin-bottom: 0.5em; 
+  margin-top: 0.9em; 
 }  
 
 .new-model-icon svg, .model-info img {
