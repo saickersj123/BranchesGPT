@@ -72,49 +72,56 @@ const Signup = () => {
   };
 
   return (
-    <div className="SignupPage">
-      <img
-        src={branchImage}
-        alt="Logo"
-        className="prlogo2-1-icon"
-        onClick={() => navigate(`/`)} 
-      />
-      {error && (
-        <Alert variant="danger" className="custom-alert">
-          <FaTimesCircle style={{ marginRight: '10px' }} />
-          {error}
-        </Alert>
-      )}
-      {success && (
-        <Alert variant="success" className="custom-alert">
-          <FaCheckCircle style={{ marginRight: '10px' }} />
-          회원가입에 성공했습니다!
-        </Alert>
-      )}
-      <Form className="form" onSubmit={handleSubmit}>
-        <Form.Group controlId="formEmail" className="inputGroup">
-          <Form.Label className="label">이메일 주소</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="이메일을 입력하세요"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="inputField"
+    <div className="signupPage">
+      <div className="signup-center-box">
+        <div className='signupinputGroup'>
+          <img
+            src={branchImage}
+            alt="Logo"
+            className="signupLogo"
+            onClick={() => navigate(`/`)}
           />
-          <div className="underline"></div>
-        </Form.Group>
+        </div>
+      </div>
+      
+      <div className="signup-center-box">
+        {error && (
+          <Alert variant="danger" className="signupAlert">
+            <FaTimesCircle style={{ marginRight: '10px' }} />
+            {error}
+          </Alert>
+        )}
+        {success && (
+          <Alert variant="success" className="signupAlert">
+            <FaCheckCircle style={{ marginRight: '10px' }} />
+            회원가입에 성공했습니다!
+          </Alert>
+        )}
+        <Form className="signupForm" onSubmit={handleSubmit}>
+          <Form.Group controlId="formEmail" className="signupInputGroup">
+            <Form.Label className="signupLabel">이메일 주소</Form.Label>
+            <Form.Control
+              type="email"
+              placeholder="이메일을 입력하세요"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="signupInputField"
+            />
+            <div className="signupUnderline"></div>
+          </Form.Group>
 
-        <Form.Group controlId="formPassword" className="inputGroup">
-          <Form.Label className="label">비밀번호</Form.Label> 
+          <Form.Group controlId="formPassword" className="signupInputGroup">
+            <Form.Label className="signupLabel">비밀번호</Form.Label> 
             <Form.Control
               type="password"
               placeholder="8~15자리의 비밀번호를 입력하세요"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="inputField"
-            /><div className="underline"></div>
+              className="signupInputField"
+            />
+            <div className="signupUnderline"></div>
             {password && (
-              <div className="passwordIcon">
+              <div className="signupPasswordIcon">
                 {isValidPassword(password) ? (
                   <FaCheckCircle color="green" />
                 ) : (
@@ -122,21 +129,20 @@ const Signup = () => {
                 )}
               </div>
             )}
-            <div className="underline"></div>  
-        </Form.Group>
+          </Form.Group>
 
-        <Form.Group controlId="formPasswordConfirm" className="inputGroup">
-          <Form.Label className="label">비밀번호 재확인</Form.Label>
+          <Form.Group controlId="formPasswordConfirm" className="signupInputGroup">
+            <Form.Label className="signupLabel">비밀번호 재확인</Form.Label>
             <Form.Control
               type="password"
               placeholder="8~15자리의 비밀번호를 입력하세요"
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
-              className="inputField"
+              className="signupInputField"
             />
-          <div className="underline"></div>
+            <div className="signupUnderline"></div>
             {passwordConfirm && (
-              <div className="passwordIcon">
+              <div className="signupPasswordIcon">
                 {password === passwordConfirm ? (
                   <FaCheckCircle color="green" />
                 ) : (
@@ -144,24 +150,25 @@ const Signup = () => {
                 )}
               </div>
             )}
-        </Form.Group>
+          </Form.Group>
 
-        <Form.Group controlId="formName" className="inputGroup">
-          <Form.Label className="label">닉네임</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="닉네임을 입력하세요"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="inputField"
-          />
-          <div className="underline"></div>
-        </Form.Group>
+          <Form.Group controlId="formName" className="signupInputGroup">
+            <Form.Label className="signupLabel">닉네임</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="닉네임을 입력하세요"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="signupInputField"
+            />
+            <div className="signupUnderline"></div>
+          </Form.Group>
 
-        <Button variant="primary" type="submit" className="SignupButton">
-          회원가입
-        </Button>
-      </Form>
+          <Button variant="primary" type="submit" className="signupButton">
+            회원가입
+          </Button>
+        </Form>
+      </div>
     </div>
   );
 };

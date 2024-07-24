@@ -6,6 +6,7 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: auto;
+  font-size: 18px; /* 기본 글자 크기 확대 */
 }
 
 .loginPage { 
@@ -21,7 +22,7 @@ html, body {
 .login-center-box {
   width: 100%;
   min-width: 1em;
-  max-width: 20em;
+  max-width: 25em; /* 최대 너비 확대 */
   display: flex;
   flex-direction: column;
   align-items: left;
@@ -32,30 +33,30 @@ html, body {
   justify-content: center;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px; /* 간격 확대 */
 }
  
 .logininputGroup {
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-bottom: 10px;
+  margin-bottom: 15px; /* 마진 확대 */
   position: relative;  
 }
  
 .logininputGroup img{
-  margin-bottom: 3em;
-  margin-top: 3em;
+  margin-bottom: 6em; /* 이미지 마진 확대 */
+  margin-top: 6em;
 }
 
 .inputField { 
-  height: 4.375rem;
+  height: 5rem; /* 입력 필드 높이 확대 */
   position: relative;
-  padding: 10px;
+  padding: 15px; /* 패딩 확대 */
   border: 0.6px solid #b1b1b1;
   box-sizing: border-box;
   border-radius: 6px;
-  font-size: 1rem;
+  font-size: 1.2rem; /* 글자 크기 확대 */
 }
 
 .inputField:focus, .inputField:not(:placeholder-shown) {
@@ -76,26 +77,26 @@ html, body {
 
 .error {
   color: red;
-  margin-bottom: 10px;
+  margin-bottom: 15px; /* 마진 확대 */
 }
 
 .LoginButton, .SignupButton {
   width: 100% !important;
-  max-width: 20em;
+  max-width: 25em; /* 최대 너비 확대 */
   box-shadow: 0px 4px 30px rgba(38, 58, 67, 0.15);
   border-radius: 12px;
   border: none;
   background-color: #b5b5b6;
-  height: 66px;
+  height: 70px; /* 버튼 높이 확대 */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 15px;
-  font-size: 1.4375rem;
+  padding: 20px; /* 패딩 확대 */
+  font-size: 1.5rem; /* 글자 크기 확대 */
   color: #fff;
   font-weight: 600;
   font-family: Pretendard;
-  margin-top: 10px;
+  margin-top: 15px; /* 마진 확대 */
 }
 
 .LoginButton:hover, .SignupButton:hover {
@@ -103,18 +104,18 @@ html, body {
 }
 
 .LoginButton {
-  margin-top: 2rem;
+  margin-top: 2.5rem; /* 마진 확대 */
 }
 
 .SignupButton {
-  margin-top: 10px;
+  margin-top: 15px; /* 마진 확대 */
 }
 
 .or {
-  margin-top: 20px; 
-  margin-bottom: 20px;  
+  margin-top: 15px; 
+  margin-bottom: 15px;  
   width: 28px; 
-  font-size: 30px;
+  font-size: 32px; /* 글자 크기 확대 */
   font-family: Pretendard;
   color: #000; 
   display: inline-block;
@@ -123,12 +124,12 @@ html, body {
 .label {
   width: 100%;
   position: relative;
-  font-size: 1.6rem;
+  font-size: 1.8rem; /* 글자 크기 확대 */
   line-height: 156.5%;
   font-weight: 600;
   font-family: Pretendard;
   color: #263a43;
   text-align: left;
   display: block; 
-  margin-bottom: 10px; 
+  margin-bottom: 15px; /* 마진 확대 */
 }
