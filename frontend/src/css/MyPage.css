@@ -10,35 +10,16 @@
   font-family: Pretendard;
   position: relative; 
   overflow-y: auto; 
-}
+}  
 
-.prlogo2-1-icon {
-  width: 20.8vw;
-  position: fixed; 
-  z-index: 1000;
-  margin-bottom: 5vh; 
-}
-
-@media (max-width: 800px) {
-  .prlogo2-1-icon {
-    width: 100%;
-  }
-  .My-inputField {
-    width: 100%;
-  }
+@media (max-width: 800px) { 
   .my-back-button {
     height: 3rem;
     font-size: 1rem;
   }
 }
 
-@media (min-width: 801px) {
-  .prlogo2-1-icon {
-    width: 20.8vw;
-  }
-  .My-inputField {
-    width: 100%;
-  }
+@media (min-width: 801px) { 
   .my-back-button {
     height: 2.5rem;
     font-size: 1rem;
@@ -47,7 +28,8 @@
 
 .my-center-box {
   width: 100%;
-  max-width: 400px;
+  min-width: 1em;
+  max-width: 20em;
   display: flex;
   flex-direction: column;
   align-items: left;
@@ -59,6 +41,10 @@
   flex-direction: column;
   margin-bottom: 10px;
   position: relative;
+}
+
+.MainInputGroup img{
+  margin-bottom : 5em;
 }
 
 .My-inputField {

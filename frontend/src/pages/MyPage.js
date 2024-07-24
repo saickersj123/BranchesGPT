@@ -119,10 +119,12 @@ const MyPage = ({ username, setUsername }) => {
   };
 
   return (
-    <Container className="mypage-container">
-     <div className="logo-container">
-      <img src={branchImage} alt="Logo" className="prlogo2-1-icon" onClick={handleBackClick}/>
-     </div>
+    <Container className="mypage-container">  
+        <div className="my-center-box">
+          <Form.Group className="MainInputGroup"> 
+            <img src={branchImage} alt="Logo"  onClick={handleBackClick}/> 
+          </Form.Group> 
+        </div> 
       {!isPasswordVerified ? (
         <div className="my-center-box">
           <Form onSubmit={handleVerifyPassword}>
