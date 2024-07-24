@@ -15,6 +15,7 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [setIsLayoutEditing] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -23,6 +24,8 @@ const App = () => {
         setIsLoggedIn(response.valid);
         if (response.valid) {
           setUser(response.user);
+          setUsername(response.user.name);
+          console.log("User authenticated:", response.user.name);
         }
       } catch (error) {
         setIsLoggedIn(false);
@@ -70,6 +73,8 @@ const App = () => {
                       messages={messages}
                       setMessages={setMessages}
                       toggleLayoutEditing={toggleLayoutEditing}
+                      username={username}  
+                      setUsername={setUsername}
                       />
                     }
                   />
@@ -85,7 +90,8 @@ const App = () => {
                         messages={messages}
                         setMessages={setMessages}
                         toggleLayoutEditing={toggleLayoutEditing}
-                        
+                        username={username}  
+                        setUsername={setUsername} 
                       />
                     }
                   />
@@ -95,6 +101,8 @@ const App = () => {
                         user={user} 
                         setUser={setUser} 
                         setIsLoggedIn={setIsLoggedIn}
+                        username={username}  
+                        setUsername={setUsername}
                       />
                     }
                   />  

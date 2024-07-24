@@ -10,10 +10,9 @@ import '../css/MyPage.css';
 import { updatename, updatePassword, mypage } from '../api/axiosInstance';
 import branchImage from '../img/PRlogo2.png'; // import the image
 
-const MyPage = () => { 
+const MyPage = ({ username, setUsername }) => {
   const [password, setPassword] = useState('');
-  const [isPasswordVerified, setIsPasswordVerified] = useState(false);
-  const [name, setname] = useState('');
+  const [isPasswordVerified, setIsPasswordVerified] = useState(false); 
   const [newname, setNewname] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -36,7 +35,8 @@ const MyPage = () => {
       setPassword('');
       if (response.message === 'OK') {
         setIsPasswordVerified(true);
-        setname(response.name);
+        setUsername(response.name);
+        console.log("Password verified, username set to:", response.name); // 콘솔 로그 추가
       } else if (response.cause === 'Incorrect Password') {
         alert('비밀번호가 일치하지 않습니다.');
       }
@@ -67,7 +67,8 @@ const MyPage = () => {
     if (newname.trim()) {
       try {
         await updatename(newname);
-        setname(newname);
+        setUsername(newname); 
+        console.log("New username saved:", newname); // 콘솔 로그 추가
         setIsEditingname(false);
         setNewname('');
       } catch (error) {
@@ -147,7 +148,7 @@ const MyPage = () => {
           <Form>
             <Form.Group className="MainInputGroup">
               <Form.Label className="label">사용자명</Form.Label>
-              <Form.Control plaintext readOnly value={name} className="My-inputField" />
+              <Form.Control plaintext readOnly value={username} className="My-inputField" />
               <div className="MainUnderline"></div>
               <Button onClick={handleEditname} variant="link" className="edit-button">
                 <FontAwesomeIcon icon={faPen} />

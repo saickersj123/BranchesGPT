@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { FaCog } from 'react-icons/fa';
+import React, { useState, useEffect, useCallback, useRef } from 'react'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
 import { TbLayoutSidebar } from "react-icons/tb";
 import { LuPenSquare } from "react-icons/lu";
@@ -29,13 +28,14 @@ const Home = ({
   user,
   messages,
   setMessages,
+  username,  
+  setUsername 
 }) => {
   const sidebarRef = useRef(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
-  const [maxYHSum] = useState(MAX_Y_H_SUM);
-  const [username, setUsername] = useState('');
+  const [maxYHSum] = useState(MAX_Y_H_SUM); 
   const [currentLayout, setCurrentLayout] = useState(INITIAL_LAYOUT);
   const [selectedConversationId, setSelectedConversationId] = useState(null);
   const [isNewChat, setIsNewChat] = useState(false);
@@ -83,10 +83,10 @@ const Home = ({
 
     if (user) {
       setUsername(user.name);
-    }
+    } 
 
     loadStyleSettings();
-  }, [user]);
+  }, [user, setUsername]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -98,6 +98,10 @@ const Home = ({
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+  
+  useEffect(() => {
+    console.log("Home component username:", username); // 콘솔 로그 추가
+  }, [username]);
 
   useEffect(() => {
     const loadConversationMessages = async () => {
@@ -431,8 +435,10 @@ const Home = ({
           ) : (
             <div className="settings-container">
               <Dropdown>
-                <Dropdown.Toggle variant="light" id="dropdown-basic" className="FaCog-dropdown-toggle">
-                  <FaCog size={20} />
+              <Dropdown.Toggle variant="light" id="dropdown-basic" className="FaCog-dropdown-toggle">
+                  <div className="home-set-icon">
+                    {username.charAt(0)}
+                  </div>
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item onClick={handleProfileClick}> <FontAwesomeIcon icon={faUser} /> 프로필</Dropdown.Item>
