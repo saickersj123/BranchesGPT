@@ -24,8 +24,7 @@
   width: 60px;
   height: 60px;
   margin-right: 5px;
-  margin-bottom: 5px;
-  align-self: flex-end;
+  margin-top: 5px; 
   border: none;
   display: flex;
   align-items: center;
