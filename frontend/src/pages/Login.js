@@ -48,45 +48,50 @@ const Login = ({ setIsLoggedIn, setUser }) => {
   };
 
   return (
-    <div className='loginPage'>
-      <img className='prlogo2-1-icon' src={branchImage} alt="logo" onClick={() => navigate(`/`)}/>
-      <form onSubmit={handleSubmit} className='form'>
- 
-
-      <div className='inputGroup'>
-          <label htmlFor='email' className='label'>이메일 주소</label>
-          <input
-            type='email'
-            id='email'
-            placeholder='이메일을 입력하세요'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className='inputField'
-          />
-          <div className='underline'></div>
-        </div>
-        <div className='inputGroup'>
-          <label htmlFor='password' className='label'>비밀번호</label>
-          <input
-            type='password'
-            id='password'
-            placeholder='8~15자리의 비밀번호를 입력하세요'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className='inputField'
-          />
-          <div className='underline'></div>
-        </div>
-        {error && <div className='error'>{error}</div>}
-        <button className='LoginButton'>
-          로그인
-        </button>
-      </form>
-      <div className='or'>or</div>
-      <button className='SignupButton' onClick={() => navigate('/signup')}>
-        회원가입
-      </button>
-    </div>
+    <div className='loginPage'> 
+        <div className="login-center-box"> 
+            <div className='logininputGroup'>
+              <img src={branchImage} alt="logo" onClick={() => navigate(`/`)}/>
+            </div>   
+        </div>  
+      
+      <div className="login-center-box"> 
+        <form onSubmit={handleSubmit} className='form'> 
+          <div className='logininputGroup'>
+              <label htmlFor='email' className='label'>이메일 주소</label>
+              <input
+                type='email'
+                id='email'
+                placeholder='이메일을 입력하세요'
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className='inputField'
+              />
+              <div className='underline'></div>
+          </div>
+            <div className='logininputGroup'>
+              <label htmlFor='password' className='label'>비밀번호</label>
+              <input
+                type='password'
+                id='password'
+                placeholder='8~15자리의 비밀번호를 입력하세요'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className='inputField'
+              />
+              <div className='underline'></div>
+            </div>
+            {error && <div className='error'>{error}</div>}
+            <button className='LoginButton'>
+              로그인
+            </button> 
+            <div className='or'>or</div>
+            <button className='SignupButton' type="button" onClick={() => navigate('/signup')}>
+              회원가입
+            </button>
+        </form>
+      </div>
+    </div> 
   );
 };
 

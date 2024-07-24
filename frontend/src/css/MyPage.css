@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@800&display=swap');
 
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+}
+
 .mypage-container {
   display: flex;
   flex-direction: column;
@@ -8,8 +15,7 @@
   height: 100vh;
   background-color: #fff;
   font-family: Pretendard;
-  position: relative; 
-  overflow-y: auto; 
+  position: relative;  
 }  
 
 @media (max-width: 800px) { 
