@@ -71,7 +71,7 @@ body, html {
   text-align: center;
 }
 
-.chat-list-container {
+.chat-list-container { 
   overflow-y: auto;
   overflow-x: hidden;
   flex: 1;
@@ -81,8 +81,7 @@ body, html {
 
 .chat-box-container {
   overflow-y: hidden;
-  flex: none;
-  height: 10%;
+  flex: none; 
   margin: 0px;
   padding: 10px;
   box-sizing: border-box;

@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Container } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/ChatList.css';
+import AI_Logo from '../img/Nlogo3.png';
 
 const ChatMessage = ({ content, role, time, username, showTime }) => {
   let timeString = '';
@@ -21,12 +22,19 @@ const ChatMessage = ({ content, role, time, username, showTime }) => {
 
   return (
     <div className={`message-container ${role === 'user' ? 'sent-by-user' : 'received'}`}>
-      <div className="username">{displayUsername}</div>
-      <div className="bubble-container">
-        <div className="bubble" style={bubbleStyle}>
-          {content}
+      {role === 'assistant' && (
+        <div className="chatbot-icon">
+          <img src={AI_Logo} alt="AI" />
         </div>
-        {showTime && <div className="time">{timeString}</div>}
+      )}
+      <div className="bubble-wrapper">
+        <div className="username">{displayUsername}</div>
+        <div className="bubble-container">
+          <div className="bubble" style={bubbleStyle}>
+            {content}
+          </div>
+          {showTime && <div className="time">{timeString}</div>}
+        </div>
       </div>
     </div>
   );
@@ -42,9 +50,9 @@ const ChatList = ({ messages, username, showTime }) => {
   }, [messages]);
 
   return (
-    <Container className="chat-list-container mt-3">
+    <Container className="chat-list-container">
       {messages.length === 0 ? (
-        <div className="alert alert-info text-center">
+        <div className="alert-info text-center">
           새로운 대화를 시작해 보세요!
         </div>
       ) : (
