@@ -9,6 +9,7 @@
   background-color: #fff;
   font-family: Pretendard;
   position: relative; 
+  overflow-y: auto; 
 }
 
 .prlogo2-1-icon {

@@ -174,7 +174,7 @@ const ColorPickerPanel = ({
               {displayColorPicker && colorType === 'myChatBubble' && (
                 <div className="color-picker-popover" ref={colorPickerRef}>
                   <div className="color-picker-cover" onClick={handleColorClose} />
-                  <ChromePicker color={myChatBubbleColor} onChange={handleColorChange} />
+                  <ChromePicker className="chrome-picker" color={myChatBubbleColor} onChange={handleColorChange} />
                 </div>
               )}
             </div>
@@ -197,7 +197,7 @@ const ColorPickerPanel = ({
               {displayColorPicker && colorType === 'myChatText' && (
                 <div className="color-picker-popover" ref={colorPickerRef}>
                   <div className="color-picker-cover" onClick={handleColorClose} />
-                  <ChromePicker color={myChatTextColor} onChange={handleColorChange} />
+                  <ChromePicker className="chrome-picker" color={myChatTextColor} onChange={handleColorChange} />
                 </div>
               )}
             </div>
@@ -220,7 +220,7 @@ const ColorPickerPanel = ({
               {displayColorPicker && colorType === 'otherChatBubble' && (
                 <div className="color-picker-popover" ref={colorPickerRef}>
                   <div className="color-picker-cover" onClick={handleColorClose} />
-                  <ChromePicker color={otherChatBubbleColor} onChange={handleColorChange} />
+                  <ChromePicker className="chrome-picker" color={otherChatBubbleColor} onChange={handleColorChange} />
                 </div>
               )}
             </div>
@@ -243,7 +243,7 @@ const ColorPickerPanel = ({
               {displayColorPicker && colorType === 'otherChatText' && (
                 <div className="color-picker-popover" ref={colorPickerRef}>
                   <div className="color-picker-cover" onClick={handleColorClose} />
-                  <ChromePicker color={otherChatTextColor} onChange={handleColorChange} />
+                  <ChromePicker className="chrome-picker" color={otherChatTextColor} onChange={handleColorChange} />
                 </div>
               )}
             </div>
@@ -283,7 +283,7 @@ const ColorPickerPanel = ({
               {displayColorPicker && colorType === 'chatContainerBg' && (
                 <div className="color-picker-popover" ref={colorPickerRef}>
                   <div className="color-picker-cover" onClick={handleColorClose} />
-                  <ChromePicker color={chatContainerBgColor} onChange={handleColorChange} />
+                  <ChromePicker className="chrome-picker" color={chatContainerBgColor} onChange={handleColorChange} />
                 </div>
               )}
             </div>

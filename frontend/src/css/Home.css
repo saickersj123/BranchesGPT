@@ -171,7 +171,7 @@ body, html {
   right: 20px;
   display: flex;
   align-items: center;
-  z-index: 1100;
+  z-index: 1000;
 }
 
 .settings-button {
@@ -218,7 +218,21 @@ body, html {
 }
 
 .header-container.shifted-header {
-  margin-left: 18%; /* Adjust this value based on your sidebar width */
+  margin-left: 20%; /* Adjust this value based on your sidebar width */
+}
+
+.home_new_conversation {
+  font-weight: bold;
+  font-size: 31px;
+  margin-right: 0.8em;
+}
+
+.home_new_conversation:hover {
+  color: green;
+}
+ 
+.shifted-header .home_new_conversation {
+  display: none;
 }
 
 .brand-text {
@@ -271,6 +285,6 @@ body, html {
   background-color: transparent !important;
   border: none !important;    
 }
-.FaCog-dropdown-toggle::after {
+.FaCog-dropdown-toggle:after {
   display: none !important;
 }

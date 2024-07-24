@@ -149,6 +149,7 @@ d
 
 .toggle-sidebar-button {
   position: fixed;  
+  top: 19px;
   left: 1.1em;  
   display: flex;
   align-items: center;
@@ -161,7 +162,7 @@ d
 }
 
 .toggle-sidebar-button:hover{
-  color :  #87ceeb;
+  color: green;
 }
 
 .sidebar-overlay {
@@ -196,11 +197,9 @@ d
 }
 
 .new-conversation-button {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  width: 40px;
-  height: 40px;
+  position: fixed; 
+  top: 15px;
+  right: 10px; 
   display: flex;
   align-items: center;
   border: none;
@@ -324,7 +323,7 @@ d
   border-radius: 5px;
 }
 
-.input-group-pair-header {
+.input-group-pair-header { 
   display: flex;
   justify-content: space-between;
   align-items: center;

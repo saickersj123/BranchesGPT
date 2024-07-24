@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FaCog } from 'react-icons/fa';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
 import { TbLayoutSidebar } from "react-icons/tb";
+import { LuPenSquare } from "react-icons/lu";
 import { faPalette, faRightFromBracket, faSquareMinus, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import ChatBox from '../components/ChatBox';
@@ -14,6 +15,7 @@ import { fetchMessages, fetchConversations, getChatboxes, saveChatbox, resetChat
 import '../css/Home.css';
 import LoginModal from '../components/LoginModal';
 import ColorPickerPanel from '../components/ColorPickerPanel';
+
  
 const MAX_Y_H_SUM = 9;
 const DEFAULT_MODEL = "gpt-3.5-turbo";
@@ -28,6 +30,7 @@ const Home = ({
   messages,
   setMessages,
 }) => {
+  const sidebarRef = useRef(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
@@ -390,6 +393,11 @@ const Home = ({
       console.error('Failed to update conversations list:', error);
     }
   };
+  const handleStartConversation = async () => {
+    if (sidebarRef.current) { 
+      sidebarRef.current.startConversation();
+    } 
+  };
 
   return (
     <main className={`main-section`}>
@@ -399,12 +407,14 @@ const Home = ({
             <TbLayoutSidebar size={35}/>
           </button>
         )}
+         <span className="home_new_conversation" onClick={handleStartConversation}> <LuPenSquare /> </span>
          <span className="brand-text" onClick={() => navigate('/chat')}>BranchGPT</span>
       </div>
       {isLoggedIn ? (
         <>
           <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={toggleSidebar}></div>
           <Sidebar
+            ref={sidebarRef}
             isOpen={isSidebarOpen}  closeSidebar
             conversations={conversations}
             onConversationSelect={handleConversationSelect}
@@ -478,8 +488,7 @@ const Home = ({
             margin={[0, 0]}
             containerPadding={[0, 0]}
             compactType={null}
-            preventCollision={true}
-            verticalCompact={false}
+            preventCollision={true} 
           >
             <div
               key="chatContainer"

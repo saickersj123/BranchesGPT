@@ -11,7 +11,7 @@
 /* 텍스트 영역 래퍼 */
 .textarea-wrapper {
   position: relative; /* 자식 요소의 위치를 상대적으로 설정 */
-  width: 100%; /* 너비를 100%로 설정 */ 
+  width: 80%; /* 너비를 100%로 설정 */ 
 }
 
 /* 채팅 컨테이너 */
@@ -48,5 +48,6 @@
 
 /* 채팅 상자 버튼 호버 효과 */
 .chat-box-button:hover {
-  background-color: gainsboro; /* 배경 색상을 밝은 회색으로 변경 */
+  background-color: gainsboro; /* 배경 색상을 밝은 회색으로 변경 */ 
 }
+

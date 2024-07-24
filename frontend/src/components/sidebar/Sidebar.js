@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
 import {  FaRobot ,FaPlus, FaList, FaMinus } from 'react-icons/fa';
 import { Trash3 } from 'react-bootstrap-icons';
 import  { HighlightOff, }  from '@mui/icons-material'; 
 import { Modal, Button } from 'react-bootstrap';
+import { LuPenSquare } from "react-icons/lu";
 import { deleteConversation, deleteAllChats, startNewConversation, getCustomModels, createModel, deleteModel } from '../../api/axiosInstance';
 import '../../css/Sidebar.css'; 
 import Nlogo_icon from '../../img/Nlogo3.png'; 
@@ -14,7 +15,7 @@ const Sidebar = ({
   onNewConversation, 
   onConversationSelect, 
   onModelSelect // New prop to handle model selection
-}) => {
+}, ref) => {
   const sidebarRef = useRef(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
@@ -31,6 +32,10 @@ const Sidebar = ({
   const [modelName, setModelName] = useState('');
   const [systemContent, setSystemContent] = useState('');
   const [userAssistantPairs, setUserAssistantPairs] = useState([{ user: '', assistant: '' }]);
+
+  useImperativeHandle(ref, () => ({
+    startConversation
+  }));
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -98,7 +103,7 @@ const Sidebar = ({
   useEffect(() => {
     sortedChatRooms().forEach(group => {
       group.rooms.forEach(room => {
-        console.log(`대화 ID: ${room._id}, 마지막 메시지: ${room.chats[room.chats.length - 1]?.content}`);
+        
       });
     });
   }, [conversations, sortedChatRooms]);
@@ -171,11 +176,7 @@ const Sidebar = ({
         { role: "system", content: systemContent },
         { role: "user", content: pair.user },
         { role: "assistant", content: pair.assistant }
-      ]);
-
-      console.log("Submitting model with the following data:");
-      console.log("Model Name: ", modelName);
-      console.log("Training Data: ", JSON.stringify(trainingData));
+      ]); 
 
       await createModel(modelName, JSON.stringify(trainingData));
       setResponseMessage('Model created successfully');
@@ -233,7 +234,7 @@ const Sidebar = ({
     <div className={`sidebar ${isOpen ? 'open' : 'closed'}`} ref={sidebarRef}>
       <div className="sidebar-header">
         <button className="new-conversation-button" onClick={startConversation}>
-          <FaPlus size={20} />
+          <LuPenSquare size={31}/>
         </button>
       </div>
       <div className="sidebar-content">
@@ -438,4 +439,4 @@ const Sidebar = ({
   );
 };
 
-export default Sidebar;
+export default forwardRef(Sidebar);

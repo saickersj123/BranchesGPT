@@ -16,11 +16,13 @@ const MyPage = () => {
   const [name, setname] = useState('');
   const [newname, setNewname] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [isEditingname, setIsEditingname] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [isNewnameFocused, setIsNewnameFocused] = useState(false);
   const [isNewPasswordFocused, setIsNewPasswordFocused] = useState(false);
+  const [isConfirmNewPasswordFocused, setIsConfirmNewPasswordFocused] = useState(false);
   const navigate = useNavigate();
 
   const handlePasswordChange = (event) => {
@@ -77,14 +79,19 @@ const MyPage = () => {
   };
 
   const handleSaveNewPassword = async () => {
-    if (newPassword.trim()) {
-      try {
-        await updatePassword(newPassword);
-        alert('새 비밀번호가 저장되었습니다.');
-        setIsEditingPassword(false);
-        setNewPassword('');
-      } catch (error) {
-        alert('비밀번호 변경에 실패했습니다.');
+    if (newPassword.trim() && confirmNewPassword.trim()) {
+      if (newPassword === confirmNewPassword) {
+        try {
+          await updatePassword(newPassword);
+          alert('새 비밀번호가 저장되었습니다.');
+          setIsEditingPassword(false);
+          setNewPassword('');
+          setConfirmNewPassword('');
+        } catch (error) {
+          alert('비밀번호 변경에 실패했습니다.');
+        }
+      } else {
+        alert('비밀번호가 일치하지 않습니다.'); 
       }
     } else {
       alert('새 비밀번호를 입력하세요.');
@@ -99,15 +106,22 @@ const MyPage = () => {
   const handleCancelEditPassword = () => {
     setIsEditingPassword(false);
     setNewPassword('');
+    setConfirmNewPassword('');
   };
 
   const handleBackClick = () => {
     navigate('/chat'); // Navigate to the previous page
   };
 
+  const handleConfirmNewPasswordChange = (event) => {
+    setConfirmNewPassword(event.target.value);
+  };
+
   return (
     <Container className="mypage-container">
+     <div className="logo-container">
       <img src={branchImage} alt="Logo" className="prlogo2-1-icon" onClick={handleBackClick}/>
+     </div>
       {!isPasswordVerified ? (
         <div className="my-center-box">
           <Form onSubmit={handleVerifyPassword}>
@@ -182,6 +196,18 @@ const MyPage = () => {
                     className="My-inputField"
                   />
                   <div className={`MainUnderline ${isNewPasswordFocused ? 'focused' : ''}`}></div>
+                </Form.Group>
+                <Form.Group className="MainInputGroup">
+                  <Form.Label className="label">비밀번호 확인</Form.Label>
+                  <Form.Control
+                    type="password"
+                    value={confirmNewPassword}
+                    onChange={handleConfirmNewPasswordChange}
+                    onFocus={() => setIsConfirmNewPasswordFocused(true)}
+                    onBlur={() => setIsConfirmNewPasswordFocused(false)}
+                    className="My-inputField"
+                  />
+                  <div className={`MainUnderline ${isConfirmNewPasswordFocused ? 'focused' : ''}`}></div>
                 </Form.Group>
                 <Button onClick={handleSaveNewPassword} variant="primary" className="my-save-button">
                   저장
