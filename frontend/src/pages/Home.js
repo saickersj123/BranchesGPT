@@ -83,15 +83,16 @@ const Home = ({
       if (settings.chatBubbleShadow !== null) setChatBubbleShadow(settings.chatBubbleShadow);
       if (settings.timeBold !== null) setTimeBold(settings.timeBold);
     };
-    if (nicknameChanged){
+    if (nicknameChanged){ 
       setUsername(username);
+      setNicknameChanged(false);
     }
     else if (user) {
       setUsername(user.name);
     } 
 
     loadStyleSettings();
-  }, [user, setUsername, nicknameChanged, username]);  
+  }, [user, setUsername, nicknameChanged, setNicknameChanged, username]);  
   useEffect(() => {
     const handleResize = () => {
       setViewportHeight(window.innerHeight);
