@@ -10,7 +10,7 @@ import '../css/MyPage.css';
 import { updatename, updatePassword, mypage } from '../api/axiosInstance';
 import branchImage from '../img/PRlogo2.png'; // import the image
 
-const MyPage = ({ username, setUsername }) => {
+const MyPage = ({ username, setUsername, setNicknameChanged }) => {
   const [password, setPassword] = useState('');
   const [isPasswordVerified, setIsPasswordVerified] = useState(false); 
   const [newname, setNewname] = useState('');
@@ -35,8 +35,7 @@ const MyPage = ({ username, setUsername }) => {
       setPassword('');
       if (response.message === 'OK') {
         setIsPasswordVerified(true);
-        setUsername(response.name);
-        console.log("Password verified, username set to:", response.name); // 콘솔 로그 추가
+        setUsername(response.name); 
       } else if (response.cause === 'Incorrect Password') {
         alert('비밀번호가 일치하지 않습니다.');
       }
@@ -66,11 +65,15 @@ const MyPage = ({ username, setUsername }) => {
   const handleSaveNewname = async () => {
     if (newname.trim()) {
       try {
-        await updatename(newname);
+        await updatename(newname); 
         setUsername(newname); 
-        console.log("New username saved:", newname); // 콘솔 로그 추가
-        setIsEditingname(false);
-        setNewname('');
+        try {
+          setNicknameChanged(true); // 닉네임 변경 상태 업데이트 
+        } catch (error) {
+          console.error('Nickname change update failed:', error);
+        } 
+        setIsEditingname(false); 
+        setNewname('');  
       } catch (error) {
         alert('닉네임 변경에 실패했습니다.');
       }

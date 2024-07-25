@@ -16,7 +16,7 @@ const App = () => {
   const [setIsLayoutEditing] = useState(false);
   const [messages, setMessages] = useState([]);
   const [username, setUsername] = useState('');
-
+  const [nicknameChanged, setNicknameChanged] = useState(false);
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -24,8 +24,7 @@ const App = () => {
         setIsLoggedIn(response.valid);
         if (response.valid) {
           setUser(response.user);
-          setUsername(response.user.name);
-          console.log("User authenticated:", response.user.name);
+          setUsername(response.user.name); 
         }
       } catch (error) {
         setIsLoggedIn(false);
@@ -74,7 +73,9 @@ const App = () => {
                       setMessages={setMessages}
                       toggleLayoutEditing={toggleLayoutEditing}
                       username={username}  
-                      setUsername={setUsername}
+                      setUsername={setUsername} 
+                      nicknameChanged={nicknameChanged} 
+                      setNicknameChanged={setNicknameChanged}  
                       />
                     }
                   />
@@ -91,7 +92,9 @@ const App = () => {
                         setMessages={setMessages}
                         toggleLayoutEditing={toggleLayoutEditing}
                         username={username}  
-                        setUsername={setUsername} 
+                        setUsername={setUsername}  
+                        nicknameChanged={nicknameChanged} 
+                        setNicknameChanged={setNicknameChanged}  
                       />
                     }
                   />
@@ -103,6 +106,7 @@ const App = () => {
                         setIsLoggedIn={setIsLoggedIn}
                         username={username}  
                         setUsername={setUsername}
+                        setNicknameChanged={setNicknameChanged}
                       />
                     }
                   />  

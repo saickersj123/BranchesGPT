@@ -29,7 +29,9 @@ const Home = ({
   messages,
   setMessages,
   username,  
-  setUsername 
+  setUsername,
+  nicknameChanged,
+  setNicknameChanged
 }) => {
   const sidebarRef = useRef(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -58,6 +60,7 @@ const Home = ({
   const [showTime, setShowTime] = useState(true);
   const [previousSidebarState, setPreviousSidebarState] = useState(false); // New state to track previous sidebar state
 
+
   useEffect(() => {
     const loadStyleSettings = () => {
       const settings = {
@@ -80,14 +83,15 @@ const Home = ({
       if (settings.chatBubbleShadow !== null) setChatBubbleShadow(settings.chatBubbleShadow);
       if (settings.timeBold !== null) setTimeBold(settings.timeBold);
     };
-
-    if (user) {
+    if (nicknameChanged){
+      setUsername(username);
+    }
+    else if (user) {
       setUsername(user.name);
     } 
 
     loadStyleSettings();
-  }, [user, setUsername]);
-
+  }, [user, setUsername, nicknameChanged, username]);  
   useEffect(() => {
     const handleResize = () => {
       setViewportHeight(window.innerHeight);
@@ -98,10 +102,6 @@ const Home = ({
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-  
-  useEffect(() => {
-    console.log("Home component username:", username); // 콘솔 로그 추가
-  }, [username]);
 
   useEffect(() => {
     const loadConversationMessages = async () => {

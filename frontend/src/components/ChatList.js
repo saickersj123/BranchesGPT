@@ -39,7 +39,7 @@ const ChatMessage = ({ content, role, time, username, showTime }) => {
     </div>
   );
 };
-
+ 
 const ChatList = ({ messages, username, showTime }) => {
   const chatEndRef = useRef(null);
 
