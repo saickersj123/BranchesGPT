@@ -26,7 +26,7 @@
    ```
 5. (FOR LOCAL) Change baseURL in `/frontend/api/axiosinstance.js`
    ```sh
-   "http://localhost:5000 or <YOUR PORT>"
+   "http://localhost:<YOUR PORT> or :5000"
    ```
    
 ### How to Run
