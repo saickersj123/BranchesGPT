@@ -403,7 +403,7 @@ const Home = ({
             <FaBars size={20} />
           </button>
         )}
-         <span className="brand-text" onClick={() => navigate('/chat')}>BranchGPT</span>
+         <span className="brand-text" onClick={() => navigate('/chat')}>BranchesGPT</span>
       </div>
       {isLoggedIn ? (
         <>
