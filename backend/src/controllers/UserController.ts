@@ -47,7 +47,7 @@ export const userSignUp = async (
 				maxAge: 0,
 				httpOnly: true,
 				signed: true,
-				sameSite: 'none',
+				sameSite: 'lax',
 				secure: true,
 			});
 
@@ -63,7 +63,7 @@ export const userSignUp = async (
 			expires, // same as token expiration time
 			httpOnly: true,
 			signed: true,
-			sameSite: 'none',
+			sameSite: 'lax',
 			secure: true,
 		});
 
@@ -106,7 +106,7 @@ export const userLogin = async (
 				maxAge: 0,
 				httpOnly: true,
 				signed: true,
-				sameSite: 'none',
+				sameSite: 'lax',
 				secure: true,
 			});
 
@@ -122,7 +122,7 @@ export const userLogin = async (
 			expires, // same as token expiration time
 			httpOnly: true,
 			signed: true,
-			sameSite: 'none',
+			sameSite: 'lax',
 			secure: true,
 		});
 
@@ -193,7 +193,7 @@ export const logoutUser = async (
 				maxAge: 0,
 				httpOnly: true,
 				signed: true,
-				sameSite: 'none',
+				sameSite: 'lax',
 				secure: true,
 			});
 
