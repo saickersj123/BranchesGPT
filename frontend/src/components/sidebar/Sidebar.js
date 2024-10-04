@@ -168,17 +168,19 @@ const Sidebar = ({
     setIsTraining(true);
     setResponseMessage('');
     try {
-      const trainingData = userAssistantPairs.flatMap(pair => [
-        {"message": [{ role: "system", content: systemContent },
-        { role: "user", content: pair.user },
-        { role: "assistant", content: pair.assistant }]}
-      ]);
+      const trainingData = userAssistantPairs.map(pair => JSON.stringify({
+        message: [
+          { role: "system", content: systemContent },
+          { role: "user", content: pair.user },
+          { role: "assistant", content: pair.assistant }
+        ]
+      })).join('\n'); // Join each JSON object with a newline
 
       console.log("Submitting model with the following data:");
       console.log("Model Name: ", modelName);
-      console.log("Training Data: ", JSON.stringify(trainingData));
+      console.log("Training Data: ", trainingData);
 
-      await createModel(modelName, JSON.stringify(trainingData));
+      await createModel(modelName, trainingData); // Send as JSONL string
       setResponseMessage('Model created successfully');
       const updatedModels = await getCustomModels();
       setModels(updatedModels);
