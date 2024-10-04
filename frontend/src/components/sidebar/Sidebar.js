@@ -168,18 +168,20 @@ const Sidebar = ({
     setIsTraining(true);
     setResponseMessage('');
     try {
+      // Convert each pair to a JSON string and join with newline
       const trainingData = userAssistantPairs.map(pair => JSON.stringify({
         message: [
           { role: "system", content: systemContent },
           { role: "user", content: pair.user },
           { role: "assistant", content: pair.assistant }
         ]
-      })).join('\n'); // Join each JSON object with a newline
+      })).join('\n');
 
       console.log("Submitting model with the following data:");
       console.log("Model Name: ", modelName);
       console.log("Training Data: ", trainingData);
 
+      // Ensure that createModel sends the trainingData as a string, not as a JSON array
       await createModel(modelName, trainingData); // Send as JSONL string
       setResponseMessage('Model created successfully');
       const updatedModels = await getCustomModels();
