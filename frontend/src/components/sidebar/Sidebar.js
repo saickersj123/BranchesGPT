@@ -170,7 +170,7 @@ const Sidebar = ({
     try {
       // Convert each pair to a JSON string and join with newline
       const trainingData = userAssistantPairs.map(pair => JSON.stringify({
-        message: [
+        messages: [
           { role: "system", content: systemContent },
           { role: "user", content: pair.user },
           { role: "assistant", content: pair.assistant }
