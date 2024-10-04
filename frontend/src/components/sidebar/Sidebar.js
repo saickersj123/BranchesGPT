@@ -169,9 +169,9 @@ const Sidebar = ({
     setResponseMessage('');
     try {
       const trainingData = userAssistantPairs.flatMap(pair => [
-        { role: "system", content: systemContent },
+        {"message": [{ role: "system", content: systemContent },
         { role: "user", content: pair.user },
-        { role: "assistant", content: pair.assistant }
+        { role: "assistant", content: pair.assistant }]}
       ]);
 
       console.log("Submitting model with the following data:");
