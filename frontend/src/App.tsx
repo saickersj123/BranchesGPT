@@ -6,25 +6,29 @@ import MyPage from './pages/MyPage';
 import Home from './pages/Home';
 import MainPage from './pages/MainPage';
 import Signup from './pages/Signup';
-import {  checkAuthStatus, 
-          fetchMessages, 
-          } from './api/axiosInstance';
+import { checkAuthStatus, fetchMessages } from './api/axiosInstance';
+import { Message } from './types';  // types.ts에서 Message 인터페이스를 import
 
-const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
-  const [setIsLayoutEditing] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [username, setUsername] = useState('');
-  const [nicknameChanged, setNicknameChanged] = useState(false);
+interface User {
+  name: string;
+}
+
+const App: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLayoutEditing, setIsLayoutEditing] = useState<boolean>(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [username, setUsername] = useState<string>('');
+  const [nicknameChanged, setNicknameChanged] = useState<boolean>(false);
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const response = await checkAuthStatus();
         setIsLoggedIn(response.valid);
-        if (response.valid) {
+        if (response.valid && response.user) {
           setUser(response.user);
-          setUsername(response.user.name); 
+          setUsername(response.user.name);
         }
       } catch (error) {
         setIsLoggedIn(false);
@@ -38,15 +42,14 @@ const App = () => {
     setIsLayoutEditing((prevLayoutEditing) => !prevLayoutEditing);
   };
 
-  const loadMessages = useCallback(async (conversationId) => {
+  const loadMessages = useCallback(async (conversationId: string) => {
     try {
       const data = await fetchMessages(conversationId);
-      setMessages(Array.isArray(data) ? data : []);
+      setMessages(data);  // 여기서 타입 체크가 정확히 이루어져야 합니다.
     } catch (error) {
       console.error('Error loading messages:', error);
     }
   }, []);
-
 
   return (
     <Router>
@@ -64,18 +67,18 @@ const App = () => {
                     path="/chat"
                     element={
                       <Home
-                      isLoggedIn={isLoggedIn}
-                      setIsLoggedIn={setIsLoggedIn}
-                      user={user}
-                      isLayoutEditing={setIsLayoutEditing}
-                      loadMessages={loadMessages}
-                      messages={messages}
-                      setMessages={setMessages}
-                      toggleLayoutEditing={toggleLayoutEditing}
-                      username={username}  
-                      setUsername={setUsername} 
-                      nicknameChanged={nicknameChanged} 
-                      setNicknameChanged={setNicknameChanged}  
+                        isLoggedIn={isLoggedIn}
+                        setIsLoggedIn={setIsLoggedIn}
+                        user={user}
+                        isLayoutEditing={isLayoutEditing}
+                        loadMessages={loadMessages}
+                        messages={messages}
+                        setMessages={setMessages}
+                        toggleLayoutEditing={toggleLayoutEditing}
+                        username={username}
+                        setUsername={setUsername}
+                        nicknameChanged={nicknameChanged}
+                        setNicknameChanged={setNicknameChanged}
                       />
                     }
                   />
@@ -86,20 +89,21 @@ const App = () => {
                         isLoggedIn={isLoggedIn}
                         setIsLoggedIn={setIsLoggedIn}
                         user={user}
-                        isLayoutEditing={setIsLayoutEditing}
+                        isLayoutEditing={isLayoutEditing}
                         loadMessages={loadMessages}
                         messages={messages}
                         setMessages={setMessages}
                         toggleLayoutEditing={toggleLayoutEditing}
-                        username={username}  
-                        setUsername={setUsername}  
-                        nicknameChanged={nicknameChanged} 
-                        setNicknameChanged={setNicknameChanged}  
+                        username={username}
+                        setUsername={setUsername}
+                        nicknameChanged={nicknameChanged}
+                        setNicknameChanged={setNicknameChanged}
                       />
                     }
                   />
                   <Route
-                    path="/mypage" element={
+                    path="/mypage" 
+                    element={
                       <MyPage 
                         user={user} 
                         setUser={setUser} 
@@ -110,7 +114,6 @@ const App = () => {
                       />
                     }
                   />  
-                  
                 </Routes>
               </div>
             }

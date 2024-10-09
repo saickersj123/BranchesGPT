@@ -1,33 +1,31 @@
-// SignupPage.js
-
 import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import branchImage from '../img/PRlogo2.png';
-import '../css/Signup.css';
+import { useNavigate } from 'react-router-dom';
 import { signupUser } from '../api/axiosInstance';
-import { useNavigate } from 'react-router-dom'; 
+import '../css/Signup.css';
+import branchImage from '../img/PRlogo2.png';
 
-const Signup = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConfirm] = useState('');
-  const [name, setName] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
+const Signup: React.FC = () => {
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [passwordConfirm, setPasswordConfirm] = useState<string>('');
+  const [name, setName] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [success, setSuccess] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
-  const isValidEmail = (email) => {
+  const isValidEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const isValidPassword = (password) => {
+  const isValidPassword = (password: string): boolean => {
     return password.length >= 8 && password.length <= 15;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!email || !password || !name || !passwordConfirm) {
@@ -56,13 +54,13 @@ const Signup = () => {
       if (response.success) {
         setSuccess(true);
         setTimeout(() => {
-          navigate(`/login`);
+          navigate('/login');
         }, 1000);
         setError('');
       } else {
         setError('회원가입 중 오류가 발생했습니다. 다시 시도하세요.');
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.response && error.response.status === 409) {
         setError('이미 사용 중인 이메일입니다.');
       } else {
@@ -79,7 +77,7 @@ const Signup = () => {
             src={branchImage}
             alt="Logo"
             className="signupLogo"
-            onClick={() => navigate(`/`)}
+            onClick={() => navigate('/')}
           />
         </div>
       </div>

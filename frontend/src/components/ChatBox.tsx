@@ -1,27 +1,41 @@
-// ChatBox.js
-
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import '../css/ChatBox.css';
 import { useNavigate } from 'react-router-dom';
 import { sendMessage, startNewConversationwithmsg } from '../api/axiosInstance';
+import { Message, Conversation } from '../types';  // types.ts에서 Message와 Conversation을 import
 
-const ChatBox = ({
+interface ChatBoxProps {
+  onNewMessage: (message: Message) => void;
+  onUpdateMessage: (message: Message) => void;
+  conversationId: string | null;
+  isNewChat: boolean;
+  onChatInputAttempt: () => void;
+  isLoggedIn: boolean;
+  selectedModel: string;
+  onNewConversation: (newConversationId: string) => Promise<void>;
+  isEditMode: boolean;
+  setSelectedConversationId: React.Dispatch<React.SetStateAction<string | null>>;
+}
+
+// Message 인터페이스 제거 (이미 types.ts에서 import했으므로)
+
+const ChatBox: React.FC<ChatBoxProps> = ({
   conversationId,
   onNewMessage,
   onUpdateMessage,
   isEditMode,
   isNewChat,
-  selectedModel,  // Added prop
+  selectedModel,
   onChatInputAttempt,
   isLoggedIn,
   onNewConversation,
   setSelectedConversationId
 }) => {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState<string>('');
   const navigate = useNavigate();
 
-  const handleMessageChange = (event) => {
+  const handleMessageChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (!isLoggedIn) {
       onChatInputAttempt();
     } else {
@@ -32,7 +46,7 @@ const ChatBox = ({
   const sendMessageToServer = async () => {
     if (message.trim() === '') return;
 
-    const newMessage = {
+    const newMessage: Message = {
       content: message,
       role: 'user',
       createdAt: new Date().toISOString(),
@@ -43,21 +57,21 @@ const ChatBox = ({
     try {
       if (isNewChat) {
         const response = await startNewConversationwithmsg(message);
-        const newConversationId = response.id;
+        const newConversationId = response._id;  // 여기를 _id로 변경
         onNewConversation(newConversationId);
-        navigate(`/chat`);
-        if (response && response.length > 0) {
-          const aiMessage = {
-            content: response[response.length - 1].content,
+        navigate(`/chat/${newConversationId}`);  // 새 대화로 이동
+        if (response && response.chats.length > 0) {
+          const aiMessage: Message = {
+            content: response.chats[response.chats.length - 1].content,
             role: 'assistant',
             createdAt: new Date().toISOString(),
           };
           onUpdateMessage(aiMessage);
         }
-      } else {
+      } else if (conversationId) {
         const response = await sendMessage(conversationId, message);
         if (response && response.length > 0) {
-          const aiMessage = {
+          const aiMessage: Message = {
             content: response[response.length - 1].content,
             role: 'assistant',
             createdAt: new Date().toISOString(),
@@ -71,7 +85,7 @@ const ChatBox = ({
     }
   };
 
-  const handleKeyPress = (event) => {
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       sendMessageToServer();

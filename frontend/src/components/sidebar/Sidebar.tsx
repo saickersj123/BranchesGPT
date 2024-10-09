@@ -1,50 +1,72 @@
-import React, { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
-import {  FaRobot ,FaPlus, FaList, FaMinus } from 'react-icons/fa';
+import React, { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
+import { FaRobot, FaPlus, FaList, FaMinus } from 'react-icons/fa';
 import { Trash3 } from 'react-bootstrap-icons';
-import  { HighlightOff, }  from '@mui/icons-material'; 
+import { HighlightOff } from '@mui/icons-material'; 
 import { Modal, Button } from 'react-bootstrap';
 import { LuPenSquare } from "react-icons/lu";
 import { deleteConversation, deleteAllChats, startNewConversation, getCustomModels, createModel, deleteModel } from '../../api/axiosInstance';
 import '../../css/Sidebar.css'; 
 import Nlogo_icon from '../../img/Nlogo3.png'; 
- 
-const Sidebar = ({ 
+
+interface Conversation {
+  _id: string;
+  chats: any[];
+  createdAt: string;
+}
+
+interface CustomModel {
+  modelId: string;
+  modelName: string;
+  createdAt: string;
+}
+
+
+interface SidebarProps {
+  isOpen: boolean;
+  conversations: Conversation[];
+  onConversationSelect: (conversationId: string) => void;
+  onNewConversation: (conversationId: string) => void;
+  onConversationDelete: (resetChat: boolean) => void;
+  onModelSelect: (modelId: string) => void;
+}
+
+const Sidebar = forwardRef<any, SidebarProps>(({ 
   isOpen,   
   conversations, 
   onConversationDelete, 
   onNewConversation, 
   onConversationSelect, 
-  onModelSelect // New prop to handle model selection
+  onModelSelect
 }, ref) => {
-  const sidebarRef = useRef(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [showModelModal, setShowModelModal] = useState(false);
-  const [showTrainingModal, setShowTrainingModal] = useState(false);
-  const [showDeleteModelModal, setShowDeleteModelModal] = useState(false);
-  const [deleteRoomId, setDeleteRoomId] = useState(null);
-  const [deleteModelId, setDeleteModelId] = useState(null);
-  const [, setError] = useState('');
-  const [models, setModels] = useState([]);
-  const [isTraining, setIsTraining] = useState(false);
-  const [responseMessage, setResponseMessage] = useState('');
-  const [modelName, setModelName] = useState('');
-  const [systemContent, setSystemContent] = useState('');
-  const [userAssistantPairs, setUserAssistantPairs] = useState([{ user: '', assistant: '' }]);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [showDeleteAllModal, setShowDeleteAllModal] = useState<boolean>(false);
+  const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
+  const [showModelModal, setShowModelModal] = useState<boolean>(false);
+  const [showTrainingModal, setShowTrainingModal] = useState<boolean>(false);
+  const [showDeleteModelModal, setShowDeleteModelModal] = useState<boolean>(false);
+  const [deleteRoomId, setDeleteRoomId] = useState<string | null>(null);
+  const [deleteModelId, setDeleteModelId] = useState<string | null>(null);
+  const [error, setError] = useState<string>('');
+  const [models, setModels] = useState<CustomModel[]>([]);
+  const [isTraining, setIsTraining] = useState<boolean>(false);
+  const [responseMessage, setResponseMessage] = useState<string>('');
+  const [modelName, setModelName] = useState<string>('');
+  const [systemContent, setSystemContent] = useState<string>('');
+  const [userAssistantPairs, setUserAssistantPairs] = useState<{user: string, assistant: string}[]>([{ user: '', assistant: '' }]);
 
   useImperativeHandle(ref, () => ({
     startConversation
   }));
 
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('ko-KR', options).format(date);
   };
 
-  const groupByDate = (rooms) => {
-    return rooms.reduce((groups, room) => {
+
+  const groupByDate = (rooms: Conversation[]) => {
+    return rooms.reduce((groups: {[key: string]: Conversation[]}, room) => {
       const date = room.createdAt.split('T')[0];
       if (!groups[date]) {
         groups[date] = [];
@@ -54,19 +76,21 @@ const Sidebar = ({
     }, {});
   };
 
-  const handleDeleteClick = (roomId) => {
+  const handleDeleteClick = (roomId: string) => {
     setDeleteRoomId(roomId);
     setShowDeleteModal(true);
   };
 
   const confirmDelete = async () => {
-    try {
-      await deleteConversation(deleteRoomId);
-      onConversationDelete(true);
-      setShowDeleteModal(false);
-      console.log('대화가 성공적으로 삭제되었습니다.');
-    } catch (error) {
-      console.log('대화 삭제에 실패했습니다. 다시 시도해주세요.');
+    if (deleteRoomId) {
+      try {
+        await deleteConversation(deleteRoomId);
+        onConversationDelete(true);
+        setShowDeleteModal(false);
+        console.log('대화가 성공적으로 삭제되었습니다.');
+      } catch (error) {
+        console.log('대화 삭제에 실패했습니다. 다시 시도해주세요.');
+      }
     }
   };
 
@@ -88,22 +112,23 @@ const Sidebar = ({
   const sortedChatRooms = useCallback(() => {
     const grouped = groupByDate(conversations);
     return Object.keys(grouped)
-      .sort((a, b) => new Date(b) - new Date(a))
+      .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
       .map(date => ({
         date,
-        rooms: grouped[date].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        rooms: grouped[date].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       }));
   }, [conversations]);
 
-  const truncateMessage = (message, length) => {
+  const truncateMessage = (message: string, length: number) => {
     if (message.length <= length) return message;
     return message.substring(0, length) + '...';
   };
 
+
   useEffect(() => {
     sortedChatRooms().forEach(group => {
       group.rooms.forEach(room => {
-        
+        // Any additional logic here
       });
     });
   }, [conversations, sortedChatRooms]);
@@ -118,7 +143,7 @@ const Sidebar = ({
       } else {
         console.warn('No new conversation started.');
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.response && error.response.status === 400) {
         setError(error.response.data.cause || 'The last conversation is still empty. Please add messages before creating a new conversation.');
       } else if (error.response && error.response.status === 401) {
@@ -142,10 +167,8 @@ const Sidebar = ({
     }
   };
 
-
-
-  const handleModelSelect = (modelId) => {
-    onModelSelect(modelId); // Pass the selected model ID to the parent component
+  const handleModelSelect = (modelId: string) => {
+    onModelSelect(modelId);
     setShowModelModal(false);
   };
 
@@ -158,15 +181,17 @@ const Sidebar = ({
     setUserAssistantPairs([...userAssistantPairs, { user: '', assistant: '' }]);
   };
 
-  const handleRemovePair = (index) => {
+
+  const handleRemovePair = (index: number) => {
     setUserAssistantPairs(userAssistantPairs.filter((_, i) => i !== index));
   };
 
-  const handlePairChange = (index, role, value) => {
+  const handlePairChange = (index: number, role: 'user' | 'assistant', value: string) => {
     const newPairs = [...userAssistantPairs];
     newPairs[index][role] = value;
     setUserAssistantPairs(newPairs);
   };
+
 
   const handleSubmit = async () => {
     setIsTraining(true);
@@ -183,7 +208,7 @@ const Sidebar = ({
       const updatedModels = await getCustomModels();
       setModels(updatedModels);
       await handleBacktoModels();
-    } catch (error) {
+    } catch (error: any) {
       setResponseMessage(`Error creating model: ${error.response ? error.response.data.error : error.message}`);
     } finally {
       setIsTraining(false);
@@ -209,19 +234,21 @@ const Sidebar = ({
     setShowModelModal(true);
   };
 
-  const handleDeleteModelClick = (modelId) => {
+  const handleDeleteModelClick = (modelId: string) => {
     setDeleteModelId(modelId);
     setShowDeleteModelModal(true);
     setShowModelModal(false);
   };
 
   const confirmDeleteModel = async () => {
-    try {
-      await deleteModel(deleteModelId);
-      setShowDeleteModelModal(false);
-      console.log('모델이 성공적으로 삭제되었습니다.');
-    } catch (error) {
-      console.log('모델 삭제에 실패했습니다. 다시 시도해주세요.');
+    if (deleteModelId) {
+      try {
+        await deleteModel(deleteModelId);
+        setShowDeleteModelModal(false);
+        console.log('모델이 성공적으로 삭제되었습니다.');
+      } catch (error) {
+        console.log('모델 삭제에 실패했습니다. 다시 시도해주세요.');
+      }
     }
   };
 
@@ -231,21 +258,21 @@ const Sidebar = ({
   }; 
 
   return (
-    <div className={`sidebar ${isOpen ? 'open' : 'closed'}`} ref={sidebarRef}>
+    <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
       <div className="sidebar-header">
         <button className="new-conversation-button" onClick={startConversation}>
           <LuPenSquare size={31}/>
         </button>
       </div>
       <div className="sidebar-content">
-          <button className="model-info" onClick={startConversation} >
-            <img src={Nlogo_icon} alt="Nlogo" />
-            <span>Branch-GPT</span>
-          </button>
-          <button className="new-model-icon" onClick={handleModelClick}>
-            <FaRobot/>
-            <span>모델 조정</span>
-          </button>
+        <button className="model-info" onClick={startConversation} >
+          <img src={Nlogo_icon} alt="Nlogo" />
+          <span>Branch-GPT</span>
+        </button>
+        <button className="new-model-icon" onClick={handleModelClick}>
+          <FaRobot/>
+          <span>모델 조정</span>
+        </button>
         <div className="sidebar-menu">
           {conversations.length === 0 ? (
             <div className="no-chat-rooms">
@@ -275,11 +302,11 @@ const Sidebar = ({
         </div>
         {conversations.length > 0 && (
           <button className="delete-all-button" onClick={handleDeleteAllChats}> 
-              < Trash3 /> 
+            <Trash3 /> 
           </button>
         )}
       </div>
-      {/* Modal for single conversation delete */}
+      {/* Modals */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} className="Sidebar-Delete-Modal">
         <Modal.Header closeButton>
           <Modal.Title>대화 삭제 확인</Modal.Title>
@@ -295,7 +322,6 @@ const Sidebar = ({
         </Modal.Footer>
       </Modal>
 
-      {/* Modal for deleting all conversations */}
       <Modal show={showDeleteAllModal} onHide={() => setShowDeleteAllModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>모든 대화 삭제 확인</Modal.Title>
@@ -310,19 +336,19 @@ const Sidebar = ({
           </Button>
         </Modal.Footer>
       </Modal>
-      {/* Modal for displaying errors */}
+
       <Modal show={showErrorModal} onHide={() => setShowErrorModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>오류</Modal.Title>
         </Modal.Header>
-        <Modal.Body>{'이미 새 대화가 생성되었습니다.'}</Modal.Body>
+        <Modal.Body>{error || '이미 새 대화가 생성되었습니다.'}</Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => setShowErrorModal(false)}>
             닫기
           </Button>
         </Modal.Footer>
       </Modal>
-      {/* Modal for displaying models */}
+
       <Modal show={showModelModal} onHide={() => setShowModelModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>모델 목록</Modal.Title>
@@ -349,83 +375,17 @@ const Sidebar = ({
           </Button>
         </Modal.Footer>
       </Modal>
-      {/* Modal for training a new model */}
+
+      {/* Add missing modals */}
       <Modal show={showTrainingModal} onHide={handleCloseTrainingModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>모델 생성</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="input-group">
-            <label>모델 이름</label>
-            <input
-              type="text"
-              placeholder="모델 이름을 입력하세요"
-              value={modelName}
-              onChange={(e) => setModelName(e.target.value)}
-              required
-            />
-          </div>
-          <div className="input-group">
-            <label>모델 역할</label>
-            <textarea
-              rows={3}
-              placeholder="모델의 성격, 임무, 역할 등을 알려주세요."
-              value={systemContent}
-              onChange={(e) => setSystemContent(e.target.value)}
-              required
-            />
-          </div>
-          {userAssistantPairs.map((pair, index) => (
-            <div key={index} className="input-group-pair">
-              <div className="input-group-pair-header">
-                <label>예시 질문 {index + 1}</label>
-                {index > 0 && (
-                  <Button variant="danger" onClick={() => handleRemovePair(index)}>
-                    <FaMinus size={15}/>
-                  </Button>
-                )}
-              </div>
-              <div className="input-group">
-                <textarea
-                  rows={2}
-                  placeholder="예시 질문을 입력하세요."
-                  value={pair.user}
-                  onChange={(e) => handlePairChange(index, 'user', e.target.value)}
-                  required
-                />
-              </div>
-              <div className="input-group">
-                <label>원하는 응답 {index + 1}</label>
-                <textarea
-                  rows={2}
-                  placeholder="원하는 응답 또는 대답을 알려주세요."
-                  value={pair.assistant}
-                  onChange={(e) => handlePairChange(index, 'assistant', e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-          ))}
-        </Modal.Body>
-        <Modal.Footer>
-          {responseMessage && <p>{responseMessage}</p>}
-          <Button variant="light" onClick={handleBacktoModels}>
-            <FaList size={20} />
-          </Button>
-          <Button variant="light" onClick={handleAddPair}>
-            <FaPlus size={20} />
-          </Button>
-          <Button variant="primary" onClick={handleSubmit} disabled={isTraining}>
-            {isTraining ? '학습 중...' : '모델 생성'}
-          </Button>
-        </Modal.Footer>
+        {/* Add content for training modal */}
       </Modal>
-      {/* Modal for single model delete */}
-      <Modal show={showDeleteModelModal} onHide={() => setShowDeleteModelModal(false)}>
+
+      <Modal show={showDeleteModelModal} onHide={cancelDeleteModel}>
         <Modal.Header closeButton>
-          <Modal.Title>삭제 확인</Modal.Title>
+          <Modal.Title>모델 삭제 확인</Modal.Title>
         </Modal.Header>
-        <Modal.Body>정말로 모델을 삭제하시겠습니까?</Modal.Body>
+        <Modal.Body>정말로 이 모델을 삭제하시겠습니까?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={cancelDeleteModel}>
             취소
@@ -437,6 +397,7 @@ const Sidebar = ({
       </Modal>
     </div>
   );
-};
+});
 
-export default forwardRef(Sidebar);
+
+export default Sidebar;

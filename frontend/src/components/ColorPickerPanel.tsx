@@ -1,14 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faBold, faClock, faSun, faUndo } from '@fortawesome/free-solid-svg-icons';
-import { ChromePicker } from 'react-color';
+import { ChromePicker, ColorResult } from 'react-color';
 import '../css/ColorPickerPanel.css';
 
-const ColorPickerPanel = ({
-  navbarTextColor,
-  setNavbarTextColor,
-  navbarBold,
-  setNavbarBold,
+interface ColorPickerPanelProps {
+  myChatBubbleColor: string;
+  setMyChatBubbleColor: (color: string) => void;
+  myChatTextColor: string;
+  setMyChatTextColor: (color: string) => void;
+  otherChatBubbleColor: string;
+  setOtherChatBubbleColor: (color: string) => void;
+  otherChatTextColor: string;
+  setOtherChatTextColor: (color: string) => void;
+  chatBubbleBold: boolean;
+  setChatBubbleBold: (bold: boolean) => void;
+  chatBubbleShadow: boolean;
+  setChatBubbleShadow: (shadow: boolean) => void;
+  chatContainerBgColor: string;
+  setChatContainerBgColor: (color: string) => void;
+  showTime: boolean;
+  setShowTime: (show: boolean) => void;
+  timeBold: boolean;
+  setTimeBold: (bold: boolean) => void;
+  closePanel: () => void;
+}
+
+const ColorPickerPanel: React.FC<ColorPickerPanelProps> = ({
   myChatBubbleColor,
   setMyChatBubbleColor,
   myChatTextColor,
@@ -32,15 +50,15 @@ const ColorPickerPanel = ({
   const textColors = ['#000000', '#FFFFFF', '#87CEEB'];
   const bubbleColors = ['#FFFFE0', '#87CEFA', '#98FB98', '#FFC0CB', '#333333'];
   const bgColors = ['#D3D3D3', '#FFFFFF', '#B0E0E6', '#2F4F4F', '#121212', '#212121'];
-  const [displayColorPicker, setDisplayColorPicker] = useState(false);
-  const [colorType, setColorType] = useState('navbarText');
-  const [isClosing, setIsClosing] = useState(false);
-  const panelRef = useRef(null);
-  const colorPickerRef = useRef(null);
+  const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
+  const [colorType, setColorType] = useState<string>('myChatBubble');
+  const [isClosing, setIsClosing] = useState<boolean>(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const colorPickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (panelRef.current && !panelRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
         closePanel();
       }
     };
@@ -51,8 +69,8 @@ const ColorPickerPanel = ({
   }, [closePanel]);
 
   useEffect(() => {
-    const handleClickOutsideColor = (event) => {
-      if (colorPickerRef.current && !colorPickerRef.current.contains(event.target)) {
+    const handleClickOutsideColor = (event: MouseEvent) => {
+      if (colorPickerRef.current && !colorPickerRef.current.contains(event.target as Node)) {
         setDisplayColorPicker(false);
       }
     };
@@ -67,12 +85,12 @@ const ColorPickerPanel = ({
     if (colorPicker) {
       const rect = colorPicker.getBoundingClientRect();
       if (rect.bottom > window.innerHeight) {
-        colorPicker.style.top = `${window.innerHeight - rect.height - 20}px`;
+        (colorPicker as HTMLElement).style.top = `${window.innerHeight - rect.height - 20}px`;
       }
     }
   }, [displayColorPicker]);
 
-  const handleColorClick = (type) => {
+  const handleColorClick = (type: string) => {
     setColorType(type);
     setDisplayColorPicker(!displayColorPicker);
   };
@@ -81,13 +99,9 @@ const ColorPickerPanel = ({
     setDisplayColorPicker(false);
   };
 
-  const handleColorChange = (color) => {
+  const handleColorChange = (color: ColorResult) => {
     const colorHex = color.hex;
     switch (colorType) {
-      case 'navbarText':
-        setNavbarTextColor(colorHex);
-        localStorage.setItem('navbarTextColor', colorHex);
-        break;
       case 'myChatBubble':
         setMyChatBubbleColor(colorHex);
         localStorage.setItem('myChatBubbleColor', colorHex);
@@ -113,7 +127,7 @@ const ColorPickerPanel = ({
     }
   };
 
-  const handleToggleSetting = (settingName, setter, currentValue) => {
+  const handleToggleSetting = (settingName: string, setter: (value: boolean) => void, currentValue: boolean) => {
     const newValue = !currentValue;
     setter(newValue);
     localStorage.setItem(settingName, JSON.stringify(newValue));
@@ -124,7 +138,7 @@ const ColorPickerPanel = ({
     setTimeout(() => {
       closePanel();
       setIsClosing(false);
-    }, 300); // Match the duration of the slideOut animation
+    }, 300);
   };
 
   const handleResetSettings = () => {
@@ -249,23 +263,6 @@ const ColorPickerPanel = ({
             </div>
           </div>
           <div className="form-group">
-            <label className="form-label"></label>
-            <div className="icon-buttons">
-              <button className={`icon-button ${chatBubbleBold ? 'active' : ''}`} onClick={() => handleToggleSetting('chatBubbleBold', setChatBubbleBold, chatBubbleBold)}>
-                <FontAwesomeIcon icon={faBold} />
-              </button>
-              <button className={`icon-button ${chatBubbleShadow ? 'active' : ''}`} onClick={() => handleToggleSetting('chatBubbleShadow', setChatBubbleShadow, chatBubbleShadow)}>
-                <FontAwesomeIcon icon={faSun} />
-              </button>
-              <button className={`icon-button ${timeBold ? 'active' : ''}`} onClick={() => handleToggleSetting('timeBold', setTimeBold, timeBold)}>
-                <FontAwesomeIcon icon={faClock} />
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="panel-section">
-          <h3>배경 설정</h3>
-          <div className="form-group">
             <label className="form-label">배경 색상</label>
             <div className="color-buttons">
               {bgColors.map(color => (
@@ -288,12 +285,24 @@ const ColorPickerPanel = ({
               )}
             </div>
           </div>
-        </div>
-        <div className="form-group">
-            <button className="reset-button" onClick={handleResetSettings}>
-              <FontAwesomeIcon icon={faUndo} /> 초기화
-            </button>
+          <div className="form-group">
+            <label className="form-label"></label>
+            <div className="icon-buttons">
+              <button className={`icon-button ${chatBubbleBold ? 'active' : ''}`} onClick={() => handleToggleSetting('chatBubbleBold', setChatBubbleBold, chatBubbleBold)}>
+                <FontAwesomeIcon icon={faBold} />
+              </button>
+              <button className={`icon-button ${chatBubbleShadow ? 'active' : ''}`} onClick={() => handleToggleSetting('chatBubbleShadow', setChatBubbleShadow, chatBubbleShadow)}>
+                <FontAwesomeIcon icon={faSun} />
+              </button>
+              <button className={`icon-button ${timeBold ? 'active' : ''}`} onClick={() => handleToggleSetting('timeBold', setTimeBold, timeBold)}>
+                <FontAwesomeIcon icon={faClock} />
+              </button>
+              <button className="icon-button" onClick={handleResetSettings}>
+                <FontAwesomeIcon icon={faUndo} />
+              </button>
+            </div>
           </div>
+        </div>
       </div>
     </div>
   );

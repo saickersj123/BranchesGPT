@@ -1,28 +1,34 @@
-// src/components/LoginModal.js
 import React, { useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import '../css/LoginModal.css'
 
-const LoginModal = ({ show, handleClose, handleLogin }) => {
-const navigate = useNavigate();
-    handleLogin = () => {
-        handleClose();
-        navigate('/login');
-    };
+interface LoginModalProps {
+  show: boolean;
+  handleClose: () => void;
+  handleLogin: () => void;
+}
 
-    useEffect(() => {
-        if (show) {
-          document.body.classList.add('modal-open');
-        } else {
-          document.body.classList.remove('modal-open');
-        }
-    
-        return () => {
-          document.body.classList.remove('modal-open');
-        };
-      }, [show]);
-    
+const LoginModal: React.FC<LoginModalProps> = ({ show, handleClose, handleLogin }) => {
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    handleClose();
+    navigate('/login');
+  };
+
+  useEffect(() => {
+    if (show) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [show]);
+
   return (
     <Modal className='loginModal' show={show} onHide={handleClose}>
       <Modal.Header closeButton>
@@ -30,7 +36,7 @@ const navigate = useNavigate();
       </Modal.Header>
       <Modal.Body>채팅을 입력하려면 로그인하세요.</Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" onClick={handleLogin}>
+        <Button variant="primary" onClick={handleLoginClick}>
           로그인
         </Button>
         <Button variant="secondary" onClick={handleClose}>
@@ -40,7 +46,5 @@ const navigate = useNavigate();
     </Modal>
   );
 };
-
-
 
 export default LoginModal;

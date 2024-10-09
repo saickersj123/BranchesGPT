@@ -14,85 +14,88 @@ import { fetchMessages, fetchConversations, getChatboxes, saveChatbox, resetChat
 import '../css/Home.css';
 import LoginModal from '../components/LoginModal';
 import ColorPickerPanel from '../components/ColorPickerPanel';
+import { saveSidebarState, loadSidebarState } from '../utils/sidebarUtils';
+import { Message, Conversation } from '../types';
 
- 
+interface HomeProps {
+  isLoggedIn: boolean;
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  user: { name: string } | null;
+  isLayoutEditing: boolean;
+  loadMessages: (conversationId: string) => Promise<void>;
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  toggleLayoutEditing: () => void;
+  username: string;
+  setUsername: React.Dispatch<React.SetStateAction<string>>;
+  nicknameChanged: boolean;
+  setNicknameChanged: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+interface LayoutItem {
+  i: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  minH?: number;
+  minW?: number;
+  maxW?: number;
+  maxH?: number;
+}
+
 const MAX_Y_H_SUM = 9;
 const DEFAULT_MODEL = "gpt-3.5-turbo";
-const INITIAL_LAYOUT = [
+const INITIAL_LAYOUT: LayoutItem[] = [
   { i: 'chatContainer', x: 2, y: 0.5, w: 8, h: 8, minH: 4, minW: 3, maxW: 12, maxH: 9 }
 ];
 
-const Home = ({
+const Home: React.FC<HomeProps> = ({
   isLoggedIn,
   setIsLoggedIn,
   user,
-  messages,
-  setMessages,
-  username,  
+  username,
   setUsername,
   nicknameChanged,
   setNicknameChanged
 }) => {
-  const sidebarRef = useRef(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
-  const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
-  const [maxYHSum] = useState(MAX_Y_H_SUM); 
-  const [currentLayout, setCurrentLayout] = useState(INITIAL_LAYOUT);
-  const [selectedConversationId, setSelectedConversationId] = useState(null);
-  const [isNewChat, setIsNewChat] = useState(false);
-  const [conversations, setConversations] = useState([]);
-  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);  // Add state for selected model
-  const originalLayoutRef = useRef(INITIAL_LAYOUT);
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const sidebarRef = useRef<any>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [viewportHeight, setViewportHeight] = useState<number>(window.innerHeight);
+  const [viewportWidth, setViewportWidth] = useState<number>(window.innerWidth);
+  const [maxYHSum] = useState<number>(MAX_Y_H_SUM); 
+  const [currentLayout, setCurrentLayout] = useState<LayoutItem[]>(INITIAL_LAYOUT);
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+  const [isNewChat, setIsNewChat] = useState<boolean>(false);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [selectedModel, setSelectedModel] = useState<string>(DEFAULT_MODEL);
+  const originalLayoutRef = useRef<LayoutItem[]>(INITIAL_LAYOUT);
+  const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { conversationId: urlConversationId } = useParams();
-  const [isLayoutEditing, setIsLayoutEditing] = useState(false);
-  const [isColorPickerPanelOpen, setIsColorPickerPanelOpen] = useState(false);
-  const [myChatBubbleColor, setMyChatBubbleColor] = useState('#DCF8C6');
-  const [myChatTextColor, setMyChatTextColor] = useState('#000000');
-  const [otherChatBubbleColor, setOtherChatBubbleColor] = useState('#F0F0F0');
-  const [otherChatTextColor, setOtherChatTextColor] = useState('#000000');
-  const [chatBubbleBold, setChatBubbleBold] = useState(false);
-  const [chatBubbleShadow, setChatBubbleShadow] = useState(false);
-  const [chatContainerBgColor, setChatContainerBgColor] = useState('#FFFFFF');
-  const [timeBold, setTimeBold] = useState(false);
-  const [showTime, setShowTime] = useState(true);
-  const [previousSidebarState, setPreviousSidebarState] = useState(false); // New state to track previous sidebar state
+  const { conversationId: urlConversationId } = useParams<{ conversationId: string }>();
+  const [isColorPickerPanelOpen, setIsColorPickerPanelOpen] = useState<boolean>(false);
+  const [myChatBubbleColor, setMyChatBubbleColor] = useState<string>('#DCF8C6');
+  const [myChatTextColor, setMyChatTextColor] = useState<string>('#000000');
+  const [otherChatBubbleColor, setOtherChatBubbleColor] = useState<string>('#F0F0F0');
+  const [otherChatTextColor, setOtherChatTextColor] = useState<string>('#000000');
+  const [chatBubbleBold, setChatBubbleBold] = useState<boolean>(false);
+  const [chatBubbleShadow, setChatBubbleShadow] = useState<boolean>(false);
+  const [chatContainerBgColor, setChatContainerBgColor] = useState<string>('#FFFFFF');
+  const [timeBold, setTimeBold] = useState<boolean>(false);
+  const [showTime, setShowTime] = useState<boolean>(true);
+  const [previousSidebarState, setPreviousSidebarState] = useState<boolean>(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLayoutEditing, setIsLayoutEditing] = useState<boolean>(false);
 
-
-  useEffect(() => {
-    const loadStyleSettings = () => {
-      const settings = {
-        myChatBubbleColor: localStorage.getItem('myChatBubbleColor'),
-        myChatTextColor: localStorage.getItem('myChatTextColor'),
-        otherChatBubbleColor: localStorage.getItem('otherChatBubbleColor'),
-        otherChatTextColor: localStorage.getItem('otherChatTextColor'),
-        chatContainerBgColor: localStorage.getItem('chatContainerBgColor'),
-        chatBubbleBold: JSON.parse(localStorage.getItem('chatBubbleBold')),
-        chatBubbleShadow: JSON.parse(localStorage.getItem('chatBubbleShadow')),
-        timeBold: JSON.parse(localStorage.getItem('timeBold')),
-      };
-
-      if (settings.myChatBubbleColor) setMyChatBubbleColor(settings.myChatBubbleColor);
-      if (settings.myChatTextColor) setMyChatTextColor(settings.myChatTextColor);
-      if (settings.otherChatBubbleColor) setOtherChatBubbleColor(settings.otherChatBubbleColor);
-      if (settings.otherChatTextColor) setOtherChatTextColor(settings.otherChatTextColor);
-      if (settings.chatContainerBgColor) setChatContainerBgColor(settings.chatContainerBgColor);
-      if (settings.chatBubbleBold !== null) setChatBubbleBold(settings.chatBubbleBold);
-      if (settings.chatBubbleShadow !== null) setChatBubbleShadow(settings.chatBubbleShadow);
-      if (settings.timeBold !== null) setTimeBold(settings.timeBold);
-    };
-    if (nicknameChanged){ 
-      setUsername(username);
-      setNicknameChanged(false);
+  const loadMessages = useCallback(async (conversationId: string) => {
+    try {
+      const fetchedMessages = await fetchMessages(conversationId);
+      setMessages(fetchedMessages);
+    } catch (error) {
+      console.error('Error loading messages:', error);
     }
-    else if (user) {
-      setUsername(user.name);
-    } 
+  }, []);
 
-    loadStyleSettings();
-  }, [user, setUsername, nicknameChanged, setNicknameChanged, username]);  
   useEffect(() => {
     const handleResize = () => {
       setViewportHeight(window.innerHeight);
@@ -104,12 +107,12 @@ const Home = ({
     };
   }, []);
 
+
   useEffect(() => {
     const loadConversationMessages = async () => {
       if (urlConversationId) {
         try {
-          let fetchedMessages = await fetchMessages(urlConversationId);
-          setMessages(fetchedMessages);
+          await loadMessages(urlConversationId);
           setSelectedConversationId(urlConversationId);
           setIsNewChat(false);
         } catch (error) {
@@ -119,7 +122,7 @@ const Home = ({
     };
 
     loadConversationMessages();
-  }, [urlConversationId, setMessages]);
+  }, [urlConversationId, loadMessages]);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--my-chat-bubble-color', myChatBubbleColor);
@@ -130,7 +133,7 @@ const Home = ({
     document.documentElement.style.setProperty('--chat-bubble-shadow', chatBubbleShadow ? '0 4px 8px rgba(0, 0, 0, 0.1)' : 'none');
     document.documentElement.style.setProperty('--chat-container-bg-color', chatContainerBgColor);
     document.documentElement.style.setProperty('--time-bold', timeBold ? 'bold' : 'normal');
-  }, [ myChatBubbleColor, myChatTextColor, otherChatBubbleColor, otherChatTextColor, chatBubbleBold, chatBubbleShadow, chatContainerBgColor, timeBold]);
+  }, [myChatBubbleColor, myChatTextColor, otherChatBubbleColor, otherChatTextColor, chatBubbleBold, chatBubbleShadow, chatContainerBgColor, timeBold]);
 
   useEffect(() => {
     const loadConversations = async () => {
@@ -153,6 +156,249 @@ const Home = ({
       loadConversations();
     }
   }, [isLoggedIn, navigate, urlConversationId]);
+
+  useEffect(() => {
+    const loadStyleSettings = () => {
+      const settings = {
+        myChatBubbleColor: localStorage.getItem('myChatBubbleColor'),
+        myChatTextColor: localStorage.getItem('myChatTextColor'),
+        otherChatBubbleColor: localStorage.getItem('otherChatBubbleColor'),
+        otherChatTextColor: localStorage.getItem('otherChatTextColor'),
+        chatContainerBgColor: localStorage.getItem('chatContainerBgColor'),
+        chatBubbleBold: JSON.parse(localStorage.getItem('chatBubbleBold') || 'false'),
+        chatBubbleShadow: JSON.parse(localStorage.getItem('chatBubbleShadow') || 'false'),
+        timeBold: JSON.parse(localStorage.getItem('timeBold') || 'false'),
+      };
+
+      if (settings.myChatBubbleColor) setMyChatBubbleColor(settings.myChatBubbleColor);
+      if (settings.myChatTextColor) setMyChatTextColor(settings.myChatTextColor);
+      if (settings.otherChatBubbleColor) setOtherChatBubbleColor(settings.otherChatBubbleColor);
+      if (settings.otherChatTextColor) setOtherChatTextColor(settings.otherChatTextColor);
+      if (settings.chatContainerBgColor) setChatContainerBgColor(settings.chatContainerBgColor);
+      setChatBubbleBold(settings.chatBubbleBold);
+      setChatBubbleShadow(settings.chatBubbleShadow);
+      setTimeBold(settings.timeBold);
+    };
+
+    if (nicknameChanged) {
+      setUsername(username);
+      setNicknameChanged(false);
+    } else if (user) {
+      setUsername(user.name);
+    }
+
+    loadStyleSettings();
+  }, [user, setUsername, nicknameChanged, setNicknameChanged, username]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      const initialSidebarState = loadSidebarState();
+      setIsSidebarOpen(initialSidebarState);
+    }
+  }, [isLoggedIn]);
+
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
+  const handleProfileClick = async () => {
+    navigate("/mypage");
+  };
+
+  const handleLogoutClick = async () => {
+    try {
+      const logoutSuccess = await logout();
+      if (logoutSuccess) {
+        setIsLoggedIn(false);
+        setIsSidebarOpen(false);
+        navigate('/chat');
+      } else {
+        alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
+      }
+    } catch (error) {
+      alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
+    }
+  };
+
+  const handleChatInputAttempt = () => {
+    if (!isLoggedIn) {
+      setShowLoginModal(true);
+    }
+  };
+
+  const handleNewMessage = useCallback((newMessage: Message) => {
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    updateConversations();
+  }, []);
+
+  const handleUpdateMessage = useCallback((aiMessage: Message) => {
+    setMessages((prevMessages) => [...prevMessages, aiMessage]);
+    updateConversations();
+  }, []);
+
+  const handleConversationSelect = async (conversationId: string) => {
+    try {
+      await loadMessages(conversationId);
+      setSelectedConversationId(conversationId);
+      setIsNewChat(false);
+      navigate(`/chat/${conversationId}`);
+    } catch (error) {
+      console.error('Failed to load conversation messages:', error);
+    }
+  };
+
+  const handleModelSelect = (modelId: string) => {
+    setSelectedModel(modelId);
+  };
+
+  const updateConversations = async () => {
+    try {
+      const fetchedConversations = await fetchConversations();
+      setConversations(fetchedConversations as Conversation[]);
+    } catch (error) {
+      console.error('Failed to update conversations:', error);
+    }
+  };
+
+  const validateLayout = (layout: LayoutItem[]): LayoutItem[] => {
+    const occupiedPositions = new Set<string>();
+    return layout.map(item => {
+      let { x, y, w, h } = item;
+      if (y < 0) y = 0;
+      if (y + h > maxYHSum) y = 0;
+      while (isPositionOccupied(x, y, w, h, occupiedPositions)) {
+        x = (x + 1) % 12;
+        if (x === 0) {
+          y = (y + 1) % maxYHSum;
+        }
+        if (y + h > maxYHSum) {
+          y = 0;
+        }
+      }
+      markPosition(x, y, w, h, occupiedPositions);
+      return { ...item, x, y, w, h };
+    });
+  };
+  
+  const isPositionOccupied = (x: number, y: number, w: number, h: number, occupiedPositions: Set<string>): boolean => {
+    for (let i = 0; i < w; i++) {
+      for (let j = 0; j < h; j++) {
+        if (occupiedPositions.has(`${x + i},${y + j}`)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+  
+  const markPosition = (x: number, y: number, w: number, h: number, occupiedPositions: Set<string>): void => {
+    for (let i = 0; i < w; i++) {
+      for (let j = 0; j < h; j++) {
+        occupiedPositions.add(`${x + i},${y + j}`);
+      }
+    }
+  };
+  
+  const handleLayoutChange = (newLayout: LayoutItem[]) => {
+    const validatedLayout = validateLayout(newLayout);
+    setCurrentLayout(validatedLayout);
+  };
+  
+  const handleResizeStop = (layout: LayoutItem[]) => {
+    const validatedLayout = validateLayout(layout);
+    setCurrentLayout(validatedLayout);
+  };
+  
+  const handleDragStop = (layout: LayoutItem[]) => {
+    const validatedLayout = validateLayout(layout);
+    setCurrentLayout(validatedLayout);
+  };
+  
+  const handleResetLayout = async () => {
+    try {
+      await resetChatbox();
+      setCurrentLayout(INITIAL_LAYOUT);
+      originalLayoutRef.current = INITIAL_LAYOUT;
+    } catch (error) {
+      console.error('Failed to reset chatbox layout:', error);
+    }
+  };
+  
+  const handleSaveLayout = async () => {
+    try {
+      const chatbox = {
+        cbox_x: currentLayout[0].x,
+        cbox_y: currentLayout[0].y,
+        cbox_w: currentLayout[0].w,
+        cbox_h: currentLayout[0].h,
+      };
+      await saveChatbox(chatbox);
+      originalLayoutRef.current = currentLayout;
+      toggleLayoutEditing();
+      setIsSidebarOpen(previousSidebarState);
+    } catch (error) {
+      console.error('Failed to save chatbox layout:', error);
+    }
+  };
+  
+  const handleCancelLayout = () => {
+    setCurrentLayout(originalLayoutRef.current);
+    toggleLayoutEditing();
+    setIsSidebarOpen(previousSidebarState);
+  };
+  
+  const handleSettingsClick = () => {
+    setPreviousSidebarState(isSidebarOpen);
+    setIsSidebarOpen(false);
+    toggleLayoutEditing();
+  };
+  
+  const handleColorClick = () => {
+    setPreviousSidebarState(isSidebarOpen);
+    setIsSidebarOpen(false);
+    setIsColorPickerPanelOpen(true);
+  };
+  
+  const handleClosePanel = () => {
+    setIsColorPickerPanelOpen(false);
+    setIsSidebarOpen(previousSidebarState);
+  };
+  
+  const handleNewConversation = async (newConversationId: string) => {
+    setSelectedConversationId(newConversationId);
+    setIsNewChat(false);
+    navigate(`/chat/${newConversationId}`);
+  };
+  
+  const handleConversationDelete = async (resetChat: boolean = false) => {
+    try {
+      const updatedConversations = await fetchConversations();
+      setConversations(updatedConversations);
+      if (resetChat) {
+        setSelectedConversationId(null);
+        setIsNewChat(true);
+        navigate('/chat');
+      }
+    } catch (error) {
+      console.error('Failed to update conversations list:', error);
+    }
+  };
+  
+  const handleStartConversation = async () => {
+    if (sidebarRef.current) { 
+      sidebarRef.current.startConversation();
+    } 
+  };
+  
+  const toggleLayoutEditing = () => {
+    setIsLayoutEditing(prev => !prev);
+  };
+
+  const toggleSidebar = () => {
+    const newState = !isSidebarOpen;
+    setIsSidebarOpen(newState);
+    saveSidebarState(newState);
+  };
 
   useEffect(() => {
     const loadChatboxLayout = async () => {
@@ -189,221 +435,6 @@ const Home = ({
     }
   }, [isLoggedIn]);
 
-  const handleLoginClick = () => {
-    navigate('/login');
-  };
-
-  useEffect(() => {
-    if(isLoggedIn){
-      const initialSidebarState = loadSidebarState();
-      setIsSidebarOpen(initialSidebarState);
-    }
-  }, [isLoggedIn]);
-
-  const saveSidebarState = (isOpen) => {
-    localStorage.setItem('sidebarState', isOpen ? 'open' : 'closed');
-  };
-
-  const loadSidebarState = () => {
-    const state = localStorage.getItem('sidebarState');
-    return state === 'open';
-  };
-
-  const toggleSidebar = () => {
-    const newState = !isSidebarOpen;
-    setIsSidebarOpen(newState);
-    saveSidebarState(newState);
-  };
-
-  const handleProfileClick = async () => {
-    navigate("/mypage");
-  };
-
-  const handleLogoutClick = async () => {
-    try {
-      const logoutSuccess = await logout();
-      if (logoutSuccess) {
-        setIsLoggedIn(false);
-        setIsSidebarOpen(false);
-        navigate('/chat');
-      } else {
-        alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
-      }
-    } catch (error) {
-      alert('로그아웃에 실패했습니다. 다시 시도해주세요.');
-    }
-  };
-
-  const handleChatInputAttempt = () => {
-    if (!isLoggedIn) {
-      setShowLoginModal(true);
-    }
-  };
-
-  const handleNewMessage = useCallback((newMessage) => {
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
-    updateConversations();
-  }, [setMessages]);
-
-  const handleUpdateMessage = useCallback((aiMessage) => {
-    setMessages((prevMessages) => [...prevMessages, aiMessage]);
-    updateConversations();
-  }, [setMessages]);
-
-  const handleConversationSelect = async (conversationId) => {
-    try {
-      const fetchedMessages = await fetchMessages(conversationId);
-      setMessages(fetchedMessages);
-      setSelectedConversationId(conversationId);
-      setIsNewChat(false);
-      navigate(`/chat/${conversationId}`);
-    } catch (error) {
-      console.error('Failed to load conversation messages:', error);
-    }
-  };
-
-  const handleModelSelect = (modelId) => {
-    setSelectedModel(modelId);  // Set the selected model
-  };
-
-  const updateConversations = async () => {
-    try {
-      const fetchedConversations = await fetchConversations();
-      setConversations(fetchedConversations);
-    } catch (error) {
-      console.error('Failed to update conversations:', error);
-    }
-  };
-
-  const validateLayout = (layout) => {
-    const occupiedPositions = new Set();
-    return layout.map(item => {
-      let { x, y, w, h } = item;
-      if (y < 0) y = 0;
-      if (y + h > maxYHSum) y = 0;
-      while (isPositionOccupied(x, y, w, h, occupiedPositions)) {
-        x = (x + 1) % 12;
-        if (x === 0) {
-          y = (y + 1) % maxYHSum;
-        }
-        if (y + h > maxYHSum) {
-          y = 0;
-        }
-      }
-      markPosition(x, y, w, h, occupiedPositions);
-      return { ...item, x, y, w, h };
-    });
-  };
-
-  const isPositionOccupied = (x, y, w, h, occupiedPositions) => {
-    for (let i = 0; i < w; i++) {
-      for (let j = 0; j < h; j++) {
-        if (occupiedPositions.has(`${x + i},${y + j}`)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  };
-
-  const markPosition = (x, y, w, h, occupiedPositions) => {
-    for (let i = 0; i < w; i++) {
-      for (let j = 0; j < h; j++) {
-        occupiedPositions.add(`${x + i},${y + j}`);
-      }
-    }
-  };
-
-  const handleLayoutChange = (newLayout) => {
-    const validatedLayout = validateLayout(newLayout);
-    setCurrentLayout(validatedLayout);
-  };
-
-  const handleResizeStop = (layout) => {
-    const validatedLayout = validateLayout(layout);
-    setCurrentLayout(validatedLayout);
-  };
-
-  const handleDragStop = (layout) => {
-    const validatedLayout = validateLayout(layout);
-    setCurrentLayout(validatedLayout);
-  };
-
-  const handleResetLayout = async () => {
-    try {
-      await resetChatbox();
-      setCurrentLayout(INITIAL_LAYOUT);
-      originalLayoutRef.current = INITIAL_LAYOUT;
-    } catch (error) {
-      console.error('Failed to reset chatbox layout:', error);
-    }
-  };
-
-  const handleSaveLayout = async () => {
-    try {
-      const chatbox = {
-        cbox_x: currentLayout[0].x,
-        cbox_y: currentLayout[0].y,
-        cbox_w: currentLayout[0].w,
-        cbox_h: currentLayout[0].h,
-      };
-      await saveChatbox(chatbox);
-      originalLayoutRef.current = currentLayout;
-      setIsLayoutEditing(false);
-      setIsSidebarOpen(previousSidebarState); // Restore sidebar state after saving layout
-    } catch (error) {
-      console.error('Failed to save chatbox layout:', error);
-    }
-  };
-
-  const handleCancelLayout = () => {
-    setCurrentLayout(originalLayoutRef.current);
-    setIsLayoutEditing(false);
-    setIsSidebarOpen(previousSidebarState); // Restore sidebar state after canceling layout editing
-  };
-
-  const handleSettingsClick = () => {
-    setPreviousSidebarState(isSidebarOpen); // Save the current sidebar state
-    setIsSidebarOpen(false); // Close the sidebar
-    setIsLayoutEditing(true);
-  };
-
-  const handleColorClick = () => {
-    setPreviousSidebarState(isSidebarOpen); // Save the current sidebar state
-    setIsSidebarOpen(false); // Close the sidebar
-    setIsColorPickerPanelOpen(true); // Open the color picker panel
-  };
-
-  const handleClosePanel = () => {
-    setIsColorPickerPanelOpen(false);
-    setIsSidebarOpen(previousSidebarState); // Restore the previous sidebar state
-  };
-
-  const handleNewConversation = async (newConversationId) => {
-    setSelectedConversationId(newConversationId);
-    setIsNewChat(false);
-    navigate(`/chat/${newConversationId}`);
-  };
-
-  const handleConversationDelete = async (resetChat = false) => {
-    try {
-      const updatedConversations = await fetchConversations();
-      setConversations(updatedConversations);
-      if (resetChat) {
-        setSelectedConversationId(null);
-        setIsNewChat(true);
-        navigate('/chat');
-      }
-    } catch (error) {
-      console.error('Failed to update conversations list:', error);
-    }
-  };
-  const handleStartConversation = async () => {
-    if (sidebarRef.current) { 
-      sidebarRef.current.startConversation();
-    } 
-  };
-
   return (
     <main className={`main-section`}>
       <div className={`header-container ${isSidebarOpen ? 'shifted-header' : ''}`}>
@@ -412,20 +443,20 @@ const Home = ({
             <TbLayoutSidebar size={35}/>
           </button>
         )}
-         <span className="home_new_conversation" onClick={handleStartConversation}> <LuPenSquare /> </span>
-         <span className="brand-text" onClick={() => navigate('/chat')}>BranchGPT</span>
+        <span className="home_new_conversation" onClick={handleStartConversation}> <LuPenSquare /> </span>
+        <span className="brand-text" onClick={() => navigate('/chat')}>BranchGPT</span>
       </div>
       {isLoggedIn ? (
         <>
-          <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={toggleSidebar}></div>
+          <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
           <Sidebar
             ref={sidebarRef}
-            isOpen={isSidebarOpen}  closeSidebar
+            isOpen={isSidebarOpen}
             conversations={conversations}
             onConversationSelect={handleConversationSelect}
             onNewConversation={handleNewConversation}
             onConversationDelete={handleConversationDelete}
-            onModelSelect={handleModelSelect}  // Pass the handleModelSelect function
+            onModelSelect={handleModelSelect}
           />
           {isLayoutEditing ? (
             <div className="settings-container">
@@ -436,7 +467,7 @@ const Home = ({
           ) : (
             <div className="settings-container">
               <Dropdown>
-              <Dropdown.Toggle variant="light" id="dropdown-basic" className="FaCog-dropdown-toggle">
+                <Dropdown.Toggle variant="light" id="dropdown-basic" className="FaCog-dropdown-toggle">
                   <div className="home-set-icon">
                     {username.charAt(0)}
                   </div>
@@ -470,7 +501,7 @@ const Home = ({
               setShowTime={setShowTime}
               timeBold={timeBold}
               setTimeBold={setTimeBold}
-              closePanel={handleClosePanel} // Use handleClosePanel to close the color picker
+              closePanel={handleClosePanel}
             />
           )}
         </>
@@ -511,7 +542,6 @@ const Home = ({
                   <ChatList
                     messages={messages}
                     username={username}
-                    conversationId={selectedConversationId}
                     showTime={true}
                   />
                 )}
@@ -520,13 +550,14 @@ const Home = ({
                 <ChatBox
                   onNewMessage={handleNewMessage}
                   onUpdateMessage={handleUpdateMessage}
-                  isLayoutEditing={setIsLayoutEditing}
                   conversationId={selectedConversationId}
                   isNewChat={isNewChat}
                   onChatInputAttempt={handleChatInputAttempt}
                   isLoggedIn={isLoggedIn}
-                  selectedModel={selectedModel}  // Pass the selected model to ChatBox
-                  onNewConversation={handleNewConversation}  // Add this prop to handle new conversations
+                  selectedModel={selectedModel}
+                  onNewConversation={handleNewConversation}
+                  isEditMode={isLayoutEditing}  // 추가
+                  setSelectedConversationId={setSelectedConversationId}  // 추가
                 />
               </div>
             </div>
@@ -540,6 +571,6 @@ const Home = ({
       />
     </main>
   );
-};
-
-export default Home;
+  };
+  
+  export default Home;

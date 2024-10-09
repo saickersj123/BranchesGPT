@@ -1,5 +1,3 @@
-// MyPage.js
-
 import React, { useState } from 'react';
 import { Button, Form, Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -8,11 +6,24 @@ import { faArrowRight, faPen, faArrowLeft } from '@fortawesome/free-solid-svg-ic
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/MyPage.css';
 import { updatename, updatePassword, mypage } from '../api/axiosInstance';
-import branchImage from '../img/PRlogo2.png'; // import the image
+import branchImage from '../img/PRlogo2.png';
 
-const MyPage = ({ username, setUsername, setNicknameChanged }) => {
+interface User {
+  name: string;
+}
+
+interface MyPageProps {
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  username: string;
+  setUsername: (username: string) => void;
+  setNicknameChanged: (changed: boolean) => void;
+}
+
+const MyPage: React.FC<MyPageProps> = ({ user, setUser, setIsLoggedIn, username, setUsername, setNicknameChanged }) => {
   const [password, setPassword] = useState('');
-  const [isPasswordVerified, setIsPasswordVerified] = useState(false); 
+  const [isPasswordVerified, setIsPasswordVerified] = useState(false);
   const [newname, setNewname] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -24,18 +35,18 @@ const MyPage = ({ username, setUsername, setNicknameChanged }) => {
   const [isConfirmNewPasswordFocused, setIsConfirmNewPasswordFocused] = useState(false);
   const navigate = useNavigate();
 
-  const handlePasswordChange = (event) => {
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
   };
 
-  const handleVerifyPassword = async (event) => {
+  const handleVerifyPassword = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const response = await mypage(password); // 서버에서 비밀번호 검증
+      const response = await mypage(password);
       setPassword('');
       if (response.message === 'OK') {
         setIsPasswordVerified(true);
-        setUsername(response.name); 
+        setUsername(response.name);
       } else if (response.cause === 'Incorrect Password') {
         alert('비밀번호가 일치하지 않습니다.');
       }
@@ -44,11 +55,11 @@ const MyPage = ({ username, setUsername, setNicknameChanged }) => {
     }
   };
 
-  const handleNewnameChange = (event) => {
+  const handleNewnameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewname(event.target.value);
   };
 
-  const handleNewPasswordChange = (event) => {
+  const handleNewPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewPassword(event.target.value);
   };
 
@@ -65,15 +76,11 @@ const MyPage = ({ username, setUsername, setNicknameChanged }) => {
   const handleSaveNewname = async () => {
     if (newname.trim()) {
       try {
-        await updatename(newname); 
-        setUsername(newname); 
-        try {
-          setNicknameChanged(true); // 닉네임 변경 상태 업데이트 
-        } catch (error) {
-          console.error('Nickname change update failed:', error);
-        } 
-        setIsEditingname(false); 
-        setNewname('');  
+        await updatename(newname);
+        setUsername(newname);
+        setNicknameChanged(true);
+        setIsEditingname(false);
+        setNewname('');
       } catch (error) {
         alert('닉네임 변경에 실패했습니다.');
       }
@@ -95,7 +102,7 @@ const MyPage = ({ username, setUsername, setNicknameChanged }) => {
           alert('비밀번호 변경에 실패했습니다.');
         }
       } else {
-        alert('비밀번호가 일치하지 않습니다.'); 
+        alert('비밀번호가 일치하지 않습니다.');
       }
     } else {
       alert('새 비밀번호를 입력하세요.');
@@ -114,20 +121,20 @@ const MyPage = ({ username, setUsername, setNicknameChanged }) => {
   };
 
   const handleBackClick = () => {
-    navigate('/chat'); // Navigate to the previous page
+    navigate('/chat');
   };
 
-  const handleConfirmNewPasswordChange = (event) => {
+  const handleConfirmNewPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setConfirmNewPassword(event.target.value);
   };
 
   return (
-    <Container className="mypage-container">  
-        <div className="my-center-box">
-          <Form.Group className="MainInputGroup"> 
-            <img src={branchImage} alt="Logo"  onClick={handleBackClick}/> 
-          </Form.Group> 
-        </div> 
+    <Container className="mypage-container">
+      <div className="my-center-box">
+        <Form.Group className="MainInputGroup">
+          <img src={branchImage} alt="Logo" onClick={handleBackClick} />
+        </Form.Group>
+      </div>
       {!isPasswordVerified ? (
         <div className="my-center-box">
           <Form onSubmit={handleVerifyPassword}>
@@ -226,10 +233,7 @@ const MyPage = ({ username, setUsername, setNicknameChanged }) => {
           </Form>
         </div>
       )}
-      <Button 
-        className="my-back-button"
-        onClick={handleBackClick}
-      >
+      <Button className="my-back-button" onClick={handleBackClick}>
         <FontAwesomeIcon icon={faArrowLeft} />
       </Button>
     </Container>

@@ -4,7 +4,21 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/ChatList.css';
 import AI_Logo from '../img/Nlogo3.png';
 
-const ChatMessage = ({ content, role, time, username, showTime }) => {
+interface Message {
+  content: string;
+  role: string;
+  createdAt: string;
+}
+
+interface ChatMessageProps {
+  content: string;
+  role: string;
+  time: string;
+  username: string;
+  showTime: boolean;
+}
+
+const ChatMessage: React.FC<ChatMessageProps> = ({ content, role, time, username, showTime }) => {
   let timeString = '';
   if (time && !isNaN(new Date(time).getTime())) {
     timeString = new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
@@ -18,7 +32,6 @@ const ChatMessage = ({ content, role, time, username, showTime }) => {
     fontWeight: 'var(--chat-bubble-bold)',
     boxShadow: 'var(--chat-bubble-shadow)',
   };
-
 
   return (
     <div className={`message-container ${role === 'user' ? 'sent-by-user' : 'received'}`}>
@@ -39,9 +52,15 @@ const ChatMessage = ({ content, role, time, username, showTime }) => {
     </div>
   );
 };
- 
-const ChatList = ({ messages, username, showTime }) => {
-  const chatEndRef = useRef(null);
+
+interface ChatListProps {
+  messages: Message[];
+  username: string;
+  showTime: boolean;
+}
+
+const ChatList: React.FC<ChatListProps> = ({ messages, username, showTime }) => {
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (chatEndRef.current) {
