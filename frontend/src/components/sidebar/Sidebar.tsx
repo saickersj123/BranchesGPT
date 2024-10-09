@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
-import { FaRobot, FaPlus, FaList, FaMinus } from 'react-icons/fa';
+import { FaRobot, FaPlus, FaMinus, FaList } from 'react-icons/fa';
 import { Trash3 } from 'react-bootstrap-icons';
 import { HighlightOff } from '@mui/icons-material'; 
 import { Modal, Button } from 'react-bootstrap';
@@ -48,11 +48,11 @@ const Sidebar = forwardRef<any, SidebarProps>(({
   const [deleteModelId, setDeleteModelId] = useState<string | null>(null);
   const [error, setError] = useState<string>('');
   const [models, setModels] = useState<CustomModel[]>([]);
-  const [isTraining, setIsTraining] = useState<boolean>(false);
-  const [responseMessage, setResponseMessage] = useState<string>('');
   const [modelName, setModelName] = useState<string>('');
   const [systemContent, setSystemContent] = useState<string>('');
   const [userAssistantPairs, setUserAssistantPairs] = useState<{user: string, assistant: string}[]>([{ user: '', assistant: '' }]);
+  const [isTraining, setIsTraining] = useState<boolean>(false);
+  const [responseMessage, setResponseMessage] = useState<string>('');
 
   useImperativeHandle(ref, () => ({
     startConversation
@@ -181,7 +181,6 @@ const Sidebar = forwardRef<any, SidebarProps>(({
     setUserAssistantPairs([...userAssistantPairs, { user: '', assistant: '' }]);
   };
 
-
   const handleRemovePair = (index: number) => {
     setUserAssistantPairs(userAssistantPairs.filter((_, i) => i !== index));
   };
@@ -192,18 +191,23 @@ const Sidebar = forwardRef<any, SidebarProps>(({
     setUserAssistantPairs(newPairs);
   };
 
-
   const handleSubmit = async () => {
     setIsTraining(true);
     setResponseMessage('');
     try {
-      const trainingData = userAssistantPairs.flatMap(pair => [
-        { role: "system", content: systemContent },
-        { role: "user", content: pair.user },
-        { role: "assistant", content: pair.assistant }
-      ]); 
+      const trainingData = userAssistantPairs.map(pair => JSON.stringify({
+        messages: [
+          { role: "system", content: systemContent },
+          { role: "user", content: pair.user },
+          { role: "assistant", content: pair.assistant }
+        ]
+      })).join('\n');
 
-      await createModel(modelName, JSON.stringify(trainingData));
+      console.log("Submitting model with the following data:");
+      console.log("Model Name: ", modelName);
+      console.log("Training Data: ", trainingData);
+
+      await createModel(modelName, trainingData);
       setResponseMessage('Model created successfully');
       const updatedModels = await getCustomModels();
       setModels(updatedModels);
@@ -220,7 +224,6 @@ const Sidebar = forwardRef<any, SidebarProps>(({
     setModelName('');
     setSystemContent('');
     setUserAssistantPairs([{ user: '', assistant: '' }]);
-    setResponseMessage('');
   };
 
   const handleBacktoModels = async () => {
@@ -228,7 +231,6 @@ const Sidebar = forwardRef<any, SidebarProps>(({
     setModelName('');
     setSystemContent('');
     setUserAssistantPairs([{ user: '', assistant: '' }]);
-    setResponseMessage('');
     const updatedModels = await getCustomModels();
     setModels(updatedModels);
     setShowModelModal(true);
@@ -378,7 +380,74 @@ const Sidebar = forwardRef<any, SidebarProps>(({
 
       {/* Add missing modals */}
       <Modal show={showTrainingModal} onHide={handleCloseTrainingModal}>
-        {/* Add content for training modal */}
+        <Modal.Header closeButton>
+          <Modal.Title>모델 생성</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="input-group">
+            <label>모델 이름</label>
+            <input
+              type="text"
+              placeholder="모델 이름을 입력하세요"
+              value={modelName}
+              onChange={(e) => setModelName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="input-group">
+            <label>모델 역할</label>
+            <textarea
+              rows={3}
+              placeholder="모델의 성격, 임무, 역할 등을 알려주세요."
+              value={systemContent}
+              onChange={(e) => setSystemContent(e.target.value)}
+              required
+            />
+          </div>
+          {userAssistantPairs.map((pair, index) => (
+            <div key={index} className="input-group-pair">
+              <div className="input-group-pair-header">
+                <label>예시 질문 {index + 1}</label>
+                {index > 0 && (
+                  <Button variant="danger" onClick={() => handleRemovePair(index)}>
+                    <FaMinus size={15}/>
+                  </Button>
+                )}
+              </div>
+              <div className="input-group">
+                <textarea
+                  rows={2}
+                  placeholder="예시 질문을 입력하세요."
+                  value={pair.user}
+                  onChange={(e) => handlePairChange(index, 'user', e.target.value)}
+                  required
+                />
+              </div>
+              <div className="input-group">
+                <label>원하는 응답 {index + 1}</label>
+                <textarea
+                  rows={2}
+                  placeholder="원하는 응답 또는 대답을 알려주세요."
+                  value={pair.assistant}
+                  onChange={(e) => handlePairChange(index, 'assistant', e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+          ))}
+        </Modal.Body>
+        <Modal.Footer>
+          {responseMessage && <p>{responseMessage}</p>}
+          <Button variant="light" onClick={handleBacktoModels}>
+            <FaList size={20} />
+          </Button>
+          <Button variant="light" onClick={handleAddPair}>
+            <FaPlus size={20} />
+          </Button>
+          <Button variant="primary" onClick={handleSubmit} disabled={isTraining}>
+            {isTraining ? '학습 중...' : '모델 생성'}
+          </Button>
+        </Modal.Footer>
       </Modal>
 
       <Modal show={showDeleteModelModal} onHide={cancelDeleteModel}>
