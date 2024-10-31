@@ -42,7 +42,7 @@
 
 .bubble-container {
   display: flex;
-  align-items: center; /* 수정: 수직 정렬 */
+  align-items: center;
   position: relative;
   max-width: 100%;
 }
@@ -63,7 +63,7 @@
   white-space: nowrap;
   margin-left: 10px;
   font-weight: var(--time-bold);
-  align-self: flex-end; /* 수정: 수직 정렬 */
+  align-self: flex-end;
 }
 
 .username {

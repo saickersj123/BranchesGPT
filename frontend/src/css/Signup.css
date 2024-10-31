@@ -1,4 +1,3 @@
-/* Signup.css */
 @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@800&display=swap');
 
 html, body {
@@ -6,7 +5,7 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: auto;
-  font-size: 18px; /* 기본 글자 크기 확대 */
+  font-size: 18px;
 }
 
 .signupPage {
@@ -23,7 +22,7 @@ html, body {
 .signup-center-box {
   width: 100%;
   min-width: 1em;
-  max-width: 25em; /* 최대 너비 확대 */
+  max-width: 25em;
   display: flex;
   flex-direction: column;
   align-items: left;
@@ -31,7 +30,7 @@ html, body {
 
 .signupinputGroup img {
   width: 100%;
-  margin-bottom: 6em; /* 이미지 마진 확대 */
+  margin-bottom: 6em;
   margin-top: 6em;
 }
 
@@ -40,14 +39,14 @@ html, body {
   justify-content: center;
   display: flex;
   flex-direction: column;
-  gap: 20px; /* 간격 확대 */
+  gap: 20px;
 }
  
 .signupInputGroup {
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px; /* 마진 확대 */
+  margin-bottom: 15px;
   position: relative;
 }
 
@@ -58,12 +57,12 @@ html, body {
 }
 
 .signupInputField { 
-  height: 5rem; /* 입력 필드 높이 확대 */
-  padding: 15px; /* 패딩 확대 */
+  height: 5rem;
+  padding: 15px;
   border: 0.6px solid #b1b1b1;
   box-sizing: border-box;
   border-radius: 6px;
-  font-size: 1.2rem; /* 글자 크기 확대 */
+  font-size: 1.2rem;
   outline: none;
   position: relative; 
 }
@@ -99,29 +98,29 @@ html, body {
 
 .signupError {
   color: red;
-  margin-bottom: 15px; /* 마진 확대 */
+  margin-bottom: 15px;
 }
 
 .signupButton {
   width: 100% !important;
-  max-width: 25em; /* 최대 너비 확대 */
+  max-width: 25em;
   position: relative;
   box-shadow: 0px 4px 30px rgba(38, 58, 67, 0.15);
   border-radius: 12px;
   border : none;
   background-color: #b5b5b6;
-  height: 70px; /* 버튼 높이 확대 */
+  height: 70px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: 20px; /* 패딩 확대 */
-  font-size: 1.5rem; /* 글자 크기 확대 */
+  padding: 20px;
+  font-size: 1.5rem;
   color: #fff;
   white-space: nowrap;
   font-weight: 600;
   font-family: Pretendard;
-  margin-top: 15px; /* 마진 확대 */
+  margin-top: 15px;
 }
 
 .signupButton:hover, .signupButton:active {
@@ -131,14 +130,14 @@ html, body {
 .signupLabel {
   width: 100%;
   position: relative;
-  font-size: 1.8rem; /* 글자 크기 확대 */
+  font-size: 1.8rem;
   line-height: 156.5%;
   font-weight: 600;
   font-family: Pretendard;
   color: #263a43;
   text-align: left;
   display: block; 
-  margin-bottom: 15px; /* 마진 확대 */
+  margin-bottom: 15px;
 }
 
 .signupAlert {

@@ -13,12 +13,12 @@ body, .sidebar, .sidebar *, .new-model-icon span, .chat-date, .room-title, .last
   top: 0;
   width: 20%;
   height: 100%;
-  background-color: #E4E4E4; 
-  padding: 10px 0; 
+  background-color: #E4E4E4;
+  padding: 10px 0;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
   z-index: 1050;
-  transform: translateX(-100%); 
+  transform: translateX(-100%);
 }
 
 .sidebar.open {
@@ -30,14 +30,12 @@ body, .sidebar, .sidebar *, .new-model-icon span, .chat-date, .room-title, .last
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-}/
-
+}
 
 .sidebar-menu a:hover,
 .sidebar-menu p:hover {
   color: #007bff;
 }
-d
 
 .chat-date-group {
   margin-top: 0;
@@ -45,7 +43,7 @@ d
 
 .chat-date {
   font-size: 1.2rem;
-  font-weight: bold; 
+  font-weight: bold;
   color: #555;
   margin-top: 1em;
 }
@@ -57,6 +55,7 @@ d
   padding: 10px;
   margin-bottom: 0.1em;
 }
+
 .chat-room:hover {
   background-color: gainsboro;
   cursor: pointer;
@@ -71,7 +70,6 @@ d
   text-overflow: ellipsis;
 }
 
-
 .no-chat-rooms {
   text-align: center;
   padding: 20px;
@@ -84,7 +82,7 @@ d
   font-weight: bold;
   color: #555;
   white-space: normal;
-} 
+}
 
 .one-delete-button {
   background: none;
@@ -95,7 +93,7 @@ d
   margin-right: 0;
   display: flex;
   align-items: center;
-  width : 1.5rem; 
+  width : 1.5rem;
 }
 
 .one-delete-button:hover {
@@ -114,8 +112,8 @@ d
   cursor: pointer;
   display: flex;
   align-items: center;
-  width: 1.4em; 
-  height: 1.4em; 
+  width: 1.4em;
+  height: 1.4em;
   outline: none;
 }
 
@@ -190,7 +188,7 @@ d
   display: flex;
   flex-direction: column;
   margin-top: 2.5em;
-  height: calc(100% - 4.3em); /* Adjust based on header height */
+  height: calc(100% - 4.3em);
   padding: 10px;
   overflow-y: auto;
   overflow-x:hidden;  
@@ -273,7 +271,7 @@ d
 }
 
 .model-item:hover .model-name {
-  color: blue; /* 원하는 색상으로 변경 */
+  color: blue;
 }
 
 .model-item-content {
