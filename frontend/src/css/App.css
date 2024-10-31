@@ -51,10 +51,9 @@ body.light {
 .ChatList {
   padding: 20px;
   overflow-y: scroll;
-  margin-left: 25px;
-  margin-right: 25px;
+  margin-left: 25%;
+  margin-right: 25%;
   max-height: 80vh;
-  flex-grow: 1;  
 }
 
 .ChatList::-webkit-scrollbar {

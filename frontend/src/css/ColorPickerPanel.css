@@ -17,38 +17,18 @@
 }
 
 .panel-container {
-  position: fixed; 
-  max-height:100%;
+  position: fixed;
+  right: -15%;
+  width: 15%;
   background-color: #f4f4f4;
   border-left: 1px solid #ccc;
   padding: 20px;
-  z-index: 1500;
+  z-index: 1000;
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   transition: background-color 0.3s ease, color 0.3s ease;
-  font-family: Arial, sans-serif; 
-}
-
-@media (max-width: 1000px) {
-  .panel-container {
-    right: -30%;
-    width: 30%;
-  }
-}
-
-@media (min-width: 1001px) and (max-width: 1500px) {
-  .panel-container {
-    right: -20%;
-    width: 20%;
-  }
-}
-
-@media (min-width: 1501px) {
-  .panel-container {
-    right: -15%;
-    width: 15%;
-  }
+  font-family: Arial, sans-serif;
 }
 
 .panel-container.open {
@@ -178,28 +158,4 @@
 
 .icon-button.active {
   color: #007bff;
-}
-
-.color-picker-popover { 
-  position: absolute;
-  z-index: 2000;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden; 
-}
-
-.color-picker-cover {
-  position: fixed;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
-  background: rgba(0, 0, 0, 0.2);
-  animation: fadeInBackground 0.3s ease-in-out;
-}
-
-.chrome-picker {
-  box-shadow: none !important; /* 기존 그림자 제거 */
-  border: 1px solid #ccc; /* 경계선 추가 */
-  border-radius: 8px; /* 모서리 둥글게 */
 }

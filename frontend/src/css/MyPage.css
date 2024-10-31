@@ -1,12 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@800&display=swap');
+/* MyPage.css */
 
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: auto;
-  font-size: 18px; /* 기본 글자 크기 확대 */
-}
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@800&display=swap');
 
 .mypage-container {
   display: flex;
@@ -16,51 +10,41 @@ html, body {
   height: 100vh;
   background-color: #fff;
   font-family: Pretendard;
-  position: relative;  
-}  
-
-@media (max-width: 800px) { 
-  .my-back-button {
-    height: 3rem;
-    font-size: 1rem;
-  }
+  position: relative; 
 }
 
-@media (min-width: 801px) { 
-  .my-back-button {
-    height: 2.5rem;
-    font-size: 1rem;
-  }
+.prlogo2-1-icon {
+  width: 20.8vw;
+  position: fixed; 
+  z-index: 1000;
+  margin-bottom: 5vh; 
 }
 
 .my-center-box {
   width: 100%;
-  min-width: 1em;
-  max-width: 25em; /* 최대 너비 확대 */
+  max-width: 400px;
   display: flex;
   flex-direction: column;
-  align-items: left;
+  align-items: center;
 }
 
 .MainInputGroup {
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px; /* 마진 확대 */
+  margin-bottom: 10px;
   position: relative;
 }
 
-.MainInputGroup img{
-  margin-bottom: 6em; /* 이미지 마진 확대 */
-}
-
 .My-inputField {
-  height: 5rem; /* 입력 필드 높이 확대 */
-  padding: 15px; /* 패딩 확대 */
+  width: 20.8vw; 
+  height: 4.375rem; 
+  padding: 10px;
+  padding-right: 2.5rem;
   border: 0.6px solid #b1b1b1;
   box-sizing: border-box;
   border-radius: 6px;
-  font-size: 1.2rem; /* 글자 크기 확대 */
+  font-size: 1rem;
   outline: none;
   transition: border-color 0.3s, box-shadow 0.3s;
   position: relative;
@@ -104,16 +88,16 @@ html, body {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin-top: 15px; /* 마진 확대 */
+  margin-top: 10px;
 }
 
 .my-save-button {
-  width: 49%; 
+  width: 10vw; 
   background-color: #007f3a; 
   border: none;
   border-radius: 6px;
   color: #fff;
-  font-size: 1.5rem; /* 글자 크기 확대 */
+  font-size: 1.125rem;
   font-weight: 600;
   height: 3rem;
   box-shadow: 0px 4px 15px rgba(0, 127, 58, 0.2);
@@ -126,13 +110,13 @@ html, body {
 }
 
 .my-cancel-button {
-  margin-left: 2%;
-  width: 49%;
+  margin-left: 0.8vw;
+  width: 10vw;
   background-color: #6c757d; 
   border: none;
   border-radius: 6px;
   color: #fff;
-  font-size: 1.5rem; /* 글자 크기 확대 */
+  font-size: 1.125rem;
   font-weight: 600;
   height: 3rem;
   box-shadow: 0px 4px 15px rgba(108, 117, 125, 0.2);
@@ -145,35 +129,28 @@ html, body {
 }
 
 .label {
-  width: 100%;
-  position: relative;
-  font-size: 1.8rem !important;/* 글자 크기 확대 */
-  line-height: 156.5%;
+  font-size: 1.6rem;
   font-weight: 600;
-  font-family: Pretendard;
   color: #263a43;
-  text-align: left;
-  display: block; 
-  margin-bottom: 15px; /* 마진 확대 */
+  margin-bottom: 10px;
 }
 
 .MypageButton {
-  width: 100%;
-  max-width: 25em; /* 최대 너비 확대 */
+  width: 20.8vw;
   box-shadow: 0px 4px 30px rgba(38, 58, 67, 0.15);
   border-radius: 12px;
   border: none;
   background-color: #b5b5b6;
-  height: 70px; /* 버튼 높이 확대 */
+  height: 66px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px; /* 패딩 확대 */
-  font-size: 1.5rem; /* 글자 크기 확대 */
+  padding: 15px;
+  font-size: 1.4375rem;
   color: #fff;
   font-weight: 600;
   font-family: Pretendard;
-  margin-top: 15px; /* 마진 확대 */
+  margin-top: 10px;
 }
 
 .MypageButton:hover, .MypageButton:active {
@@ -181,13 +158,13 @@ html, body {
 } 
 
 .my-back-button {
-  position: fixed;
-  top: 2em; 
-  right: 2em; 
+  position: absolute;
+  top: 30px;
+  right: 30px;
   background-color: #b5b5b6;
   border: none;
   border-radius: 6px;
-  color: #fff; 
+  color: #fff;
 }
 
 .my-back-button:hover {

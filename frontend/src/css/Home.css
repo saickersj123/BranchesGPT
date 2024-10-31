@@ -71,7 +71,7 @@ body, html {
   text-align: center;
 }
 
-.chat-list-container { 
+.chat-list-container {
   overflow-y: auto;
   overflow-x: hidden;
   flex: 1;
@@ -81,7 +81,8 @@ body, html {
 
 .chat-box-container {
   overflow-y: hidden;
-  flex: none; 
+  flex: none;
+  height: 10%;
   margin: 0px;
   padding: 10px;
   box-sizing: border-box;
@@ -170,7 +171,7 @@ body, html {
   right: 20px;
   display: flex;
   align-items: center;
-  z-index: 1000;
+  z-index: 1100;
 }
 
 .settings-button {
@@ -211,32 +212,18 @@ body, html {
   align-items: center;
   position: fixed;
   top: 15px;
-  left: 4em;
+  left: 60px;
   z-index: 1100;
   transition: left 1.3s ease;
 }
 
 .header-container.shifted-header {
-  margin-left: 20%; /* Adjust this value based on your sidebar width */
-}
-
-.home_new_conversation {
-  font-weight: bold;
-  font-size: 31px;
-  margin-right: 0.8em;
-}
-
-.home_new_conversation:hover {
-  color: green;
-}
- 
-.shifted-header .home_new_conversation {
-  display: none;
+  margin-left: 18%; /* Adjust this value based on your sidebar width */
 }
 
 .brand-text {
   font-weight: bold;
-  font-size: 1.3em;
+  font-size: 1.2em;
   cursor: pointer;
 }
 
@@ -278,24 +265,4 @@ body, html {
 .settings-container .cancel-button:hover,
 .settings-container .reset-button:hover {
   background-color: #e0e0e0;
-}
-  
-.FaCog-dropdown-toggle{ 
-  background-color: transparent !important;
-  border: none !important;    
-}
-.FaCog-dropdown-toggle:after {
-  display: none !important;
-}
-
-.home-set-icon { 
-  width: 39px;
-  height: 39px; 
-  border-radius: 50%;
-  background-color: #989898; 
-  display: flex;
-  align-items: center;
-  justify-content: center; 
-  font-size: 1.6rem;  
-  color: white; 
 }
