@@ -1,3 +1,4 @@
+/* 기본 스타일 */
 * {
   margin: 0;
   padding: 0;
@@ -80,11 +81,11 @@ body.light {
   }
 
   .sidebar {
-    display: none; 
+    display: none; /* 모바일 화면에서는 사이드바 숨기기 */
   }
 
   .sidebar.open {
-    display: block; 
+    display: block; /* 모바일 화면에서 사이드바가 열릴 때 표시 */
     position: fixed;
     top: 0;
     left: 0;
@@ -97,11 +98,11 @@ body.light {
   }
 
   .sidebar-overlay {
-    display: none; 
+    display: none; /* 모바일 화면에서 사이드바 오버레이 숨기기 */
   }
 
   .sidebar-overlay.open {
-    display: block; 
+    display: block; /* 모바일 화면에서 사이드바가 열릴 때 오버레이 표시 */
     position: fixed;
     top: 0;
     left: 0;
@@ -110,4 +111,5 @@ body.light {
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 999;
   }
-} 
+}
+ 

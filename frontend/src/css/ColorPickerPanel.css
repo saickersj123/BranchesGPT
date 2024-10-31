@@ -93,6 +93,7 @@
   font-size: 18px;
 }
 
+
 .form-group {
   margin-bottom: 15px;
 }
@@ -144,6 +145,43 @@
 
 .color-picker-popover {
   position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.color-picker-cover {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.icon-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  transition: transform 0.2s;
+}
+
+.icon-button:hover {
+  transform: scale(1.1);
+}
+
+.icon-button.active {
+  color: #007bff;
+}
+
+.color-picker-popover { 
+  position: absolute;
   z-index: 2000;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -161,7 +199,7 @@
 }
 
 .chrome-picker {
-  box-shadow: none !important;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  box-shadow: none !important; /* 기존 그림자 제거 */
+  border: 1px solid #ccc; /* 경계선 추가 */
+  border-radius: 8px; /* 모서리 둥글게 */
 }
