@@ -1,6 +1,15 @@
+/* Signup.css */
 @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@800&display=swap');
 
-.SignupPage {
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  font-size: 18px; /* 기본 글자 크기 확대 */
+}
+
+.signupPage {
   width: 100%;
   height: 100vh;
   display: flex;
@@ -8,61 +17,67 @@
   align-items: center;
   justify-content: center;
   background-color: #fff;
-  font-family: Pretendard;
+  font-family: Pretendard; 
 }
 
-.prlogo2-1-icon { 
-  position: relative;
-  width: 20.8vw;
-  overflow: hidden; 
-  object-fit: cover;
-  margin-bottom: 10vh;
+.signup-center-box {
+  width: 100%;
+  min-width: 1em;
+  max-width: 25em; /* 최대 너비 확대 */
+  display: flex;
+  flex-direction: column;
+  align-items: left;
 }
 
-.form { 
+.signupinputGroup img {
+  width: 100%;
+  margin-bottom: 6em; /* 이미지 마진 확대 */
+  margin-top: 6em;
+}
+
+.signupForm { 
   align-items: center;
   justify-content: center;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px; /* 간격 확대 */
 }
  
-.inputGroup {
+.signupInputGroup {
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-bottom: 10px;
+  margin-bottom: 15px; /* 마진 확대 */
   position: relative;
 }
 
-.passwordIcon {
+.signupPasswordIcon {
   position: absolute;
   right: 10px;
   top: 64%;
 }
 
-
-.inputField { 
-  height: 4.375rem;
-  padding: 10px;
+.signupInputField { 
+  height: 5rem; /* 입력 필드 높이 확대 */
+  padding: 15px; /* 패딩 확대 */
   border: 0.6px solid #b1b1b1;
   box-sizing: border-box;
   border-radius: 6px;
-  font-size: 1rem;
+  font-size: 1.2rem; /* 글자 크기 확대 */
   outline: none;
   position: relative; 
 }
 
-.inputField:focus {
+.signupInputField:focus {
   border-color: #007f3a; 
   box-shadow: 0 0 0 2px rgba(0, 127, 58, 0.2);
 }
 
-.inputField:focus, .inputField:not(:placeholder-shown) {
+.signupInputField:focus, .signupInputField:not(:placeholder-shown) {
   outline: none;
 }
 
-.underline {
+.signupUnderline {
   height: 5.71%;
   width: 100%;
   position: absolute;
@@ -74,58 +89,59 @@
   background-color: transparent;
 }
 
-.inputField:focus + .underline, .inputField:not(:placeholder-shown) + .underline {
+.signupInputField:focus + .signupUnderline, .signupInputField:not(:placeholder-shown) + .signupUnderline {
   background-color: #007f3a; 
 }
 
-.inputField:placeholder-shown + .underline {
+.signupInputField:placeholder-shown + .signupUnderline {
   background-color: transparent; 
 }
 
-.error {
+.signupError {
   color: red;
-  margin-bottom: 10px;
+  margin-bottom: 15px; /* 마진 확대 */
 }
 
-.SignupButton {
-  width: 20.8vw;
+.signupButton {
+  width: 100% !important;
+  max-width: 25em; /* 최대 너비 확대 */
   position: relative;
   box-shadow: 0px 4px 30px rgba(38, 58, 67, 0.15);
   border-radius: 12px;
   border : none;
   background-color: #b5b5b6;
-  height: 66px;
+  height: 70px; /* 버튼 높이 확대 */
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: 15px 165px;
-  box-sizing: border-box;
-  text-align: left;
-  font-size: 1.4375rem;
+  padding: 20px; /* 패딩 확대 */
+  font-size: 1.5rem; /* 글자 크기 확대 */
   color: #fff;
   white-space: nowrap;
   font-weight: 600;
   font-family: Pretendard;
+  margin-top: 15px; /* 마진 확대 */
 }
 
-.SignupButton:hover, .SignupButton:active {
+.signupButton:hover, .signupButton:active {
   background-color: #111111 !important; 
 } 
 
-.label {
+.signupLabel {
   width: 100%;
   position: relative;
-  font-size: 1.6rem;
+  font-size: 1.8rem; /* 글자 크기 확대 */
   line-height: 156.5%;
   font-weight: 600;
   font-family: Pretendard;
   color: #263a43;
   text-align: left;
   display: block; 
-  margin-bottom: 10px; 
+  margin-bottom: 15px; /* 마진 확대 */
 }
-.custom-alert {
+
+.signupAlert {
   display: flex;
   align-items: center;
   font-size: 16px;

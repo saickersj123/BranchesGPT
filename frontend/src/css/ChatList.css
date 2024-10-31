@@ -5,21 +5,46 @@
   --other-chat-text-color: #000000;
   --chat-bubble-bold: normal;
   --chat-bubble-shadow: none;
-  --time-bold: normal; /* 시간 볼드체 추가 */
+  --time-bold: normal;
 }
 
-/* 채팅 메시지 컨테이너 스타일 */
-.message-container {
+.bubble-wrapper {
   display: flex;
   flex-direction: column;
+}
+
+.message-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
   margin-bottom: 10px;
+}
+
+.chatbot-icon {
+  width: 60px;
+  height: 60px;
+  margin-right: 5px;
+  margin-top: 5px; 
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.chatbot-icon img {
+  padding: 1px;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px solid #000;
 }
 
 .bubble-container {
   display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  max-width: 100%; /* 기본적으로 최대 너비를 100%로 설정 */
+  align-items: center; /* 수정: 수직 정렬 */
+  position: relative;
+  max-width: 100%;
 }
 
 .bubble {
@@ -27,14 +52,18 @@
   border-radius: 10px;
   word-wrap: break-word;
   word-break: break-all;
+  display: flex; 
+  align-items: flex-end;  
+  white-space: pre-wrap; 
 }
 
 .time {
   font-size: 0.8em;
   color: gray;
   white-space: nowrap;
-  margin-left: 10px; /* 시간을 말풍선 옆에 띄우기 위한 여백 */
-  font-weight: var(--time-bold); /* 시간 볼드체 적용 */
+  margin-left: 10px;
+  font-weight: var(--time-bold);
+  align-self: flex-end; /* 수정: 수직 정렬 */
 }
 
 .username {
@@ -46,6 +75,15 @@
 .sent-by-user {
   margin-left: auto;
   align-items: flex-end;
+  flex-direction: row-reverse;
+}
+
+.sent-by-user .bubble-wrapper {
+  align-items: flex-end;
+}
+
+.received .bubble-wrapper {
+  align-items: flex-start;
 }
 
 .sent-by-user .bubble-container {
@@ -59,8 +97,8 @@
 }
 
 .sent-by-user .time {
-  margin-left: 0; /* 왼쪽 마진 제거 */
-  margin-right: 5px; /* 오른쪽 마진 추가 */
+  margin-left: 0;
+  margin-right: 5px;
 }
 
 .received {
@@ -82,7 +120,6 @@
   margin-left: 5px;
 }
 
-/* 새로운 채팅을 시작해 보세요! 알림 스타일 */
 .alert-info {
   background-color: lightgrey;
 }
@@ -94,7 +131,6 @@
   margin-top: 50px;
 }
 
-/* 로딩 스피너 스타일 */
 .loading-spinner {
   text-align: center;
   font-size: 1.2em;
