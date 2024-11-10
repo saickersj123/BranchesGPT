@@ -16,9 +16,9 @@ const app = express();
 
 // Middlewares
 //for local testing
-//app.use(cors({origin: 'https://localhost:3000', credentials: true}));
+app.use(cors({origin: process.env.ORIGIN_URL, credentials: true}));
 //for deployment
-app.use(cors({origin: 'https://app.branchesgpt.o-r.kr', credentials: true}));
+//app.use(cors({origin: 'https://app.branchesgpt.o-r.kr', credentials: true}));
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET))
 app.use(morgan("dev")); // for development
