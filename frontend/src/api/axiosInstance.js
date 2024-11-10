@@ -10,7 +10,7 @@ axios.defaults.withCredentials = true;
 // axios 인스턴스 생성. 모든 요청에 사용됩니다.
 const axiosInstance = axios.create({
   //for local testing
-  baseURL:  'http://localhost:5000/api' ,
+  baseURL:  process.env.REACT_APP_API_BASE_URL ,
   //for deployment
   //baseURL:  'https://api.branchesgpt.o-r.kr/api' , // API 요청의 기본 URL 설정
   headers: {
