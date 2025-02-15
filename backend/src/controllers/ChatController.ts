@@ -10,13 +10,14 @@ export const generateChatCompletion = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
-) => {
+) : Promise<void> => {
 	try {
 		const { message } = req.body;
 
 		const user = await User.findById(res.locals.jwtData.id);
 		if (!user) {
-			return res.status(401).json("User not registered / token malfunctioned");
+			res.status(401).json("User not registered / token malfunctioned");
+			return;
 		}
 
 		// Add the user's message to the conversation
@@ -45,10 +46,10 @@ export const generateChatCompletion = async (
 		conversation.chats.push(chatResponse.choices[0].message);
 		await user.save();
 
-		return res.status(200).json({ chats: conversation.chats });
+		res.status(200).json({ chats: conversation.chats });
 	} catch (error) {
 		console.log(error);
-		return res.status(500).json({ message: error.message });
+		res.status(500).json({ message: error.message });
 	}
 };
 
@@ -56,25 +57,26 @@ export const getAllConversations = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
-) => {
+) : Promise<void> => {
 	try {
 		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
         
-		if (!user)
-			return res.status(401).json({
+		if (!user) {
+			res.status(401).json({
 				message: "ERROR",
 				cause: "User doesn't exist or token malfunctioned",
 			});
+			return;
+		}
 
 		if (user._id.toString() !== res.locals.jwtData.id) {
-			return res
-				.status(401)
-				.json({ message: "ERROR", cause: "Permissions didn't match" });
+			res.status(401).json({ message: "ERROR", cause: "Permissions didn't match" });
+			return;
 		}
-		return res.status(200).json({ message: "OK", conversations: user.conversations });
+		res.status(200).json({ message: "OK", conversations: user.conversations });
 	} catch (err) {
 		console.log(err);
-		return res.status(200).json({ message: "ERROR", cause: err.message });
+		res.status(200).json({ message: "ERROR", cause: err.message });
 	}
 };
 
@@ -82,29 +84,30 @@ export const deleteAllConversations = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
-) => {
+) : Promise<void> => {
 	try {
 		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
         
-		if (!user)
-			return res.status(401).json({
+		if (!user) {
+			res.status(401).json({
 				message: "ERROR",
 				cause: "User doesn't exist or token malfunctioned",
 			});
+			return;
+		}
 
 		if (user._id.toString() !== res.locals.jwtData.id) {
-			return res
-				.status(401)
-				.json({ message: "ERROR", cause: "Permissions didn't match" });
+			res.status(401).json({ message: "ERROR", cause: "Permissions didn't match" });
+			return;
 		}
 
         //@ts-ignore
         user.conversations = [];
         await user.save()
-		return res.status(200).json({ message: "OK", conversations: user.conversations });
+		res.status(200).json({ message: "OK", conversations: user.conversations });
 	} catch (err) {
 		console.log(err);
-		return res.status(200).json({ message: "ERROR", cause: err.message });
+		res.status(200).json({ message: "ERROR", cause: err.message });
 	}
 };
 
@@ -112,33 +115,36 @@ export const startNewConversation = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
-) => {
+) : Promise<void> => {
 	try {
 		const user = await User.findById(res.locals.jwtData.id);
 
-		if (!user)
-			return res.status(401).json({
+		if (!user) {
+			res.status(401).json({
 				message: "ERROR",
 				cause: "User doesn't exist or token malfunctioned",
 			});
+			return;
+		}
 		
 		// Validate if the last conversation is empty
 		const lastConversation = user.conversations[user.conversations.length - 1];
 		if (lastConversation && lastConversation.chats.length === 0) {
-			return res.status(400).json({
+			res.status(400).json({
 				message: "ERROR",
 				cause: "The last conversation is still empty. Please add messages before creating a new conversation.",
 			});
+			return;
 		}
 
 		user.conversations.push({ chats: [] });
 		await user.save();
 
-		return res.status(200).json({ message: "New conversation started", 
+		res.status(200).json({ message: "New conversation started", 
 					conversation: user.conversations[user.conversations.length - 1]  });
 	} catch (err) {
 		console.log(err);
-		return res.status(500).json({ message: "ERROR", cause: err.message });
+		res.status(500).json({ message: "ERROR", cause: err.message });
 	}
 };
 
@@ -146,18 +152,19 @@ export const startNewConversationwith = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
-) => {
+) : Promise<void> => {
 	try {
 		const { message } = req.body;
 
 		const user = await User.findById(res.locals.jwtData.id);
 		if (!user) {
-			return res.status(401).json("User not registered / token malfunctioned");
+			res.status(401).json("User not registered / token malfunctioned");
+			return;
 		}
 		// Validate if the last conversation is empty
 			const lastConversation = user.conversations[user.conversations.length - 1];
 			if (lastConversation && lastConversation.chats.length === 0) {
-				return res.status(400).json({
+				res.status(400).json({
 					message: "ERROR",
 					cause: "The last conversation is still empty. Please add messages before creating a new conversation.",
 				});
@@ -189,10 +196,10 @@ export const startNewConversationwith = async (
 		conversation.chats.push(chatResponse.choices[0].message);
 		await user.save();
 
-		return res.status(200).json({ conversation: conversation });
+		res.status(200).json({ conversation: conversation });
 	} catch (error) {
 		console.log(error);
-		return res.status(500).json({ message: error.message });
+		res.status(500).json({ message: error.message });
 	}
 };
 
@@ -200,30 +207,32 @@ export const getConversation = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
-) => {
+) : Promise<void> => {
 	try {
 		const user = await User.findById(res.locals.jwtData.id);
 		const { conversationId } = req.params;
 
 		if (!user) {
-			return res.status(401).json({
+			res.status(401).json({
 				message: "ERROR",
 				cause: "User doesn't exist or token malfunctioned",
 			});
+			return;
 		}
 
 		const conversation = user.conversations.id(conversationId);
 		if (!conversation) {
-			return res.status(404).json({
+			res.status(404).json({
 				message: "ERROR",
 				cause: "Conversation not found",
 			});
+			return;
 		}
 
-		return res.status(200).json({ message: "OK", conversation });
+		res.status(200).json({ message: "OK", conversation });
 	} catch (err) {
 		console.log(err);
-		return res.status(500).json({ message: "ERROR", cause: err.message });
+		res.status(500).json({ message: "ERROR", cause: err.message });
 	}
 };
 
@@ -231,41 +240,44 @@ export const deleteConversation = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
-) => {
+) : Promise<void> => {
 	try {
 		const user = await User.findById(res.locals.jwtData.id);
 		const { conversationId } = req.params;
 
 		if (!user) {
-			return res.status(401).json({
+			res.status(401).json({
 				message: "ERROR",
 				cause: "User doesn't exist or token malfunctioned",
 			});
+			return;
 		}
 
 		const conversation = user.conversations.id(conversationId);
 		if (!conversation) {
-			return res.status(404).json({
+			res.status(404).json({
 				message: "ERROR",
 				cause: "Conversation not found",
 			});
+			return;
 		}
 
 		// Remove the conversation
 		user.conversations.pull(conversationId);
 		await user.save();
 
-		return res.status(200).json({ message: "OK", conversations: user.conversations });
+		res.status(200).json({ message: "OK", conversations: user.conversations });
 	} catch (err) {
 		console.log(err);
-		return res.status(500).json({ message: "ERROR", cause: err.message });
+		res.status(500).json({ message: "ERROR", cause: err.message });
 	}
 };
 
 export const createCustomModel = async (
 	req: Request,
 	res: Response,
-	next: NextFunction) => {
+	next: NextFunction
+) : Promise<void> => {
 	try {
 		const userId = res.locals.jwtData.id;
 		const { trainingData, modelName } = req.body;
@@ -284,7 +296,8 @@ export const createCustomModel = async (
 export const deleteCustomModel = async (
 	req: Request,
 	res: Response,
-	next: NextFunction) => {
+	next: NextFunction
+) : Promise<void> => {
 	try {
 		const userId = res.locals.jwtData.id;
 	  	const { modelId } = req.params;
@@ -300,25 +313,26 @@ export const getCustomModels = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
-) => {
+) : Promise<void> => {
 	try {
 		const user = await User.findById(res.locals.jwtData.id); // get variable stored in previous middleware
         
-		if (!user)
-			return res.status(401).json({
+		if (!user) {
+			res.status(401).json({
 				message: "ERROR",
 				cause: "User doesn't exist or token malfunctioned",
 			});
+			return;
+		}
 
 		if (user._id.toString() !== res.locals.jwtData.id) {
-			return res
-				.status(401)
-				.json({ message: "ERROR", cause: "Permissions didn't match" });
+			res.status(401).json({ message: "ERROR", cause: "Permissions didn't match" });
+			return;
 		}
-		return res.status(200).json({ message: "OK", CustomModels: user.CustomModels });
+		res.status(200).json({ message: "OK", CustomModels: user.CustomModels });
 	} catch (err) {
 		console.log(err);
-		return res.status(200).json({ message: "ERROR", cause: err.message });
+		res.status(200).json({ message: "ERROR", cause: err.message });
 	}
 };
 
@@ -326,15 +340,15 @@ export const getModelbyId = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
-) => {
+) : Promise<void> => {
 	try {
 		const userId = res.locals.jwtData.id;
 		const { modelId } = req.params;
 		const model = await loadModel(userId, modelId);
 
-		return res.status(200).json({ message: "OK", model });
+		res.status(200).json({ message: "OK", model });
 	} catch (err) {
 		console.log(err);
-		return res.status(500).json({ message: "ERROR", cause: err.message });
+		res.status(500).json({ message: "ERROR", cause: err.message });
 	}
 };
