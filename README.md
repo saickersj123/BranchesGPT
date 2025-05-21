@@ -62,9 +62,22 @@ npm run install-client
 
 3. Create a `.env` file in the backend directory with the following variables:
 ```
-MONGODB_URI=your_mongodb_uri
-JWT_SECRET=your_jwt_secret
-OPENAI_API_KEY=your_openai_api_key
+# Server Configuration
+PORT=5000
+ORIGIN_URL=http://localhost:3000
+COOKIE_SECRET=your_cookie_secret
+
+# MongoDB Configuration
+MONGO_USER=your_mongodb_username
+MONGO_PASSWORD=your_mongodb_password
+
+# OpenAI Configuration
+OPEN_AI_SECRET_KEY=your_openai_api_key
+OPEN_AI_ORG=your_openai_organization_id
+
+# Optional: For Production
+# Set ORIGIN_URL to your production domain
+# ORIGIN_URL=https://app.branchesgpt.o-r.kr
 ```
 
 ## 🚀 Running the Application
